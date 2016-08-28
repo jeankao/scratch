@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}個人檔案{% endblock %}
+{% block head_ext %}
+<style class="cp-pen-styles">
+.wrapper {
+  margin: auto;
+  padding: 1em;
+  width: 900px;
+}
+ul.tabs {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+ul.tabs li {
+  border: gray solid 1px;
+  border-bottom: none;
+  float: left;
+  margin: 0 .25em 0 0;
+  padding: .25em .5em;
+}
+ul.tabs li a {
+  color: gray;
+  font-weight: bold;
+  text-decoration: none;
+}
+ul.tabs li.active {
+  background: gray;
+}
+ul.tabs li.active a {
+  color: white;
+}
+.clr {
+  clear: both;
+}
+article {
+  border-top: gray solid 1px;
+  padding: 0 1em;
+}</style>
+<script>
+
+$(function () {
+    $('.block article').hide();
+    var defaultTab = $('ul.tabs li:first');
+    var defaultArticle = $('.block article:first');
+    if (location.hash && $(location.hash)) {
+        $('ul.tabs li a').each(function(index, element){
+            if($(element).attr('href') === location.hash) {
+                defaultTab = $(element).parent();
+                defaultArticle = $(location.hash);
+            }
+        });
+        location.hash = ""
+    }
+    $(defaultTab).addClass('active');
+    $(defaultArticle).show();
+    $('ul.tabs li').on('click', function () {
+        $('ul.tabs li').removeClass('active');
+        $(this).addClass('active');
+        $('.block article').hide();
+        var activeTab = $(this).find('a').attr('href');
+        $(activeTab).show();
+        return false;
+    });
+});
+//# sourceURL=pen.js
+
+</script>
+{% endblock %}
+{% block content %}
+{% load tag %}
+
+{% if user.id == user_id|to_int %}
+<a href="/account/password-change"><img src="/static/images/icon_edit1.png">修改密碼</a>　
+<a href="/account/realname"><img src="/static/images/icon_edit2.png">修改姓名</a>　
+<a href="/account/school"><img src="/static/images/icon_edit3.png">修改學校</a>　
+<a href="/account/email"><img src="/static/images/icon_edit4.png">修改信箱</a><BR><BR>
+{% endif %}
+  
+<section class="wrapper">
+  <h1>{{profile.user.first_name}}個人檔案</h1>
+<p>信箱：{{profile.user.email}}</p>
+<p>學校：{{profile.user.last_name}}</p>
+<p>
+班級：
+{% for enroll in enrolls %}
+{{enroll.classroom.name}}({{enroll.seat}}號)
+{% endfor %}
+</p>
+  <ul class="tabs">
+    <li><a href="#tab1">積分</a></li>
+    <li><a href="#tab2">作業</a></li>
+    <li><a href="#tab3">證書</a></li>
+  </ul>
+  <div class="clr"></div>
+  <section class="block">
+    <article id="tab1">
+        <BR>
+  <Table>
+<tr><td rowspan=6 width=320><img src="/static/avatar/b{{ profile.avatar }}.png"></td></tr>
+<tr><td>總積分</td><td>{{credit}}</td><td><a href="/account/log/0/{{user_id}}">記錄</a></td></tr>
+<tr><td>作業積分</td><td>{{profile.work}}</td><td><a href="/account/log/1/{{user_id}}">記錄</a></td></tr>
+<tr><td>小老師積分</td><td>{{profile.assistant}}</td><td><a href="/account/log/2/{{user_id}}">記錄</a></td></tr>
+<tr><td>除錯積分</td><td>{{profile.debug}}</td><td><a href="/account/log/3/{{user_id}}">記錄</a></td></tr>
+<tr><td>創意秀積分</td><td>{{profile.creative}}</td><td><a href="/account/log/4/{{user_id}}">記錄</a></td></tr>
+  </Table>		</article>
+   <article id="tab2">
+        <BR>
+    <table>
+    <tr>
+        <td>主題</td>
+        <td>編號</td>
+        <td>作品</td>
+        <td>評分者</td>
+        <td>分數</td>
+        <Td>日期</Td>
+
+    </tr>
+    {% for lesson in lesson_list %}
+    {% with c=forloop.counter %}
+        <tr align=left>
+        <td>{{lesson.1}}</td>
+        <td align=right>{{lesson.0}}</td>
+            <td>{{lesson.2}}</td>
+            <td>{% if lesson.5 == "null" %}尚未評分!{% else %}{{lesson.5}}{% endif %}</td>
+            {% if lesson.3 == -1 %}
+                <td>已繳交</td>
+            {% else %}
+                <td>{{lesson.3}}</td>
+            {% endif %}
+            <td>{{lesson.4|date:"Y/m/d h:i:s" }}</td>
+            
+        </tr>
+        {% endwith %}
+    {% endfor %}
+    </table>
+    </article>
+    <article id="tab3">
+        <BR>
+        {% for enroll in enrolls %}
+        {% if enroll.certificate1 %}
+        <img src='/static/certificate/1/{{enroll.id}}.jpg'>
+        <Br><hr>
+        {% endif %}
+
+        {% if enroll.certificate2 %}
+        <img src='/static/certificate/2/{{enroll.id}}.jpg'>
+        <Br><hr>
+        {% endif %}
+
+        {% if enroll.certificate3 %}
+        <img src='/static/certificate/3/{{enroll.id}}.jpg'>
+        <Br><hr>
+        {% endif %}
+
+        {% if enroll.certificate4 %}
+        <img src='/static/certificate/4/{{enroll.id}}.jpg'>
+        <Br><hr>
+        {% endif %}
+        {% endfor %}    
+        {% if hour_of_code %}
+        <img src="/{{hour_of_code.picture}}">
+        {% endif %}
+        </article>
+    </article>
+  </section>
+</section>
+{% endblock %}
+
+

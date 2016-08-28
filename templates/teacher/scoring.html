@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Create a question{% endblock %}
+{% block content %}
+    {{lesson.1}} / {{lesson.2}}
+    <br>
+    {% if not work.number = "0" %}
+        班級：{{classroom.name}}  學生：{{student.first_name}}
+        <br>
+        作品：<a target=_blank href="https://scratch.mit.edu/projects/{{work.number}}/#editor">{{work.number}}</a>
+        <br>
+        <iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ work.number }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
+        <BR>
+        心得：
+        <br>
+        {{work.memo}}
+        <form action="" enctype="multipart/form-data"  method="post">
+            <table>
+                {{ form.as_table }}
+            </table>
+            {% csrf_token %}
+            <input type="submit" value="Submit">
+        </form>
+    {% else %}
+        尚未繳交
+    {% endif %}
+{% endblock %}

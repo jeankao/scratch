@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %} Students {% endblock %}
+{% block content %}
+{% load tag %}
+{% if group_show_open %}
+<a href="../add/{{classroom_id}}"><img src="/static/images/icon_group_new.png">新增組別</a>
+{% endif %}
+{% if teacher %}
+<a href="../size/{{classroom_id}}"><img src="/static/images/icon_size.png">設定人數</a>
+{% if group_show_open %}
+<a href="../open/{{classroom_id}}/0"><img src="/static/images/icon_close.png">關閉選組</a>
+{% else %}
+<a href="../open/{{classroom_id}}/1"><img src="/static/images/icon_open.png">開放選組</a>
+{% endif %}
+　<a href="/show/excel/{{classroom_id}}"><img src="/static/images/icon_excel.png">匯出到Excel</a><BR>
+{% endif %}
+<br>
+<table>
+<tr>
+<td>名稱</td>  
+<td>組員</td>  
+<td>狀態</td>
+<td>空位</td>
+<td>作品</td>
+<td>時間</td>
+<td>評分結果</td>
+<td>藝廊</td>
+</tr>
+        {% for group in student_groups %}
+                <tr>
+                <td>
+			{% for user_group in user.groups.all %}
+				{% if user_group.name == 'teacher' and group.1|length == 0 %}
+				<a href="/show/group/delete/{{group.0.id}}/{{classroom_id}}" onclick="return confirm('確定要刪除嗎?')">刪除</a>
+				{% endif %}		
+			{% endfor %}							
+				{{group.0.name}}</td>
+				<td>
+				{% for enroll in group.1 %}
+				<A href="/account/profile/{{enroll.student.id}}"><img src="/static/avatar/s{{ enroll.student.profile.avatar }}.png"></a>
+				    ({{enroll.seat}}){{enroll.student.first_name}}
+				{% endfor %}
+				</td>
+                <td>
+                {% if student_group == group.0.id %}
+		    	<a href="/show/group/submit/{{student_group}}/{{classroom_id}}">繳交</a>
+                {% endif %}                
+				{% if group_show_open %}
+                {% if student_group == group.0.id %}
+                已加入
+                {% else %}
+                {% if group.2 > 0 %}
+                <a href="/show/group/enroll/{{classroom_id}}/{{group.0.id}}">加入此組</a>
+                {% else %}
+                額滿
+                {% endif %}
+                {% endif %}   
+				{% endif %}
+                </td>
+                <td>{{group.2}}</td>
+                <td>
+				{% if group.0.done == True %}
+				<a href="/show/detail/{{group.0.id}}">{{group.0.title}}</a>
+				{% endif %}
+                </td>
+				<td>
+				{% if group.0.done == True %}				
+				{{group.0.publish}}
+				{% endif %}
+				</td>
+				<td>
+				<a href="/show/score/{{group.0.id}}">查閱</a>
+				</td>
+                {% if request.user|has_group:"teacher" %} 			
+				<td>{% if group.0.open %}<a href="#" data-showid="{{ group.0.id }}" data-action="close" class="open">取消</a>{% else %}<a href="#" data-showid="{{  group.0.id }}" data-action="open" class="open">開放</a>{% endif %}</td>
+			    {% else %}
+			    <td>{% if group.0.open %}已分享{% else %}無{% endif %}</t>
+			    {% endif %}
+                </tr>        
+        {% endfor %}
+</table>
+尚未分組名單
+{% for enroll in nogroup %}
+({{enroll.seat}}){{enroll.student.first_name}}
+{% endfor  %}
+
+{% endblock %}
+{% block domready %}
+  $('a.open').click(function(e){
+    var launcher = this;  
+    e.preventDefault();
+    $.post('/show/gallery/make/',
+      {
+        showid: $(launcher).data('showid'),
+        action: $(launcher).data('action')
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $(launcher).data('action');
+		   if (previous_action == 'open') {
+               $(launcher).html("取消");
+               $(launcher).data('action', 'close');
+           } else {
+               $(launcher).data('action', 'open');
+               $(launcher).html("開放");
+           }
+        }
+		else {
+				alert("hello");
+		}
+      }
+    );
+  });
+{% endblock %}
+
+
+

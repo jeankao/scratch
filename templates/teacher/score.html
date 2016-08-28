@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Create a question{% endblock %}
+{% block content %}
+        {{lesson.1}}
+        <br>
+        {{lesson.2}}
+		<BR>
+		 <a href="/teacher/work/group/{{index}}/{{classroom_id}}">組別</a>
+        <table>
+        <tr>
+            <td>學生</td>
+            <td>組別</td>
+            <td>功能</td>
+        </tr>
+        {% for list in classmate_work  %}
+                <tr>
+                <td>
+                {% if not list.1.number = "0" %} 
+                        {{list.0.seat}})<a href="/teacher/scoring/{{classroom_id}}/{{list.0.student.id}}/{{index}}">{{list.0.student.first_name}}-{{list.1.publication_date}}
+                    {% if list.1.score > 0 %}
+                        ({{list.1.score}}-{{list.3}})
+                    {%  endif %}
+                        </a><br/>
+                {% else %}
+                        {{list.0.seat}}){{list.0.student.first_name}}<br/>
+                {% endif %}
+                </td>
+                <td>{{list.4}}</td>
+                <td>{% if list.2 > 0 %}小老師<a href="/teacher/assistant_cancle/{{list.0.classroom.id}}/{{list.0.student.id}}/{{index}}">(取消)</a>{% else %}<a href="/teacher/assistant/{{list.0.classroom.id}}/{{list.0.student.id}}/{{index}}">設定為小老師</a>{% endif %}</td>
+                </tr>
+        {% endfor %}
+        </table>
+{% endblock %}

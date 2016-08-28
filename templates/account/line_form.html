@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Create a question{% endblock %}
+{% load tag %}
+{% block head_ext %}
+<script type="text/javascript" src="//cdn.ckeditor.com/4.5.9/standard-all/ckeditor.js"></script>
+<script>
+
+CKEDITOR.plugins.add('dreamerpasteimage', {
+    init: function(editor) {
+        editor.on('paste', function(e) {
+            var reader = new FileReader();
+            reader.onload = function(evt) {
+                var img = CKEDITOR.dom.element.createFromHtml("<img src='"+evt.target.result+"' />");
+                e.editor.insertElement(img);
+            }
+            e.data.dataTransfer._.files.forEach(function(file, index) {
+                console.log('paste: '+index);
+                reader.readAsDataURL(file);
+            });
+        });
+    },
+});
+</script>
+{% endblock %}
+{% block content %}
+        <h1>對象：{{user_id|name}}</h1>
+         <form action="" enctype="multipart/form-data"  method="post">
+            <table>
+                {{ form.as_table }}
+            </table>
+            {% csrf_token %}
+            <input type="submit" value="Submit">
+        </form>
+        <BR>
+        <h1>歷史私訊</h1>
+        <table>
+        {% for message, read in messages %}
+        <tr><td>{{message.time}}<a href="/account/line/detail/{{message.id}}">{{message.title}}{% if not read %}(未讀){% endif %}</a></td></tr>
+        {% empty %}
+        <tr><td>無</td></tr>
+        {% endfor %}
+        </table>
+{% endblock %}
+{% block domready %}
+    CKEDITOR.replace("id_content", {
+        extraPlugins: 'colorbutton,colordialog,dreamerpasteimage',
+    } );	
+{% endblock %}

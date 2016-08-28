@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% load tag %}
+{% block content %}
+        <a href="add"><img src="/static/images/icon_join.png">加入班級</a><BR><BR>
+        
+        <table>
+        {% for enroll in enrolls %}
+        <tr>
+            <td rowspan=7>班級：{{enroll.classroom}}</td>
+            <td rowspan=7>座號：{{enroll.seat}}</td>
+            <td>基本資料：
+			<a href="/student/classroom/seat/{{enroll.id}}/{{enroll.classroom_id}}">座號</a>｜			
+			<a href="/student/group/{{enroll.classroom_id}}">組別</a>｜
+			<a href="/student/classmate/{{enroll.classroom_id}}">同學</a>｜
+			<a href="/student/work/{{enroll.classroom_id}}">作業</a>｜
+			<a href="/student/memo_all/{{enroll.classroom_id}}">心得</a>｜
+			<a href="/student/note">筆記</a>｜			
+			<a href="/student/video">影片</a>｜				
+			</td>
+		</tr>
+        <tr>
+            <td>互動：
+			<a href="/student/announce/{{enroll.classroom_id}}">公告</a>｜
+		    <a href="/account/line/{{enroll.classroom_id}}">我的私訊</a>｜			
+		    <a href="/account/line/class/{{enroll.classroom_id}}">私訊同學</a>｜					    
+			<a href="/account/line/add/{{enroll.classroom_id}}/{{enroll.classroom_id|teacher_id}}">私訊老師</a>｜
+			<a href="/student/bug/class/{{enroll.classroom_id}}">Bug專區</a>｜
+			<a href="/student/bug/add/{{enroll.classroom_id}}">Bug求救</a>｜			
+			</td>
+		</tr>
+{% if enroll.classroom_id < 28 %}
+        <tr>
+            <td>創意秀：
+			<a href="/blog/add/{{enroll.classroom_id}}">發表創意</a>｜
+			<a href="/blog/person/{{enroll.classroom_id}}/{{request.user.id}}">我的創意秀</a>｜
+			<a href="/blog/class/{{enroll.classroom_id}}">班級創意秀</a>｜		
+			</td>
+		</tr>
+{% else %}
+<tr></tr>
+{% endif %}		
+        <tr>
+            <td>創意秀：
+			<a href="/show/group/{{enroll.classroom_id}}">組別</a>｜
+			{% if enroll.group_show > 0 %}
+			<a href="/show/group/submit/{{enroll.group_show}}/{{enroll.classroom_id}}">繳交</a>｜
+			{% endif %}
+			<a target=_blank href="http://drscratch.programamos.es/">Dr Scratch</a>｜
+			{% if enroll.group_show > 0 %}
+			<a href="/show/drscratch/{{enroll.group_show}}">上傳分析圖</a>｜
+			{% endif %}			
+			<a href="/show/rank/1/{{enroll.classroom_id}}/">美工王</a>｜
+			<a href="/show/rank/2/{{enroll.classroom_id}}/">程式王</a>｜
+			<a href="/show/rank/3/{{enroll.classroom_id}}/">創意王</a>｜			
+			</td>
+		</tr>	
+        <tr>
+            <td>進度：
+			<a href="../progress/{{enroll.classroom_id}}/1">Scratch12堂課</a>｜           
+            <a href="../progress/{{enroll.classroom_id}}/2">實戰入門</a>｜                        
+            <a href="../progress/{{enroll.classroom_id}}/3">實戰進擊</a>｜                       
+            <a href="../progress/{{enroll.classroom_id}}/4">實戰高手</a>｜                             
+            </td>
+		</tr>
+		<tr>
+			<td>證書：
+			<a href="/certificate/classroom/0/{{enroll.classroom_id}}">Hour of Code</a>｜
+			<a href="/certificate/classroom/1/{{enroll.classroom_id}}">Scratch12堂課</a>｜
+			<a href="/certificate/classroom/2/{{enroll.classroom_id}}">實戰入門</a>｜
+			<a href="/certificate/classroom/3/{{enroll.classroom_id}}">實戰進擊</a>｜
+			<a href="/certificate/classroom/4/{{enroll.classroom_id}}">實戰高手</a>｜
+			</td>
+        </tr>		
+		<tr>
+			<td>排行榜：
+			<a href="/student/rank/0/{{enroll.classroom_id}}">總積分</a>｜
+			<a href="/student/rank/1/{{enroll.classroom_id}}">作業上傳</a>｜
+			<a href="/student/rank/2/{{enroll.classroom_id}}">小老師</a>｜
+			<a href="/student/rank/3/{{enroll.classroom_id}}">除錯</a>｜
+			<a href="/student/rank/4/{{enroll.classroom_id}}">創意秀</a>｜	
+			</td>
+        </tr>
+        {% endfor %}
+        </table>
+{% endblock %}

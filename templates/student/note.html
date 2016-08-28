@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load tag %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+<h1>{{request.user.first_name}}的學習筆記</h1>
+<a href="/student/note/doc"><img src="/static/images/icon_word.png">匯出Word檔</a>
+<BR>
+<BR>
+<table>
+<tr><td>課別</td><td>日期</td><td>內容</td></tr>
+{% for note in notes %}
+<Tr><td>{{note.lesson}}</td><td>{{note.publication_date|date:"DATE_FORMAT"}}</td><td>{{note.memo|safe}}</td></Tr>
+{% endfor %}
+</table>
+{% include "pagination.html" with page=page_obj %}     
+{% endblock %}

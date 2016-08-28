@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Create a question{% endblock %}
+{% block content %}
+    <table>
+    <tr>
+        <td>主題</td>
+        <td>編號</td>
+        <td>作品</td>
+        <td>評分者</td>
+        <td>分數</td>
+        <Td>日期</Td>
+        <td>小老師</td>
+		<td>組別</td>
+        <td>心得</td>
+
+    </tr>
+    {% for lesson in lesson_list %}
+    {% with c=forloop.counter %}
+        <tr align=left>
+        <td>{{lesson.1}}</td>
+        <td align=right>{{lesson.0}}</td>
+            <td>{{lesson.2}}</td>
+            <td>{% if lesson.5 == "null" %}<a href="/student/group/work/{{forloop.counter}}/{{classroom_id}}">尚未評分!</a>{% else %}{{lesson.5}}{% endif %}</td>
+            {% if lesson.3 == -1 %}
+                <td>已繳交</td>
+            {% else %}
+                <td>{{lesson.3}}</td>
+            {% endif %}
+            <td>{{lesson.4|date:"Y/m/d h:i:s" }}</td>
+            <td>{% if lesson.6 == 1 %}<a href="/teacher/score_peer/{{c}}/{{classroom_id}}/{{group}}">小老師</a>{% endif %}</td> 
+            <td><A href="/student/group/work/{{ forloop.counter }}/{{classroom_id}}">查詢</A></td>			
+            <td><A href="/student/memo/{{classroom_id}}/{{ forloop.counter }}">心得</A></td>
+            
+        </tr>
+    {% endwith %}
+    {% endfor %}
+    </table>
+{% endblock %}

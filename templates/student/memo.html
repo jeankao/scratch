@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+        <table>
+        <tr>
+            <td>座號</td>        
+            <td>姓名</td>
+            <td>心得</td>
+        </tr>
+        {% for data in datas %}
+            <tr>
+            <td>{{data.0}}</td>
+            <td>{{data.1}}</td>
+            <td>{{data.2}}</td>            
+            </tr>
+        {% endfor %}
+        </table>
+
+{% endblock %}

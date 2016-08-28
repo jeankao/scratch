@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+{% load tag %}
+<BR>
+搜尋記錄：
+    <form action="."  method="get">
+      <input type="text" name = "q"><input type="submit" value="送出"/>
+    </form>
+{{user_name}}
+        <table>
+        <tr>
+            <td>姓名</td>
+            <td>記錄</td>
+            <td>時間</td>
+        </tr>
+        {% for log in events %}
+            <tr>
+                <td><a href="/account/profile/{{log.user_id}}">{{log.user_id|name}}</a></td>
+                <td>{{log.event}}</a></td>
+				<td>{{log.publish| date:"DATE_FORMAT"}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        {% include "pagination.html" with page=page_obj %}
+        
+        <BR>
+{% endblock %}
+{% block domready %}
+  $('a.event').click(function(e){
+    var launcher = this;  
+    e.preventDefault();
+    $.post('/teacher/event/make/',
+      {
+        event_open: $(launcher).data('eventopen'),
+        action: $(launcher).data('action'),
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $(launcher).data('action');
+		   if (previous_action == 'open') {
+               $(launcher).html("<img src='/static/images/icon_close.png'>關閉所有事件記錄");
+               $(launcher).data('action', 'close');
+           } else {
+               $(launcher).data('action', 'open');
+               $(launcher).html("<img src='/static/images/icon_open.png'>開啟所有事件記錄");
+           }
+        }
+		else {
+				alert('hello');
+		}
+      }
+    );
+  });
+  
+   $('a.event_video').click(function(e){
+    var launcher = this;  
+    e.preventDefault();
+    $.post('/teachher/event/video/make/',
+      {
+        event_open: $(launcher).data('eventopen'),
+        action: $(launcher).data('action'),
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $(launcher).data('action');
+		   if (previous_action == 'open') {
+               $(launcher).html("<img src='/static/images/icon_close.png'>關閉影片事件記錄");
+               $(launcher).data('action', 'close');
+           } else {
+               $(launcher).data('action', 'open');
+               $(launcher).html("<img src='/static/images/icon_open.png'>開啟影片事件記錄");
+           }
+        }
+		else {
+				alert('hello');
+		}
+      }
+    );
+  });
+{% endblock %}

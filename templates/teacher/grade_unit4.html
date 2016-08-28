@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+        班級名稱：{{ classroom_name }}<BR>
+        <table>
+        <tr>
+            <td>姓名</td>
+            <td>分數</td>
+            <td>小組</td>
+			<td>{{lesson_list.33.2}}</td>
+			<td>{{lesson_list.34.2}}</td>
+			<td>{{lesson_list.35.2}}</td>
+			<td>{{lesson_list.36.2}}</td>
+			<td>{{lesson_list.37.2}}</td>
+			<td>{{lesson_list.38.2}}</td>
+			<td>{{lesson_list.39.2}}</td>
+			<td>{{lesson_list.40.2}}</td>
+	        <Td>心得</Td>
+            <Td>積分</Td>
+            <td>姓名</td>			
+        </tr>
+        {% for enroll, score_list, grade_list, score, group_score in data %}
+            <tr>
+            <td nowrap>{{enroll.seat}}){{enroll.student.first_name}}</td>
+			<td><font color=blue>{{score}}</font></td>
+			<td><font color=blue>{{group_score}}</font></td>      
+            {% for score in score_list %}
+			{% for grade in grade_list %}
+			    {% if forloop.counter == forloop.parentloop.counter %}
+            <td>{% if score == -1 %}<a target="_blank" href="/teacher/scoring/{{classroom.id}}/{{enroll.student_id}}/{{forloop.counter|add:33}}"><font color=red>{% endif%}{{score}}({{grade}}){% if score == -1 %}</font></a>{% endif%}</td>
+			{% endif %}
+			{% endfor %}
+			{% endfor %}
+            <td nowrap>{{enroll.seat}}){{enroll.student.first_name}}</td>			
+            </tr>
+        {% endfor %}
+		
+        </table>  
+{% endblock %}

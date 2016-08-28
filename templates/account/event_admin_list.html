@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block head_ext %}
+<style class="cp-pen-styles">
+.wrapper {
+  margin: auto;
+  padding: 1em;
+  width: 900px;
+}
+ul.tabs {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+ul.tabs li {
+  border: gray solid 1px;
+  border-bottom: none;
+  float: left;
+  margin: 0 .25em 0 0;
+  padding: .25em .5em;
+}
+ul.tabs li a {
+  color: gray;
+  font-weight: bold;
+  text-decoration: none;
+}
+ul.tabs li.active {
+  background: gray;
+}
+ul.tabs li.active a {
+  color: white;
+}
+.clr {
+  clear: both;
+}
+.block article {
+    display: none;
+}
+article {
+  border-top: gray solid 1px;
+  padding: 0 1em;
+}
+</style>
+<script>
+$(function () {
+    $('ul.tabs li:first').addClass('active');
+    $('.block article').hide();
+    $('.block article:first').show();
+    $('ul.tabs li').on('click', function () {
+        $('ul.tabs li').removeClass('active');
+        $(this).addClass('active');
+        $('.block article').hide();
+        var activeTab = $(this).find('a').attr('href');
+        $(activeTab).show();
+        return false;
+    });
+});
+//# sourceURL=pen.js
+
+</script>
+{% endblock %}
+{% load tag %}
+{% block content %}
+<section class="wrapper">
+  <h1>系統事件</h1>
+  <ul class="tabs">
+    <li><a href="#tab1">事件</a></li>
+    <li><a href="#tab2">班級</a></li>
+  </ul>
+  <div class="clr"></div>
+  <section class="block">
+    <article id="tab1">
+        <BR>
+ 搜尋記錄：
+    <form action="."  method="get">
+      <input type="text" name = "q"><input type="submit" value="送出"/>
+    </form>
+{{user_name}}
+        <table>
+        <tr>
+            <td>姓名</td>
+            <td>記錄</td>
+            <td>時間</td>
+        </tr>
+        {% for log in events %}
+            <tr>
+                <td><a href="/account/profile/{{log.user_id}}">{{log.user_id|name}}</a></td>
+                <td>{{log.event}}</a></td>
+				<td>{{log.publish| date:"DATE_FORMAT"}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        {% include "pagination.html" with page=page_obj %}
+        
+        <BR>
+    </article>
+    <article id="tab2">
+    <BR>
+        <table>
+        <tr>
+        <td>班級名稱</td>
+        <Td>任課教師</Td>
+        <Td>所有事件記錄</Td>
+        <Td>影片事件記錄</Td>
+        <Td>班級事件</Td>
+            
+        </tr>
+        {% for classroom in classrooms %}
+        <Tr><Td>{{classroom.name}}</Td>
+        <Td>{{classroom.teacher_id|name}}</Td>
+        <td>{{classroom.event_open}}</td>
+        <Td>{{classroom.event_video_open}}</Td>
+        <Td><a href="/account/event/admin/classroom/{{classroom.id}}">事件</a></Td>
+        </Tr>
+        {% endfor %}
+        </table>
+</article>     
+</section>
+{% endblock %}
+{% block domready %}
+  $('a.event').click(function(e){
+    var launcher = this;  
+    e.preventDefault();
+    $.post('/teacher/event/make/',
+      {
+        event_open: $(launcher).data('eventopen'),
+        action: $(launcher).data('action'),
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $(launcher).data('action');
+		   if (previous_action == 'open') {
+               $(launcher).html("<img src='/static/images/icon_close.png'>關閉所有事件記錄");
+               $(launcher).data('action', 'close');
+           } else {
+               $(launcher).data('action', 'open');
+               $(launcher).html("<img src='/static/images/icon_open.png'>開啟所有事件記錄");
+           }
+        }
+		else {
+				alert('hello');
+		}
+      }
+    );
+  });
+  
+   $('a.event_video').click(function(e){
+    var launcher = this;  
+    e.preventDefault();
+    $.post('/teachher/event/video/make/',
+      {
+        event_open: $(launcher).data('eventopen'),
+        action: $(launcher).data('action'),
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $(launcher).data('action');
+		   if (previous_action == 'open') {
+               $(launcher).html("<img src='/static/images/icon_close.png'>關閉影片事件記錄");
+               $(launcher).data('action', 'close');
+           } else {
+               $(launcher).data('action', 'open');
+               $(launcher).html("<img src='/static/images/icon_open.png'>開啟影片事件記錄");
+           }
+        }
+		else {
+				alert('hello');
+		}
+      }
+    );
+  });
+{% endblock %}

@@ -1,0 +1,243 @@
+<SCRIPT language=JavaScript>
+<!--
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_findObj(n, d) { //v3.0
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document); return x;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+//-->
+</SCRIPT>
+
+
+{% extends "base.html" %}
+{% load tag %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+{% if unit == "1" %}
+		<table>
+		<tr>
+		<td>
+			<a onmouseover="MM_swapImage('menu01','','/static/images/lesson012.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/1"><img name="menu01" src="/static/images/lesson01.png"></a>
+        </td>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 2 %}
+		<img name="menu02" src="/static/images/lesson02L.png">
+        {% else %}		
+			<a onmouseover="MM_swapImage('menu02','','/static/images/lesson022.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/2"><img name="menu02" src="/static/images/lesson02.png"></a>
+		{% endif %}
+		</td>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 3 %}		
+		<img name="menu03" src="/static/images/lesson03L.png">		
+		{% else %}
+			<a onmouseover="MM_swapImage('menu03','','/static/images/lesson032.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/3"><img name="menu03" src="/static/images/lesson03.png"></a>
+		{% endif %}
+		</td>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 5 %}		
+		<img name="menu04" src="/static/images/lesson04L.png">		
+		{% else %}		
+			<a onmouseover="MM_swapImage('menu04','','/static/images/lesson042.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/4"><img name="menu04" src="/static/images/lesson04.png"></a>
+		{% endif %}
+		</td>
+		</tr>
+		<tr>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 7 %}		
+		<img name="menu05" src="/static/images/lesson05L.png">		
+		{% else %}		
+			<a onmouseover="MM_swapImage('menu05','','/static/images/lesson052.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/5"><img name="menu05" src="/static/images/lesson05.png"></a>
+		{% endif %}
+        </td>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 9 %}		
+		<img name="menu06" src="/static/images/lesson06L.png">		
+		{% else %}		
+			<a onmouseover="MM_swapImage('menu06','','/static/images/lesson062.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/6"><img name="menu06" src="/static/images/lesson06.png"></a>
+		{% endif %}
+		</td>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 11 %}		
+		<img name="menu07" src="/static/images/lesson07L.png">		
+		{% else %}
+			<a onmouseover="MM_swapImage('menu07','','/static/images/lesson072.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/7"><img name="menu07" src="/static/images/lesson07.png"></a>
+		{% endif %}
+		</td>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 13 %}		
+		<img name="menu08" src="/static/images/lesson08L.png">		
+		{% else %}		
+			<a onmouseover="MM_swapImage('menu08','','/static/images/lesson082.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/8"><img name="menu08" src="/static/images/lesson08.png"></a>
+		{% endif %}
+		</td>		
+		</tr>
+		<tr>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 14 %}		
+		<img name="menu09" src="/static/images/lesson09L.png">		
+		{% else %}			
+			<a onmouseover="MM_swapImage('menu09','','/static/images/lesson092.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/9"><img name="menu09" src="/static/images/lesson09.png"></a>
+		{% endif %}
+        </td>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 15 %}		
+		<img name="menu093" src="/static/images/lesson093L.png">		
+		{% else %}			
+			<a onmouseover="MM_swapImage('menu10','','/static/images/lesson094.png',1);" onmouseout=MM_swapImgRestore() href="/student/exam/"><img name="menu10" src="/static/images/lesson093.png"></a>
+		{% endif %}
+		</td>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 15 %}		
+		<img name="menu10" src="/static/images/lesson10L.png">		
+		{% else %}				
+			<a onmouseover="MM_swapImage('menu11','','/static/images/lesson102.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/10"><img name="menu11" src="/static/images/lesson10.png"></a>
+		{% endif %}
+		</td>
+		<td>
+		{% if not user|has_group:"teacher" and lock < 16 %}		
+		<img name="menu11" src="/static/images/lesson11L.png">		
+		{% else %}				
+			<a onmouseover="MM_swapImage('menu12','','/static/images/lesson112.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/11"><img name="menu12" src="/static/images/lesson11.png"></a>
+		{% endif %}
+		</td>		
+		</tr>
+	  	</table>
+{% elif unit == "2" %}
+		<table>
+		<tr>
+			<td rowspan=10>
+			<img src="/static/images/lesson_banner2.png">
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuA01','','/static/images/lesson_A012.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/A01"><img name="menuA01" src="/static/images/lesson_A01.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuA05','','/static/images/lesson_A052.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/A05"><img name="menuA05" src="/static/images/lesson_A05.png"></a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<a onmouseover="MM_swapImage('menuA02','','/static/images/lesson_A022.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/A02"><img name="menuA02" src="/static/images/lesson_A02.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuA06','','/static/images/lesson_A062.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/A06"><img name="menuA06" src="/static/images/lesson_A06.png"></a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<a onmouseover="MM_swapImage('menuA03','','/static/images/lesson_A032.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/A03"><img name="menuA03" src="/static/images/lesson_A03.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuA07','','/static/images/lesson_A072.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/A07"><img name="menuA07" src="/static/images/lesson_A07.png"></a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<a onmouseover="MM_swapImage('menuA04','','/static/images/lesson_A042.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/A04"><img name="menuA04" src="/static/images/lesson_A04.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuA08','','/static/images/lesson_A082.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/A08"><img name="menuA08" src="/static/images/lesson_A08.png"></a>
+			</td>
+		</tr>
+			<td>
+			</td>			
+		</tr>
+		
+		</table>
+{% elif unit == "3" %}
+		<table>
+		<tr>
+			<td rowspan=10>
+			<img src="/static/images/lesson_banner3.png">
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuB01','','/static/images/lesson_B012.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/B01"><img name="menuB01" src="/static/images/lesson_B01.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuB05','','/static/images/lesson_B052.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/B05"><img name="menuB05" src="/static/images/lesson_B05.png"></a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<a onmouseover="MM_swapImage('menuB02','','/static/images/lesson_B022.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/B02"><img name="menuB02" src="/static/images/lesson_B02.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuB06','','/static/images/lesson_B062.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/B06"><img name="menuB06" src="/static/images/lesson_B06.png"></a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<a onmouseover="MM_swapImage('menuB03','','/static/images/lesson_B032.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/B03"><img name="menuB03" src="/static/images/lesson_B03.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuB07','','/static/images/lesson_B072.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/B07"><img name="menuB07" src="/static/images/lesson_B07.png"></a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<a onmouseover="MM_swapImage('menuB04','','/static/images/lesson_B042.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/B04"><img name="menuB04" src="/static/images/lesson_B04.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuB08','','/static/images/lesson_B082.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/B08"><img name="menuB08" src="/static/images/lesson_B08.png"></a>
+			</td>
+			</td>			
+		</tr>
+		
+		</table>
+{% elif unit == "4" %}
+		<table>
+		<tr>
+			<td rowspan=10>
+			<img src="/static/images/lesson_banner4.png">
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuC01','','/static/images/lesson_C012.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/C01"><img name="menuC01" src="/static/images/lesson_C01.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuC05','','/static/images/lesson_C052.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/C05"><img name="menuC05" src="/static/images/lesson_C05.png"></a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<a onmouseover="MM_swapImage('menuC02','','/static/images/lesson_C022.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/C02"><img name="menuC02" src="/static/images/lesson_C02.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuC06','','/static/images/lesson_C062.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/C06"><img name="menuC06" src="/static/images/lesson_C06.png"></a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<a onmouseover="MM_swapImage('menuC03','','/static/images/lesson_C032.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/C03"><img name="menuC03" src="/static/images/lesson_C03.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuC07','','/static/images/lesson_C072.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/C07"><img name="menuC07" src="/static/images/lesson_C07.png"></a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<a onmouseover="MM_swapImage('menuC04','','/static/images/lesson_C042.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/C04"><img name="menuC04" src="/static/images/lesson_C04.png"></a>
+			</td>
+			<td>
+			<a onmouseover="MM_swapImage('menuC08','','/static/images/lesson_C082.png',1);" onmouseout=MM_swapImgRestore() href="/student/lesson/C08"><img name="menuC08" src="/static/images/lesson_C08.png"></a>
+			</td>			
+		</tr>
+		
+		</table>
+{% endif %}
+{% endblock %}

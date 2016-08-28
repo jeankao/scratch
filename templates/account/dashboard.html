@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load tz %}
+{% load tag %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <h1>訊息</h1>
+  <Table>
+{% for messagepoll, message in messages %}<Tr><td><img src="/static/images/scratch{{forloop.counter|modulo:3}}.png"> {{ message.time| date:"DATE_FORMAT"}}
+<a href="/account/message/{{ messagepoll.id }}">
+{% if message.title|img == "line"%}
+<img src="/static/images/line.png">
+{% elif message.title|img == "announce" %}
+<img src="/static/images/announce.png">
+{% endif %}
+{{ message.title}}
+{% if message.title|img == "assistant"%}
+<img src="/static/images/assistant.png">
+{% elif message.title|img == "teacher" %}
+<img src="/static/images/teacher.png">
+{% elif message.title|img == "certificate" %}
+<img src="/static/images/certificate.png">
+{% endif %}
+</a>
+
+{% if not messagepoll.read %}
+<img src="/static/images/new.gif">
+{% endif %}
+</Tr>
+{% endfor %}
+</Table>
+ {% include "pagination.html" with page=page_obj %}          
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+{% if certificate %}
+<img src="/{{certificate.picture}}">
+{% endif %}
+{% endblock %}

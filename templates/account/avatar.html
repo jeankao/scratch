@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %}Avatar{% endblock %}
+
+{% block content %}
+  <h1>個人圖像</h1>
+  <Table>
+    <Tr>
+    <td><img src="/static/avatar/{% if avatar = 0 %}b{% else %}g{% endif %}0.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 10 %}b{% else %}g{% endif %}10.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 20 %}b{% else %}g{% endif %}20.png"></td>              
+    </Tr>
+    <td><img src="/static/avatar/{% if avatar = 30 %}b{% else %}g{% endif %}30.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 40 %}b{% else %}g{% endif %}40.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 50 %}b{% else %}g{% endif %}50.png"></td>              
+    </Tr>
+    <Tr>
+    <td><img src="/static/avatar/{% if avatar = 60 %}b{% else %}g{% endif %}60.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 70 %}b{% else %}g{% endif %}70.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 80 %}b{% else %}g{% endif %}80.png"></td>              
+    </Tr>
+    <td><img src="/static/avatar/{% if avatar = 90 %}b{% else %}g{% endif %}90.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 100 %}b{% else %}g{% endif %}100.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 120 %}b{% else %}g{% endif %}120.png"></td>              
+    </Tr>
+      <Tr>
+    <td><img src="/static/avatar/{% if avatar = 140 %}b{% else %}g{% endif %}140.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 160 %}b{% else %}g{% endif %}160.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 180 %}b{% else %}g{% endif %}180.png"></td>              
+    </Tr>
+    <td><img src="/static/avatar/{% if avatar = 200 %}b{% else %}g{% endif %}200.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 225 %}b{% else %}g{% endif %}225.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 250 %}b{% else %}g{% endif %}250.png"></td>              
+    </Tr>
+      <Tr>
+    <td><img src="/static/avatar/{% if avatar = 275 %}b{% else %}g{% endif %}275.png"></td>
+    <td><img src="/static/avatar/{% if avatar = 300 %}b{% else %}g{% endif %}300.png"></td>
+    <td></td>    
+  </Tr>    
+</Table>
+{% endblock %}

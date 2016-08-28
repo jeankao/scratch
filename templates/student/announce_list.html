@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+        <h1>班級名稱：{{classroom.name}}</h1>
+        <table>
+            <tr>
+                <td>時間</td>
+                <td>主旨</td>
+        {% for message in messages %}
+            <tr>
+            <td>{{message.1.time| date:"DATE_FORMAT"}}</td>
+            <td><a href="/account/message/{{message.0.id}}">{{message.1.title}}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+ {% include "pagination.html" with page=page_obj %}          
+{% endblock %}

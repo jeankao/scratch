@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %} Students {% endblock %}
+{% block content %}
+{% if group_open %}
+<a href="../add/{{classroom.id}}"><img src="/static/images/icon_group_new.png">新增組別</a>
+{% endif %}
+{% if teacher %}
+<a href="../size/{{classroom.id}}"><img src="/static/images/icon_size.png">設定人數</a>
+{% if group_open %}
+<a href="../open/{{classroom.id}}/0"><img src="/static/images/icon_close.png">關閉選組</a>
+{% else %}
+<a href="../open/{{classroom.id}}/1"><img src="/static/images/icon_open.png">開放選組</a>
+{% endif %}
+{% endif %}
+
+<br>
+<br>
+<table>
+<tr>
+<td>名稱</td>  
+<td>組員</td>  
+<td>狀態</td>
+<td>空位</td>
+</tr>
+        {% for group in student_groups %}
+                <tr>
+                <td>
+			{% for user_group in user.groups.all %}
+				{% if user_group.name == 'teacher' and group.1|length == 0 %}
+				<a href="/student/group/delete/{{group.0.id}}/{{classroom.id}}" onclick="return confirm('確定要刪除嗎?')">刪除</a>
+				{% endif %}		
+			{% endfor %}							
+				{{group.0.name}}</td>
+				<td>
+				{% for enroll in group.1 %}
+				<A href="/account/profile/{{enroll.student.id}}"><img src="/static/avatar/s{{ enroll.student.profile.avatar }}.png"></a>
+				    ({{enroll.seat}}){{enroll.student.first_name}}
+				{% endfor %}
+				</td>
+                <td>
+				{% if group_open %}
+                {% if student_group == group.0.id %}
+                已加入
+                {% else %}
+                {% if group.2 > 0 %}
+                <a href="/student/group/enroll/{{classroom.id}}/{{group.0.id}}">加入此組</a>
+                {% else %}
+                額滿
+                {% endif%}
+                {% endif %}             
+                {% endif %}
+                </td>
+                <td>{{group.2}}</td>
+                </tr>
+        {% endfor %}
+</table>
+
+尚未分組名單
+{% for enroll in nogroup %}
+({{enroll.seat}}){{enroll.student.first_name}}
+{% endfor  %}
+{% endblock %}

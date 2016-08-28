@@ -1,0 +1,13 @@
+﻿{% extends "base.html" %}
+{% block title %}{% endblock %}
+{% block content %}
+         <form action="" enctype="multipart/form-data"  method="post">
+            <table>
+			<TR><TD>組別：</td><td>{{object.name}}</td></tr>
+			<TR><TD>組員：</td><td>{% for member in members %}({{member.seat}}){{member.student.first_name}}{% endfor %}</td></tr>			
+                {{ form.as_table }}
+            </table>
+            {% csrf_token %}
+            <input type="submit" value="Submit">
+        </form>
+{% endblock %}

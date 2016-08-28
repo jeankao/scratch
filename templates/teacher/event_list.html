@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+{% load tag %}
+<h1>班級名稱：{{classroom.name}}</h1>
+        {% if is_event_open %}<a href="#" data-classroomid={{classroom.id}} data-action="close" class="event"><img src="/static/images/icon_close.png">關閉所有事件記錄</a>{% else %}<a href="#" data-classroomid={{classroom.id}}  data-action="open" class="event"><img src="/static/images/icon_open.png">開啟所有事件記錄</a>{% endif %}|
+        {% if is_event_video_open %}<a href="#"  data-classroomid={{classroom.id}} data-action="close" class="event_video"><img src="/static/images/icon_close.png">關閉影片事件記錄</a>{% else %}<a href="#"  data-classroomid={{classroom.id}} data-action="open" class="event_video"><img src="/static/images/icon_open.png">開啟影片事件記錄</a>{% endif %}|
+        <!--<a href="/account/event/clear" onclick="return confirm('確定要清除嗎?')"><img src="/static/images/icon_clear.png">清除所有事件</a>|-->
+        <a href="/teacher/event/excel/{{classroom.id}}"><img src="/static/images/icon_excel.png">下載所有事件到Excel</a>
+<BR>
+搜尋記錄：
+    <form action="."  method="get">
+      <input type="text" name = "q"><input type="submit" value="送出"/>
+    </form>
+{{user_name}}
+        <table>
+        <tr>
+            <td>姓名</td>
+            <td>記錄</td>
+            <td>時間</td>
+        </tr>
+        {% for log in events %}
+            <tr>
+                <td><a href="/account/profile/{{log.user_id}}">{{log.user_id|name}}</a></td>
+                <td>{{log.event}}</a></td>
+				<td>{{log.publish| date:"DATE_FORMAT"}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        {% include "pagination.html" with page=page_obj %}
+        
+        <BR>
+{% endblock %}
+{% block domready %}
+  $('a.event').click(function(e){
+    var launcher = this;  
+    e.preventDefault();
+    $.post('/teacher/event/make/',
+      {
+        event_open: $(launcher).data('eventopen'),
+        action: $(launcher).data('action'),
+        classroomid: $(launcher).data('classroomid'),
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $(launcher).data('action');
+		   if (previous_action == 'open') {
+               $(launcher).html("<img src='/static/images/icon_close.png'>關閉所有事件記錄");
+               $(launcher).data('action', 'close');
+           } else {
+               $(launcher).data('action', 'open');
+               $(launcher).html("<img src='/static/images/icon_open.png'>開啟所有事件記錄");
+           }
+        }
+		else {
+				alert('hello');
+		}
+      }
+    );
+  });
+  
+   $('a.event_video').click(function(e){
+    var launcher = this;  
+    e.preventDefault();
+    $.post('/teacher/event/video/make/',
+      {
+        event_open: $(launcher).data('eventopen'),
+        action: $(launcher).data('action'),
+        classroomid: $(launcher).data('classroomid'),        
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $(launcher).data('action');
+		   if (previous_action == 'open') {
+               $(launcher).html("<img src='/static/images/icon_close.png'>關閉影片事件記錄");
+               $(launcher).data('action', 'close');
+           } else {
+               $(launcher).data('action', 'open');
+               $(launcher).html("<img src='/static/images/icon_open.png'>開啟影片事件記錄");
+           }
+        }
+		else {
+				alert('hello');
+		}
+      }
+    );
+  });
+{% endblock %}

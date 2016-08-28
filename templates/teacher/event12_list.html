@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+{% load tag %}
+<h1>班級名稱：{{classroom.name}}</h1>
+<BR>
+        <table>
+        <tr>
+            <td>姓名</td>
+            <td>1</td>
+			<td>2</td>
+            <td>3</td>
+            <td>4</td>
+			<td>5</td>
+            <td>6</td>
+            <td>7</td>
+			<td>8</td>
+            <td>9</td>
+            <td>10</td>
+			<td>11</td>
+        </tr>
+        {% for event in events %}
+		{% if forloop.counter0|divisibleby:11 %}
+		<tr>
+            <td nowrap>({{event.0}}){{event.1|name}}</td>		
+		{% endif %}
+		    <td>
+		  {% with event.2.0.publish as date %}			
+            <a href="/teacher/event12/{{event.1}}/{{forloop.counter|modulo:11}}">{{event.2.last.publish|timesince:date}}</a>
+		  {% endwith %}
+			</td>
+		{% if forloop.counter|divisibleby:11 %}
+		</tr>
+		{% endif %}		
+        {% endfor %}
+        </table>
+        {% include "pagination.html" with page=page_obj %}
+        
+        <BR>
+{% endblock %}

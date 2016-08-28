@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Create a question{% endblock %}
+{% block content %}
+	學生姓名：{{user_name}}/分數：{{score}}
+    <table>
+    <tr>
+        <td>編號</td>
+        <td>作品</td>
+        <td>評分者</td>
+        <td>分數</td>
+        <Td>日期</Td>
+        <td>小老師</td>
+        <td>心得</td>
+
+    </tr>
+    {% for lesson in lesson_list %}
+                {% if unit = "1" and forloop.counter < 18 %}
+        <tr align=left>
+        <td align=right>{{lesson.0}}</td>
+            <td nowrap>{{lesson.2}}</td>
+            <td>{% if lesson.5 == "null" %}<a href="/student/group/work/{{forloop.counter}}/{{classroom_id}}">尚未評分!</a>{% else %}{{lesson.5}}{% endif %}</td>
+            {% if lesson.3 == -1 %}
+                <td>已繳交</td>
+            {% else %}
+                <td>{{lesson.3}}</td>
+            {% endif %}
+            <td>{{lesson.4|date:"Y/m/d h:i:s" }}</td>
+            <td>{{lesson.7}}</td>            
+            <td>{{lesson.6}}</td>           
+        </tr>
+                {% endif %}
+                {% if unit = "2" and forloop.counter > 17 and forloop.counter < 26 %}
+        <tr align=left>
+        <td align=right>{{lesson.0}}</td>
+            <td nowrap>{{lesson.2}}</td>
+            <td>{{lesson.5}}</td>
+            {% if lesson.3 == -1 %}
+                <td>已繳交</td>
+            {% else %}
+                <td>{{lesson.3}}</td>
+            {% endif %}
+            <td>{{lesson.4|date:"Y/m/d h:i:s" }}</td>
+            <td>{{lesson.7}}</td>            
+            <td>{{lesson.6}}</td>           
+        </tr>
+                {% endif %}
+                {% if unit = "3" and forloop.counter > 25 and forloop.counter < 34 %}
+        <tr align=left>
+        <td align=right>{{lesson.0}}</td>
+            <td nowrap>{{lesson.2}}</td>
+            <td>{{lesson.5}}</td>
+            {% if lesson.3 == -1 %}
+                <td>已繳交</td>
+            {% else %}
+                <td>{{lesson.3}}</td>
+            {% endif %}
+            <td>{{lesson.4|date:"Y/m/d h:i:s" }}</td>
+            <td>{{lesson.7}}</td>            
+            <td>{{lesson.6}}</td>           
+        </tr>
+                {% endif %}
+                {% if unit = "4" and forloop.counter > 33 %}
+        <tr align=left>
+        <td align=right>{{lesson.0}}</td>
+            <td nowrap>{{lesson.2}}</td>
+            <td>{{lesson.5}}</td>
+            {% if lesson.3 == -1 %}
+                <td>已繳交</td>
+            {% else %}
+                <td>{{lesson.3}}</td>
+            {% endif %}
+            <td>{{lesson.4|date:"Y/m/d h:i:s" }}</td>
+            <td>{{lesson.7}}</td>            
+            <td>{{lesson.6}}</td>           
+        </tr>
+                {% endif %}                
+
+    {% endfor %}
+    </table>
+{% endblock %}

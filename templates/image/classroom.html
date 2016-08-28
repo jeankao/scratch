@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Certificate {% endblock %}
+{% block content %}
+<table>
+<tr>
+    <td>座號</td>
+    <td>姓名</td>
+    <td>上傳時間</td>
+    <td>證書</td>
+</tr>
+{% for enroll, certificate in datas %}
+<Tr>
+    <td>{{enroll.seat}}</td>
+    <td>{{enroll.student.first_name}}</td>
+    <td>{{certificate.0.publish|timezone:'Asia/Taipei'}}</td>
+    <td>{% if certificate.0 %}<a href="/certificate/show/{{enroll.student.id}}"><img src="/{{certificate.0.picture}}" width=50>{% endif %}</a></td>
+</Tr>
+{% endfor %}
+</table>
+{% endblock %}

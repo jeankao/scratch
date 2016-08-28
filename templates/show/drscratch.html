@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}My Blog{% endblock %}
+{% block head_ext %}
+<script language="javascript">
+    window.addEventListener('load', function (e) {
+        var node = document.getElementById('edit-box');
+        node.onpaste = function (e) {
+            if (e.clipboardData && e.clipboardData.types) {
+                // Loop the data store in type and display it
+                for (var i = 0; i < e.clipboardData.types.length; ++i) {
+                    var key = e.clipboardData.types[i];
+                    var item = e.clipboardData.items[i];
+                    if (key === 'Files') {
+                        var file = item.getAsFile();
+                        var reader = new FileReader();
+                        reader.onload = function(evt) {
+                            var img = document.createElement('img');
+                            img.src = evt.target.result;
+                            $(node).append(img);
+                        };
+                        reader.readAsDataURL(file);
+                        return found = true;
+                    }
+                }
+            }
+        };
+        $("#edit-box").focus();
+        $("form").submit(function(event) {
+            var img = $("img", $("#edit-box"));
+            if (img.length < 1) {
+                alert("請先貼上螢幕擷圖後再按上傳");
+                event.preventDefault();
+            } else {
+                $("#screenshot").val(img[0].src);
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% block content %}
+<a name=drscratch>
+<h1>上傳 Dr. Scratch 分析圖</h1>
+<form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+<div id="edit-box" class="target" contenteditable="true">請在此貼上螢幕擷圖...</div>
+<input type="hidden" name="screenshot" id="screenshot" value="" />
+<input id="submit" type="submit" value="上傳" />
+</form>
+            
+{% endblock %}
+

@@ -1,0 +1,9 @@
+{% if certificate %}
+<img src="/{{certificate.picture}}" width="500">
+{% endif %}
+<form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
+                <p>
+                    <input id="id_image" type="file" class="" name="image">
+                </p>
+                <input type="submit" value="Submit" />
+            </form>

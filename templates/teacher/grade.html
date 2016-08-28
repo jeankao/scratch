@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Create a question{% endblock %}
+{% block content %}
+    <table>
+    <tr>
+        <td>主題</td>
+        <td>班級</td>
+    </tr>
+        <tr align=left>
+        <td>Scratch 12堂課</td>
+        <td><a href="/teacher/grade1/{{classroom.id}}">{{classroom.name}}</a></td>
+        </tr>
+         <tr align=left>
+        <td>實戰入門</td>
+        <td><a href="/teacher/grade2/{{classroom.id}}">{{classroom.name}}</a></td>
+        </tr>
+        <tr align=left>
+        <td>實戰進擊</td>
+        <td><a href="/teacher/grade3/{{classroom.id}}">{{classroom.name}}</a></td>
+        </tr>
+        <tr align=left>
+        <td>實戰高手</td>
+        <td><a href="/teacher/grade4/{{classroom.id}}">{{classroom.name}}</a></td>
+        </tr>
+	</table>
+ {% endblock %}

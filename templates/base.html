@@ -1,0 +1,207 @@
+{% load tag %}<!DOCTYPE html>
+<!--
+Template Name: Abele
+Author: <a href="http://www.os-templates.com/">OS Templates</a>
+Author URI: http://www.os-templates.com/
+Licence: Free to use under our free template licence terms
+Licence URI: http://www.os-templates.com/template-terms
+-->
+<html>
+<head>
+	<title>程式設計輕鬆學─使用Scratch2| {% block title %}Homepage{% endblock %}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />        
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+{% block head_ext %}{% endblock %}
+	<link href="/static/css/layout.css" rel="stylesheet" type="text/css" media="all">
+	<link href="/static/css/dropdownmenu.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body id="top">
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row0">
+  <div id="topbar" class="clear"> 
+    <!-- ################################################################################################ -->
+    <div class="fl_left">
+      <ul class="nospace linklist"> 
+		<li><a href="{% url 'homepage' %}"><img width=16 src="/static/images/icon_home.png">首頁</a></li>
+		<li><a href="https://scratch.mit.edu/" target="_blank"><img width=16 src="/static/images/icon_star.png">官網</a></li>	
+        <div class="dropdown">			
+		<li><img src="/static/images/icon_lesson.png" width=16>課程</li>
+        <div class="dropdown-content">
+            <a href="/student/lessons/1">基礎12堂課</a>
+            <a href="/student/lessons/2">實戰入門</a>
+            <a href="/student/lessons/3">實戰進擊</a>
+            <a href="/student/lessons/4">實戰高手</a>          
+        </div>
+        </div>
+		<li><a href="/show/gallery"><img  width=16 src="/static/images/icon_gallery.png">藝廊</a></li>		
+		{% if not user.is_authenticated %}
+		<li><a href="http://www.books.com.tw/products/0010703424" target="_blank"><img src="/static/images/icon_book.png" width=16>參考書</a></li>
+        <div class="dropdown">			
+		<li><img src="/static/images/icon_manual.png" width=16>使用手冊</li>
+		<div class="dropdown-content">
+            <a href="/account/manual/student">學生版手冊</a>
+            <a href="/account/manual/teacher">教師版手冊</a></a>
+            <a href="/account/manual/ubuntu">Ubuntu架站</a>
+            <a href="/account/manual/windows">Windows架站</a>
+            <a href="/account/manual/heroku">Heroku架站</a>            
+        </div>
+        </div>
+		{% endif %}
+		{% if user.is_authenticated %}
+		<li><a href="/student/classroom"><img  width=16 src="/static/images/icon_class.png">班級</a></li>			
+		<li><a href="/account"><img  width=16 src="/static/images/icon_message.png">訊息{% if request.user.id|unread > 0 %}({{request.user.id|unread}}){% endif %}</a></li>
+        <div class="dropdown">	
+	    <li><img  width=16 src="/static/images/icon_doc.png">個人檔案</li>		
+        <div class="dropdown-content">
+            <a href="/account/profile/{{user.id}}#tab1">積分</a>
+            <a href="/account/profile/{{user.id}}#tab2">作業</a>
+            <a href="/account/profile/{{user.id}}#tab3">證書</a>
+			{% if user|event %}
+		    <a href="/account/event/{{user.id}}">事件</a>		
+            {% endif %}			
+        </div>
+        </div>
+            {% if request.user|has_group:"teacher" %} 	
+		<li><a href="/teacher/classroom"><img  width=16 src="/static/images/icon_teacher.png">教師</a></li>
+			{% endif %}
+			{% if user.id == 1 %}
+    		<li><a href="/account/userlist"><img  width=16 src="/static/images/icon_admin.png">帳號</a></li>
+			<li><a href="/account/event/admin"><img  width=16 src="/static/images/icon_event.png">事件</a></li>		
+			{% else %}
+            {% endif %}
+	    {% endif %}
+        <div class="dropdown">			
+		<li><img src="/static/images/icon_article.png" width=16>網路資源</li>
+        <div class="dropdown-content">
+            <a href="/account/article">網路文章</a>
+            <a target=_blank href="http://s4a.cat/">S4A</a>
+            <a target=_blank href="http://www.mblock.cc/">Mblock</a>
+			<a target=_blank href="https://www.raspberrypi.org/documentation/usage/scratch/gpio/README.md">Pi GPIO</a>
+            <a target=_blank href="http://developers.gausstoys.com/tutorials/scratch2-gausssense-desktop?locale=zh">GaussToys</a>          
+        </div>
+		</div>
+		<li><a href="/account/visitor"><img src="/static/images/icon_visitor.png">訪客</a></li>	    
+      </ul>
+    </div>
+    <div class="fl_right">
+      <ul class="nospace linklist">
+		{% if user.is_authenticated %}
+		<li><a href="/account/avatar/"><img src="/static/avatar/s{{ user.profile.avatar }}.png"><strong>{{ user.first_name }}</strong></a></li>
+		<li><a href="/account/logout" class='button'>登出</a></li>
+		{% else %}
+    	歡迎光臨!
+        <li><a href="/account/register" class='button'>註冊新帳號</a></li>
+		<li><a href="/account/login" class='button'>登入</a></li>
+		{% endif %}
+      </ul>
+    </div>
+    <!-- ################################################################################################ -->
+  </div>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row1">
+  <header id="header" class="clear"> 
+    <!-- ################################################################################################ -->
+    <div id="logo" class="fl_left">
+
+    </div>
+    <!-- ################################################################################################ -->
+    <nav id="mainav" class="fl_right">
+	  {% block mainav %}{% endblock %}
+    </nav>
+    <!-- ################################################################################################ -->
+  </header>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row2 bgded">
+  <div class="overlay">
+    <div id="#breadcrumb" class="clear"> 
+      <!-- ################################################################################################ -->
+      {% block breadcrumb %}{% endblock %} 
+      <!-- ################################################################################################ -->
+    </div>
+  </div>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row3">
+  <main class="container clear" style="padding-top: 81px;"> 
+    <!-- main body -->
+    <!-- ################################################################################################ -->
+    <div id="content" class="content"> 
+		{% block content %}{% endblock %}
+    </div>
+    <!-- ################################################################################################ -->
+    <!-- / main body -->
+    <div class="clear"></div>
+  </main>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row4">
+  <section id="cta" class="clear"> 
+    <!-- ################################################################################################ -->
+    <!-- ################################################################################################ -->
+    <div class="clear"></div>
+  </section>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row5">
+  <footer id="footer" class="clear"> 
+    <!-- ################################################################################################ -->
+    <!-- ################################################################################################ -->
+  </footer>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row6">
+  <div id="copyright" class="clear"> 
+    <!-- ################################################################################################ -->
+	<p>Scratch is developed by the Lifelong Kindergarten Group at the MIT Media Lab. See <a href="http://scratch.mit.edu" target=_blank>http://scratch.mit.edu</a></p>
+    <p class="fl_left">Copyright &copy; 2016 - 網站開發：高慧君、魏仲良、賴錦緣<BR>Find us on:<A target=_blank href="http://github.com/jeankao/scratch">Github</a></BR></p>
+    <p class="fl_right">Template by <a target="_blank" href="http://www.os-templates.com/" title="Free Website Templates">OS Templates</a> <a href="http://www.freepik.com">Designed by Freepik</a></p>
+    <!-- ################################################################################################ -->
+  </div>
+</div>
+<!-- JAVASCRIPTS -->
+<script src="/static/js/jquery.mobilemenu.js"></script>
+<script src="http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js "></script>
+<script>
+  var csrftoken = $.cookie('csrftoken');
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+  
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+ 
+  $(document).ready(function(){
+    //$('main').css('padding-top', $('.row0').height()+15+'px');
+    {% block domready %}
+    {% endblock %}
+  });
+  {% block userscript %}
+  
+  {% endblock %}
+</script>  
+</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% load tag %}
+{% block content %}
+        <table>
+            <tr>
+                <td>時間</td>
+                <td>對象</td>                
+                <td>主旨</td>
+            </tr>
+        {% for message in messages %}
+            <tr>
+            <td>{{message.time}}</td>
+            <td>{{message.id|reader_name}}</td>
+            <td><a href="/account/line/detail/{{message.id}}">{{message.title}}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+ {% include "pagination.html" with page=page_obj %}          
+{% endblock %}

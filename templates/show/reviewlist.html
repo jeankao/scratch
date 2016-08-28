@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}My Blog{% endblock %}
+{% load tz %}
+{% block content %}
+
+<h1>組別：{{show.name}}</h1>
+<h1>組員：{% for member in members %}({{member.seat}}){{member.student.first_name}}{% endfor %}</h1>
+<table>
+<tr>
+<td>姓名</td>
+<TD>美工設計</TD>
+<TD>程式難度</TD>
+<TD>創意表現</TD>
+<TD>評語</TD>
+<TD>時間</TD>
+</tr>
+    <tr>
+        <td>平均({{scores.3}}人)</td>
+        <td>{{scores.0}}</td>
+        <td>{{scores.1}}</td>
+        <td>{{scores.2}}</td>
+        <td></td>
+        <td></td>
+        
+    </tr>
+  {% for review in reviews %}
+	<tr>
+	<td>{% if not review.done %}<font color=red>{% endif %}{{review.student.first_name}}{% if not review.done %}(尚未評分)</font>{% endif %}</td>
+	{% if review.done %}
+	<td>{{review.score1}}</td>
+	<td>{{review.score2}}</td>
+	<td>{{review.score3}}</td>
+	<td>{{review.comment}}</td>	
+	<td>{{review.publish}}</td>
+    {% else %}
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+    {% endif %}	
+	</tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %} Exam {% endblock %}
+{% load tag %}
+{% block content %}
+{% for key, value in video_url.items %}
+<hr>
+{{key.1}}<BR>
+<iframe width="900" height="520" src="https://www.youtube.com/embed/{{value}}?autoplay=0&autostart=0&enablejsapi=1" frameborder="0" allowfullscreen></iframe>
+<BR>
+{% for video in videos|get_value_from_dict:key %}
+{{video}}<BR>
+{% endfor %}
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+{% if kind == "0" %}
+<h1>總積分排行</h1>
+{% elif kind == "1" %}
+<h1>作業上傳積分排行</h1>
+{% elif kind == "2" %}
+<h1>小老師積分排行</h1>
+{% elif kind == "3" %}
+<h1>除錯積分排行</h1>
+{% elif kind == "4" %}
+<h1>創意秀積分排行</h1>
+{% endif %}
+
+
+
+        <table>
+            <tr>
+                <td>姓名</td>
+                <td>積分</td>
+        {% for enroll, value in datas %}
+            <tr>
+            <td><a href="/account/profile/{{enroll.student_id}}">{{enroll.seat}}){{enroll.student.first_name}}</a></td>
+            <td><a href="/account/log/{{kind}}/{{enroll.student_id}}">{{value}}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+{% endblock %}

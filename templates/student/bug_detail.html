@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ bug.title }}{% endblock %}
+{% block content %}
+  <h1>{{ bug.title }}</h1>
+  {{ bug.body|linebreaks }}  
+  <p class="date">
+  {{ bug.publish}}{{ bug.author.first_name }}提出一個bug：<a target=_blank href="https://scratch.mit.edu/projects/{{bug.number}}/#editor">{{bug.number}}</a>
+  </p>
+  <iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ bug.number  }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
+  <BR></BR>
+  <hr>
+
+{% with debugs.count as total_debug %}
+  <h2>
+    {{ total_debug }} debug{{ total_debug|pluralize }}
+  </h2>
+{% for debug in datas %}
+  <div class="debug">
+    <p class="info">
+    {{ debug.0.publish}} by debugger {{ debug.0.author.first_name }}
+    作品：<a target=_blank href="https://scratch.mit.edu/projects/{{debug.number}}/#editor">{{debug.0.number}}</a>
+    <br>
+    {{ debug.0.body|linebreaks }}
+    
+  <BR>
+  {% if debug.0.reward > 0 %}
+  評價時間：{{debug.0.reward_date}}
+  {% endif %}
+  評價結果：
+  {% if debug.0.reward == 3 %}完全解決
+  {% elif debug.0.reward == 2 %}大概解決
+  {% elif debug.0.reward == 1 %}部份解決
+  {% elif debug.0.reward == 1 %}沒有解決 
+  {% else %}尚未評價
+  {% endif %}
+  {% if request.user.id == debug.0.bug_author_id and request.user.id != debug.0.author_id %}
+  <BR>
+  <form action="/student/bug/value/{{bug.id}}/" method="Post">
+    {{ debug.1.as_p }}
+    {% csrf_token %}
+    <p><input type="submit" value="評價"></p>
+  </form>  
+  {% endif %}
+  </p>
+	<iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ debug.0.number  }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
+  <hr>
+  </div>
+{% empty %}
+  <p>目前沒有人幫忙除錯</p>
+{% endfor %}  
+{% endwith %}  
+  <h2>Add a new debug</h2>
+  <form action="." method="Post">
+    {{ debug_form.as_p }}
+    {% csrf_token %}
+    <p><input type="submit" value="送出"></p>
+  </form>
+{% endblock %}

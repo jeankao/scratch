@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+        <table>
+        <tr>
+            <td>帳號</td>
+            <td>姓名</td>
+            <td>最新登入</td>
+            <td>功能</td>
+        </tr>
+        {% for user in users %}
+            <tr>
+                <td>{{user.username}}</td>
+                <td>{{user.first_name}}</td>
+                <td>{{user.last_login}}</td>
+                <td>
+                    {% if user.groups.all.0.name == "teacher"  %}<a href="#" data-userid="{{ user.id }}" data-action="unset" class="teacher"><img src="/static/images/teacher.png">取消教師{% else %}<a href="#" data-userid="{{ user.id }}" data-action="set" class="teacher">設為教師</a>{% endif %}
+                |<A href="/account/password/{{user.id}}">重設密碼</a>|<A href="/account/realname/{{user.id}}">設定姓名</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+        {% include "pagination.html" with page=page_obj %}
+{% endblock %}
+
+{% block domready %}
+  $('a.teacher').click(function(e){
+    var launcher = this;  
+    e.preventDefault();
+    $.post('/account/teacher/make/',
+      {
+        userid: $(launcher).data('userid'),
+        action: $(launcher).data('action')
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $(launcher).data('action');
+		   if (previous_action == 'set') {
+               $(launcher).html("<img src='/static/images/teacher.png'>取消教師|");
+               $(launcher).data('action', 'unset');
+           } else {
+               $(launcher).html("設為教師|");
+               $(launcher).data('action', 'set');               
+           }
+        }
+		else {
+				alert("hello");
+		}
+      }
+    );
+  });
+{% endblock %}

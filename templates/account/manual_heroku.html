@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% load tag %}
+{% block content %}
+<h1>部署到Heroku</h1>
+<p>
+在開始部署（deploy）之前，請先確定你已經申請好帳號與安裝好工具箱：<BR>
+1.註冊 Heroku 帳號：<a href="https://id.heroku.com/signup" target=_blank>https://id.heroku.com/signup</a><BR>
+2.安裝 Heroku 工具箱：<a href="https://toolbelt.heroku.com/" target=_blank>https://toolbelt.heroku.com/</a><BR>
+</p>
+<h1>Step 1: 登入 Heroku</h1>
+<p>
+在安裝完工具箱裡的 Heroku client 之後，就可以開始使用 heroku 指令，首先讓我們登入：<BR>
+$ heroku login<BR>
+輸入註冊時的 Email 帳號和密碼，當你看到 Authentication successful. 時，表示認證成功。<BR>
+</p>
+<h1>Step 2: 使用git取得網站原始碼</h1>
+<p>
+Windows版Git安裝程式下載：<a href="https://git-for-windows.github.io/" target=_blank>https://git-for-windows.github.io/</a><BR>
+Ubuntu版Git安娤指令：$ apt-get install git<BR>
+Mac版Git安裝程式下載：<a href="http://sourceforge.net/projects/git-osx-installer/" target=_blank>http://sourceforge.net/projects/git-osx-installer/</a><BR>
+<BR>
+輸入以下的Git指令取得網站原始碼<BR>
+git clone http://github.com/
+</p>
+<h1>Step 3: 上傳到Heroku</h1>
+<p>
+如果您的網站是(scratchweb)，請依序完成以下指令<BR>
+heroku create (scratchweb) --buildpack https://github.com/kennethreitz/conda-buildpack<BR>
+heroku git:remote -a (scratchweb)          <BR>
+heroku config:set DJANGO_SETTINGS_MODULE=scratch.production_settings<BR>
+heroku config:add BUILDPACK_URL=https://github.com/kennethreitz/conda-buildpack.git<BR>
+heroku addons:create heroku-postgresql<BR>
+git push heroku master<BR>
+heroku run python manage.py makemigrations<BR>
+heroku run python manage.py migrate<BR>
+heroku run python manage.py createsuperuser<BR>
+</p>
+<h1>Step 4: 瀏覽您的網站</h1>
+<p>
+如果您的網站是(scratchweb)，請在瀏覽器輸入以下網址<BR>
+http://scratchweb.herokuapp.com<BR>
+</p>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Create a question{% endblock %}
+{% block content %}
+    <table>
+    <tr>
+        <td>主題</td>
+        <td>編號</td>
+        <td>作品</td>
+        <td>班級</td>
+    </tr>
+    {% for lesson in lesson_list %}
+    {% with c=forloop.counter %}
+        <tr align=left>
+        <td>{{lesson.1}}</td>
+        <td align=right>{{lesson.0}}</td>
+            <td>{{lesson.2}}</td>
+            <td><a href="/teacher/score/{{classroom.id}}/{{c}}">{{classroom.name}}</a></td>
+        </tr>
+    {% endwith %}
+    {% endfor %}
+    </table>
+{% endblock %}

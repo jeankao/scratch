@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% load tag %}
+{% block content %}
+<h1>Step 1: 註冊帳號</h1>
+<p>
+請<a href="/account/register">註冊新帳號</a>後，使用新註冊的帳號登入。
+</p>
+<h1>Step 2: 加入班級</h1>
+<p> 
+請洽詢任課老師班級名稱及選課密碼。<BR>
+<img src="/static/images/manual_student_1.png" style="border:5px solid black">
+</p>
+<h1>Step 3: 進行分組</h1>
+<p> 
+加入班級後，先完成分組活動，原則上4個人一組，每組推派1位組長負責建立新組別，提供組員加入。<BR>
+<img src="/static/images/manual_student_2.png" style="border:5px solid black">
+</p>
+<h1>Step 4: 繳交作業</h1>
+<p> 
+選讀課程後，將指定作業上傳<a href="/student/work_help" target=_blank>[說明]</a>。上傳作業可獲得2點積分，被評完分可獲得1點積分。<BR>
+<img src="/static/images/manual_student_3.png" style="border:5px solid black">
+</p>
+{% endblock %}

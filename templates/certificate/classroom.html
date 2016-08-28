@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Certificate {% endblock %}
+{% block content %}
+{% for enroll in enrolls %}
+{% endfor %}
+<table>
+<tr>
+    <td>座號</td>
+    <td>姓名</td>
+    <td>時間</td>
+    <td>證書</td>
+</tr>
+{% for enroll in datas %}
+<Tr>
+	{% if unit == "0" %}
+    <td>{{enroll.0.seat}}</td>
+    <td>{{enroll.0.student.first_name}}</td>	
+    <td>{{enroll.1.publish}}</td>	
+    <td>{% if enroll.1 %}<a href="/certificate/show/0/{{enroll.0.id}}"><img src="/static/images/certificate.png">{% endif %}</a></td>
+	{% else %}
+    <td>{{enroll.seat}}</td>
+    <td>{{enroll.student.first_name}}</td>	
+    {% endif %}
+	{% if unit == "1" %}
+    <td>{% if enroll.certificate1 %}{{enroll.certificate1_date}}{% endif %}</td>	
+    <td>{% if enroll.certificate1 %}<a href="/certificate/show/1/{{enroll.id}}"><img src="/static/images/certificate.png">{% endif %}</a></td>
+    {% elif unit == "2" %}
+    <td>{% if enroll.certificate2 %}{{enroll.certificate2_date}}{% endif %}</td>	
+    <td>{% if enroll.certificate2 %}<a href="/certificate/show/2/{{enroll.id}}"><img src="/static/images/certificate.png">{% endif %}</a></td>
+    {% elif unit == "3" %}
+    <td>{% if enroll.certificate3 %}{{enroll.certificate3_date}}{% endif %}</td>	
+    <td>{% if enroll.certificate3 %}<a href="/certificate/show/3/{{enroll.id}}"><img src="/static/images/certificate.png">{% endif %}</a></td>
+    {% elif unit == "4" %}
+    <td>{% if enroll.certificate4 %}{{enroll.certificate4_date}}{% endif %}</td>	
+    <td>{% if enroll.certificate4 %}<a href="/certificate/show/4/{{enroll.id}}"><img src="/static/images/certificate.png">{% endif %}</a></td>
+    {% endif %}		
+	</Tr>
+{% endfor %}
+</table>
+{% endblock %}

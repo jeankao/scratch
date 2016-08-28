@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Create a question{% endblock %}
+{% block content %}
+        {{lesson.1}}
+        <br>
+        {{lesson.2}}
+        <table border=1>
+        {% for list in classmate_work  %}
+                <tr>
+                <td>
+                {% if not list.1.number = "0" %} 
+                        <a href="/teacher/scoring/{{classroom_id}}/{{list.0.id}}/{{index}}">{{list.0.first_name}}
+                    {% if list.1.score > 0 %}
+                        ({{list.1.score}}-{{list.3}})
+                    {%  endif %}
+                        </a><br/>
+                {% else %}
+                        {{list.0.first_name}}<br/>
+                {% endif %}
+                </tr>
+        {% endfor %}
+        </table>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+        班級名稱：{{ classroom_name }}<BR>
+        <table>
+        <tr>   
+            <td>姓名</td>
+            <td>心得</td>
+			<td>證書</td>
+            <td>姓名</td>
+            <td>心得</td>
+			<td>證書</td>
+            <td>姓名</td>
+            <td>心得</td>
+			<td>證書</td>
+            <td>姓名</td>
+            <td>心得</td>			
+			<td>證書</td>
+			</tr>
+        {% for enroll in enrolls %}
+            <tr>
+            <td>{{enroll.seat}}){{enroll.student.first_name}}</td>
+            <td><a href="/teacher/check/{{enroll.student_id}}/1/{{enroll.classroom_id}}">12堂課{% if enroll.score_memo1 > 0 %}({{enroll.score_memo1}}){% endif%}</a></td>
+			<td>{% if enroll.certificate1 %}<a href="#" data-unit="1" data-classroomid="{{enroll.classroom_id}}" data-enrollid="{{ enroll.id }}" data-action="uncertificate" class="certificate">取消<a target="certView" href="/certificate/show/1/{{enroll.id }}"> <img src="/static/images/certificate.png"></a></a>{% else %}<a href="#" data-unit="1" data-classroomid="{{enroll.classroom_id}}" data-enrollid="{{ enroll.id }}" data-action="certificate" class="certificate">核發</a>{% endif %}</td>
+            <td>{{enroll.seat}}){{enroll.student.first_name}}</td>
+            <td><a href="/teacher/check/{{enroll.student_id}}/2/{{enroll.classroom_id}}">實戰入門{% if enroll.score_memo2 > 0 %}({{enroll.score_memo2}}){% endif%}</a></td>
+			<td>{% if enroll.certificate2 %}<a href="#" data-unit="2" data-classroomid="{{enroll.classroom_id}}" data-enrollid="{{ enroll.id }}" data-action="uncertificate" class="certificate">取消<a target="certView" href="/certificate/show/2/{{enroll.id }}"> <img src="/static/images/certificate.png"></a></a>{% else %}<a href="#" data-unit="2" data-classroomid="{{enroll.classroom_id}}" data-enrollid="{{ enroll.id }}" data-action="certificate" class="certificate">核發</a>{% endif %}</td>
+            <td>{{enroll.seat}}){{enroll.student.first_name}}</td>
+            <td><a href="/teacher/check/{{enroll.student_id}}/3/{{enroll.classroom_id}}">實戰進擊{% if enroll.score_memo3 > 0 %}({{enroll.score_memo3}}){% endif%}</a></td>
+			<td>{% if enroll.certificate3 %}<a href="#" data-unit="3" data-classroomid="{{enroll.classroom_id}}" data-enrollid="{{ enroll.id }}" data-action="uncertificate" class="certificate">取消<a target="certView" href="/certificate/show/3/{{enroll.id }}"> <img src="/static/images/certificate.png"></a></a>{% else %}<a href="#" data-unit="3" data-classroomid="{{enroll.classroom_id}}" data-enrollid="{{ enroll.id }}" data-action="certificate" class="certificate">核發</a>{% endif %}</td>
+            <td>{{enroll.seat}}){{enroll.student.first_name}}</td>
+            <td><a href="/teacher/check/{{enroll.student_id}}/4/{{enroll.classroom_id}}">實戰高手{% if enroll.score_memo4 > 0 %}({{enroll.score_memo4}}){% endif%}</a></td>
+			<td>{% if enroll.certificate4 %}<a href="#" data-unit="4" data-classroomid="{{enroll.classroom_id}}" data-enrollid="{{ enroll.id }}" data-action="uncertificate" class="certificate">取消<a target="certView" href="/certificate/show/4/{{enroll.id }}"> <img src="/static/images/certificate.png"></a></a>{% else %}<a href="#" data-unit="4" data-classroomid="{{enroll.classroom_id}}" data-enrollid="{{ enroll.id }}" data-action="certificate" class="certificate">核發</a>{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </table>
+
+{% endblock %}
+{% block domready %}
+  $('a.certificate').click(function(e){
+    var launcher = this;  
+    e.preventDefault();
+    $.post('/certificate/make/',
+      {
+        unit: $(launcher).data('unit'),
+	    classroomid: $(launcher).data('classroomid'),	
+        enrollid: $(launcher).data('enrollid'),
+        action: $(launcher).data('action')
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $(launcher).data('action');
+		   if (previous_action == 'certificate') {
+               $(launcher).html("取消");
+               $(launcher).data('action', 'uncertificate');
+               $(launcher).parent().append('<a target="certView" href="/certificate/show/'+ $(launcher).data('unit') + '/' + $(launcher).data('enrollid')+ '"> <img src="/static/images/certificate.png"></a>');
+           } else {
+               $(launcher).data('action', 'certificate');
+               $(launcher).html("核發");
+               $("a:last-child", $(launcher).parent()).remove();
+           }
+        }
+		else {
+				alert(data['enroll_id']);
+		}
+      }
+    );
+  });
+{% endblock %}

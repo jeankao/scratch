@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+        班級名稱：{{ enroll.classroom.name }}<BR>
+        <table>
+        <tr>
+            <td>姓名</td>        
+            <td>時間</td>
+            <td>分數</td>
+        </tr>
+        {% for exam in exams %}
+            <tr>
+            <td>{{enroll.seat}}){{ enroll.student.first_name }}</td>           
+            <td>{{exam.publication_date}}</td>
+            <td>{{exam.score}}</td>			
+			</tr>
+        {% endfor %}
+        </table>
+
+{% endblock %}

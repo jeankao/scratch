@@ -1,0 +1,13 @@
+﻿{% for exam in exams %}
+{% if exam.exam_id == 1 %}
+變數
+{% elif exam.exam_id == 2 %}
+選擇結構
+{% else %}
+重複結構
+{% endif %}
+：{{exam.publication_date}}--{{exam.score}}分<BR>
+{% empty %}
+<h2>目前沒有測驗記錄</h2>
+{% endfor %}
+

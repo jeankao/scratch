@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+        班級名稱：{{ classroom_name }}<BR>
+        <table>
+        <tr>
+			<td>學校</td>
+			<td>等級</td>
+            <td>座號</td>        
+            <td>姓名</td>
+            <td>組別</td>
+            <td>最新登入</td>
+            <td>登入次數</td>            
+			{% for group in user.groups.all %}
+			{% if group.name == 'teacher' %}            
+			<td>影片</td>
+            <td>事件</td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% for enroll, group_name, login_times in enroll_group %}
+            <tr>
+			<td>
+			{% for group in user.groups.all %}
+			{% if group.name == 'teacher' %}
+			<A href="/teacher/unenroll/{{enroll.id}}/{{enroll.classroom_id}}" onclick="return confirm('確定要刪除嗎?')">退選</a>
+			<a href="/account/password/{{enroll.student.id}}">密碼</a>
+			{% endif %}
+			{% endfor %}
+			{{enroll.student.last_name}}
+			</td>
+			<td><A href="/account/profile/{{enroll.student.id}}"><img src="/static/avatar/s{{ enroll.student.profile.avatar }}.png"></a></td>
+            <td>{{enroll.seat}}</td>           
+            <td>{{enroll.student.first_name}}</td>
+            <td>{{group_name}}</td>
+            <td>{{enroll.student.last_login}}</td>
+            <td><a href="/student/loginlog/{{enroll.student_id}}">{{login_times}}</a></td>
+			{% for group in user.groups.all %}
+			{% if group.name == 'teacher' %}              
+			<td><a href="/student/video/{{enroll.student_id}}">影片</a>
+            <td><a href="/account/event/{{enroll.student_id}}">全部</a> | <a href="/account/event12/{{enroll.student.id}}">12堂課</a></td>
+            {% endif %}
+            {% endfor %}            
+            </tr>
+        {% endfor %}
+        </table>
+
+{% endblock %}

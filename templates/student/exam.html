@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %} Exam {% endblock %}
+{% load tag %}
+{% block head_ext %}
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<style class="cp-pen-styles">
+.wrapper {
+  margin: auto;
+  padding: 1em;
+  width: 900px;
+}
+ul.tabs {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+ul.tabs li {
+  border: gray solid 1px;
+  border-bottom: none;
+  float: left;
+  margin: 0 .25em 0 0;
+  padding: .25em .5em;
+}
+ul.tabs li a {
+  color: gray;
+  font-weight: bold;
+  text-decoration: none;
+}
+ul.tabs li.active {
+  background: gray;
+}
+ul.tabs li.active a {
+  color: white;
+}
+.clr {
+  clear: both;
+}
+article {
+  border-top: gray solid 1px;
+  padding: 0 1em;
+}</style>
+<script src='//assets.codepen.io/assets/common/stopExecutionOnTimeout.js?t=1'></script>
+<!-- <script src='/static/js/youtube.util.js'></script> -->
+<script>
+function lesson_log(tabname) {
+    $.post('/student/lesson/log/9/',
+        {'tabname': tabname},
+        function(data){}
+    );
+}
+$(function () {
+	$('ul.tabs li:first').addClass('active');
+    lesson_log($('ul.tabs li:first').find('a').text());	
+	$('.block article').hide();
+	$('.block article:first').show();
+	$('ul.tabs li').on('click', function () {
+		$('ul.tabs li').removeClass('active');
+		$(this).addClass('active');
+		$('.block article').hide();
+		var activeTab = $(this).find('a');
+		if (activeTab.attr('href') == "#tab4") {
+			$("#scoreboard").html("成績更新中，請稍待...");
+			$("#scoreboard").load("/student/exam/score");
+		}
+		$(activeTab.attr('href')).show();
+        lesson_log(activeTab.text());		
+		return false;
+	});
+	//------------------------------------------------------------------------
+});
+//# sourceURL=pen.js
+</script>
+{% endblock %}
+{% block content %}
+<!--------------------------------------------------------------------------------------------------------------------------------------------------------------->
+<section class="wrapper">
+  <h1>第9堂課</h1>
+  <ul class="tabs">
+    <li><a href="#tab1">測驗：變數</a></li>
+    <li><a href="#tab2">測驗：選擇結構</a></li>		
+    <li><a href="#tab3">測驗：重複結構</a></li>	
+    <li><a href="#tab4">成績</a></li>		
+    {% if request.user|has_group:"teacher" %} 	
+    <li><a href="#tabn">筆記</a></li>
+	{% endif %}		
+  </ul>
+  <div class="clr"></div>
+  <section class="block">
+	<article id="tab1">
+{% include "student/exam1.html" %}
+    </article>
+    <article id="tab2">
+{% include "student/exam2.html" %}
+    </article>
+	<article id="tab3">
+{% include "student/exam3.html" %}
+    </article>	
+    <article id="tab4">
+		<p id="scoreboard"></p>
+    </article>
+  </section>
+<!----------------------------------------------------------->
+{% endblock %}
+{% block domready %}
+	$(".answer_list li").click(function(){
+		var index = $(this).parent().children().index(this);
+		var ans = String.fromCharCode(65+index);
+		var prev_ans = $("input", $(this).parent().parent()).val();
+		$(this).parent().children().removeClass("selected");
+		if (prev_ans != ans) {
+			$(this).addClass("selected");
+			$("input", $(this).parent().parent()).val(ans);
+		} else {
+			$("input", $(this).parent().parent()).val('');
+		}
+	});
+	//---------------------------------------------------------------------------
+	$('input.quiz-submit').click(function(e){
+		var ans=[];
+		var ansmap=[];
+		var examid = $(this).data('examid');
+		var valid=true;
+		var unfilled=null;
+		var tmp;
+		var pid;
+		
+		e.preventDefault();
+		$('#tab'+examid+" .quiz").each(function(index){
+			tmp = $("input", this).val();
+			ansmap.push(pid = ($(this).data('pid')-1));
+			ans[pid] = tmp;
+			if (tmp == "") {
+				if (unfilled == null)
+					unfilled = this;
+				valid = false;	
+			}
+		});
+		$('#tab'+examid+' .quiz').removeClass("unfilled");
+		if (!valid) {
+			alert("有題目忘記作答囉!!");
+			$("html, body").animate({
+				scrollTop: $(unfilled).offset().top
+			}, 1000);
+			$(unfilled).addClass("unfilled");
+			return false;
+		}
+		$('#tab'+examid+" .answer_list li").off('click');
+		$('#tab'+examid+" .answer_list li").css("cursor", "default");
+		var ansstr = ans.join();
+		$.post('/student/exam_check/',
+			{
+				'examid': examid, 
+				'answer': ans.join(),
+			},
+			function(data){
+				var tmpans = data['answer'].split(',');
+				var ans = [];
+				var len = tmpans.length;
+				for (i = 0; i < len; ++i) {
+					ans[i] = tmpans[ansmap[i]];
+				}
+				$('#tab'+examid+' .answer_list img').remove();
+				$('#tab'+examid+" input[name='ans']").removeClass("correct wrong");
+				$('#tab'+examid+" input[name='ans']").each(function(index){
+					$('li', $(this).parent()).eq(ans[index].charCodeAt(0)-65).append("<img src='/static/images/tick-20.png' />");
+					if ($(this).val() == ans[index])
+						$(this).addClass('correct');
+					else {
+						$(this).addClass('wrong');
+						if ($(this).val() != '')
+							$('li', $(this).parent()).eq($(this).val().charCodeAt(0)-65).append("<img src='/static/images/cross-20.png' />");
+					}
+				});
+			}
+		);
+		$(this).hide();
+	});
+	//---------------------------------------------------------------------------
+	(function($){
+		$.fn.shuffle = function() {
+			return this.each(function(){
+				var items = $(this).children().clone(true);
+				return (items.length) ? $(this).html($.shuffle(items)) : this;
+			});
+		}
+		$.shuffle = function(arr) {
+			for(var j, x, i = arr.length; i; j = parseInt(Math.random() * i), x = arr[--i], arr[i] = arr[j], arr[j] = x);
+			return arr;
+		}
+	})(jQuery);
+	//---------------------------------------------------------------------------
+	$('article').each(function(){
+		if ($(this).attr('id') !== 'tab4')
+			$(".quiz_container", $(this)).shuffle();
+			var pid = 1;
+			$(".pid", $(this)).each(function() {
+			  $(this).text(pid);
+				++pid;
+			});
+	});
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+        班級名稱：{{ classroom.name }}<BR>
+        <table>
+        <tr>
+            <td>姓名</td>
+            <td>分數</td>
+            <td>小組</td>
+			<td>{{lesson_list.0.2}}</td>
+			<td>{{lesson_list.1.2}}</td>
+			<td>{{lesson_list.2.2}}</td>
+			<td>{{lesson_list.3.2}}</td>
+			<td>{{lesson_list.4.2}}</td>
+			<td>{{lesson_list.5.2}}</td>
+			<td>{{lesson_list.6.2}}</td>
+			<td>{{lesson_list.7.2}}</td>
+			<td>{{lesson_list.8.2}}</td>
+			<td>{{lesson_list.9.2}}</td>
+			<td>{{lesson_list.10.2}}</td>
+			<td>{{lesson_list.11.2}}</td>
+			<td>{{lesson_list.12.2}}</td>
+			<td>{{lesson_list.13.2}}</td>
+			<td>{{lesson_list.14.2}}</td>
+			<td>{{lesson_list.15.2}}</td>
+			<td>{{lesson_list.16.2}}</td>		
+            <Td>變數測驗</Td>
+            <Td>選擇測驗</Td>
+            <Td>重複測驗</Td>
+	        <Td>心得</Td>
+            <Td>積分</Td>
+            <td>姓名</td>			
+        </tr>
+        {% for enroll, score_list, grade_list, score, group_score in data %}
+            <tr>
+            <td nowrap>{{enroll.seat}}){{enroll.student.first_name}}</td>
+			<td><font color=blue>{{score}}</font></td>
+			<td><font color=blue>{{group_score}}</font></td>    
+            {% for score in score_list %}
+			{% for grade in grade_list %}
+			    {% if forloop.counter == forloop.parentloop.counter %}
+            <td>{% if score == -1 %}<a target=_blank href="/teacher/scoring/{{classroom.id}}/{{enroll.student_id}}/{{forloop.counter}}"><font color=red>{% endif%}{{score}}({{grade}}){% if score == -1 %}</font></a>{% endif%}</td>			
+			{% endif %}
+			{% endfor %}
+			{% endfor %}
+            <td nowrap>{{enroll.seat}}){{enroll.student.first_name}}</td>			
+            </tr>
+        {% endfor %}
+		
+        </table>
+{% endblock %}

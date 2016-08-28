@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}My Blog{% endblock %}
+{% load tz %}
+{% block content %}
+{% if lists.0.5 == "1" %}
+<h1>美工王</h1>
+{% endif %}
+{% if lists.0.5 == "2" %}
+<h1>程式王</h1>
+{% endif %}
+{% if lists.0.5 == "3" %}
+<h1>創意王</h1>
+{% endif %}
+<table>
+<tr>
+<td>名次</td>
+<td>組別</td>
+<TD>組員</TD>
+<td>作品</td>
+<TD>分數</TD>
+<TD>評分人數</TD>
+</tr>
+  {% for show, students, score, count in lists %}
+	<tr>
+	<td>{{forloop.counter}}</td>
+	<td>{{show.name}}</td>
+	<td>{% for student in students%}<A href="/account/profile/{{student.student.id}}"><img src="/static/avatar/s{{ student.student.profile.avatar }}.png"></a>({{student.seat}}){{student.student.first_name}}{% endfor %}</td>
+	<td><a href="/show/detail/{{show.id}}">{{show.title}}</a></td>
+	<td>{{score}}</td>
+	<td>{{count}}</td>
+	</tr>
+  {% endfor %}
+</table>
+{% endblock %}

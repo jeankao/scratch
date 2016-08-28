@@ -1,0 +1,13 @@
+﻿{% extends "base.html" %}
+{% block title %}Create a question{% endblock %}
+{% block content %}
+尚未分組名單：<BR>
+<table>
+            {% for enroll in nogroup %}
+			<tr>
+			<td>({{enroll.seat}}){{enroll.student.first_name}}</td>
+			</tr>
+			{% endfor %}
+</table>
+{{form}}
+{% endblock %}

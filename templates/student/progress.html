@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %} Welcome ! {% endblock %}
+{% block content %}
+        <table border=1>
+            <tr>
+                <Td></Td>
+                {% for lesson in lesson_list %}
+                {% if unit = "1" and forloop.counter < 18 %}
+                    <td><font size=-2>{{lesson.2}}</font></td>
+                {% endif %}
+                {% if unit = "2" and forloop.counter > 17 and forloop.counter < 26 %}
+                    <td><font size=-2>{{lesson.2}}</font></td>
+                {% endif %}
+                {% if unit = "3" and forloop.counter > 25 and forloop.counter < 34 %}
+                    <td><font size=-2>{{lesson.2}}</font></td>
+                {% endif %}
+                {% if unit = "4" and forloop.counter > 33 %}
+                    <td><font size=-2>{{lesson.2}}</font></td>
+                {% endif %}                
+                {% endfor %}
+            </tr>
+            {% if unit == "1" %}   
+            {% for bar in bars1 %}
+                {% if forloop.counter0|divisibleby:17 %}
+                <tr>
+                <Td nowrap>{{bar.0.seat}}){{bar.0.student.first_name}}
+                {% if bar.0.certificate1 %}
+                    <a target="_blank" href="/certificate/show/{{unit}}/{{bar.0.id}}"><img src="/static/images/certificate.png"></a>
+                {% endif %}                
+
+                {% endif %}
+                <Td nowrap><font size=-2>{{bar.1.publication_date|date:"Y/m/d"}}</font><br>{{bar.1.score}}-<font size=-2>{{bar.2}}</font></Td>
+            {% endfor %}
+            {% endif %}
+            {% if unit == "2" %}            
+            {% for bar in bars2 %}
+                {% if forloop.counter0|divisibleby:8 %}
+                <tr><Td>{{bar.0.seat}}){{bar.0.student.first_name}}
+                    {% if bar.0.certificate2 %}
+                    <a target="_blank" href="/certificate/show/{{unit}}/{{bar.0.id}}"><img src="/static/images/certificate.png"></a>
+                    {% endif %}                
+
+                {% endif %}
+                <Td><font size=-2>{{bar.1.publication_date|date:"Y/m/d"}}</font><br>{{bar.1.score}}-<font size=-2>{{bar.2}}</font></Td>
+            {% endfor %}
+            {% endif %}            
+            {% if unit == "3" %}            
+            {% for bar in bars3 %}
+                {% if forloop.counter0|divisibleby:8 %}
+                <tr><Td>{{bar.0.seat}}){{bar.0.student.first_name}}
+                    {% if bar.0.certificate3 %}
+                    <a target="_blank" href="/certificate/show/{{unit}}/{{bar.0.id}}"><img src="/static/images/certificate.png"></a>
+                    {% endif %}                
+                {% endif %}
+                <Td><font size=-2>{{bar.1.publication_date|date:"Y/m/d"}}</font><br>{{bar.1.score}}-<font size=-2>{{bar.2}}</font></Td>
+            {% endfor %}
+            {% endif %}            
+            {% if unit == "4" %}            
+            {% for bar in bars4 %}
+                {% if forloop.counter0|divisibleby:8 %}
+                <tr><Td>{{bar.0.seat}}){{bar.0.student.first_name}}
+                  {% if bar.0.certificate4 %}
+                    <a target="_blank" href="/certificate/show/{{unit}}/{{bar.0.id}}"><img src="/static/images/certificate.png"></a>
+                    {% endif %}                
+                {% endif %}
+                <Td><font size=-2>{{bar.1.publication_date|date:"Y/m/d"}}</font><br>{{bar.1.score}}-<font size=-2>{{bar.2}}</font></Td>
+            {% endfor %}
+            {% endif %}                 
+            </tr>
+        </table>
+
+{% endblock %}
+{% block domready %}
+  $('a.certificate').click(function(e){
+    var launcher = this;  
+    e.preventDefault();
+    $.post('/certificate/make/',
+      {
+        unit: $(launcher).data('unit'),
+	    classroomid: $(launcher).data('classroomid'),	
+        enrollid: $(launcher).data('enrollid'),
+        action: $(launcher).data('action')
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $(launcher).data('action');
+		   if (previous_action == 'certificate') {
+               $(launcher).html("取消證書");
+               $(launcher).data('action', 'uncertificate');
+               $(launcher).parent().append('<a target="certView" href="/certificate/show/'+ $(launcher).data('unit') + '/' + $(launcher).data('enrollid')+ '"> <img src="/static/images/certificate.png"></a>');
+           } else {
+               $(launcher).data('action', 'certificate');
+               $(launcher).html("發證書");
+               $("a:last-child", $(launcher).parent()).remove();
+           }
+        }
+		else {
+				alert(data['student_id']);
+		}
+      }
+    );
+  });
+{% endblock %}

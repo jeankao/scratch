@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% load tag %}
+{% block content %}
+        <h1>班級名稱：{{classroom.name}}</h1>
+        <table>
+            <tr>
+                <td>時間</td><td>{{message.time| date:"DATE_FORMAT"}}</td>
+            </tr>
+            <tr>
+                <td>主旨</td> <td>{{message.title}}</td>
+            </tr>
+            <tr>
+                <td>內容</td><td>{{message.content|safe}}</td>
+            </tr>
+           
+        </table>
+        <table> 
+           {% for announce_read in announce_reads %}
+            <tr>
+            <td>
+           ({{announce_read.0}}){{announce_read.1}}：
+           {% if announce_read.2.read %}
+           已讀
+           {% else %}
+           <font color=red>未讀</font>           
+           {% endif %}
+           </td>
+           </tr>
+           {% endfor %}
+            
+        </table>
+{% endblock %}

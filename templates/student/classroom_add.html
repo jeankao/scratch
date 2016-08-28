@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+<table>
+<tr>
+    <td>班級</td>
+    <td>教師</td>
+    <td>狀況</td>
+</tr>
+        {% for classroom, teacher_name, enroll in classroom_teachers %}
+            <tr>
+                <td>{{classroom.name}}</td>
+                <td>{{teacher_name}}</td>
+                <td>
+                {% if enroll == 1 %}
+                已加入
+                {% else %}
+                <a href="../enroll/{{classroom.id}}">加入此班級</a><br/>
+                {% endif %}
+                </td>
+            </Tr>
+        {% endfor %}
+</table>
+{% endblock %}

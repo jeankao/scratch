@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+{% load tag %}
+<BR>
+{{user_name}}
+        <table>
+        <tr>
+            <td>姓名</td>
+            <td>記錄</td>
+            <td>時間</td>
+        </tr>
+        {% for event in events %}		
+		{% with event.0.publish as date %}
+		    <tr><td colspan=3><font color=red>第{{forloop.counter}}堂課:{{event.last.publish| date:"DATE_FORMAT"}}～{{event.0.publish| date:"DATE_FORMAT"}}|{{event.last.publish|timesince:date}}</font></td></tr>
+		{% endwith %}
+		    {% for log in event %}
+            <tr>
+                <td><a href="/account/profile/{{log.user_id}}">{{log.user_id|name}}</a></td>
+                <td>{{log.event}}</a></td>
+				<td>{{log.publish| date:"DATE_FORMAT"}}</td>
+            </tr>
+			{% endfor %}
+        {% endfor %}
+        </table>
+        {% include "pagination.html" with page=page_obj %}
+        
+        <BR>
+{% endblock %}
+

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+        <a href="/teacher/classroom/add"><img src="/static/images/icon_class_new.png">新增班級</a><BR><BR>
+        <table>
+            <tr>
+                <td>名稱</td>
+                <td>密碼</td>
+                <td>功能</td>
+        {% for classroom in classrooms %}
+            <tr>
+            <td>{{classroom.name}}</td>
+            <td>{{classroom.password}}</td>
+            <td>
+                <a href="/teacher/classroom/edit/{{classroom.id}}">修改</a>|			
+                <a href="/student/classmate/{{classroom.id}}">學生</a>|
+                <a href="/teacher/announce/{{classroom.id}}">公告</a>|
+                <a href="/student/group/{{classroom.id}}">組別</a>|
+                <a href="/teacher/work/{{classroom.id}}">作業</a>|
+				<a href="/teacher/event12/{{classroom.id}}">12堂課</a>|
+                <a href="/teacher/note/{{classroom.id}}">筆記</a>|                
+				<a href="/teacher/exam/{{classroom.id}}">測驗</a>|
+				<a href="/teacher/memo/{{classroom.id}}">心得</a>|
+				<a href="/show/teacher/{{classroom.id}}">創意秀</a>|				
+				<a href="/teacher/grade/{{classroom.id}}">結算成績</a>|			
+				<a href="/teacher/event/{{classroom.id}}/0">事件</a>|		
+            </td>
+            </tr>
+        {% endfor %}
+        </table>
+{% endblock %}

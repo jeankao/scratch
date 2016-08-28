@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ show.title }}
+{% endblock %}
+{% block head_ext %}
+<!-- bootstrap javascript library: BEGIN -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<!-- bootstrap javascript library: END -->
+<!-- bootstrap slide library: BEGIN -->
+<link href="/static/css/bootstrap-slider.css" rel="stylesheet" type="text/css">
+<script src="/static/js/bootstrap-slider.js"></script>
+<!-- bootstrap slide library: END -->
+{% endblock %}
+{% load tz %}
+{% block content %}
+  <h1>組別：{{show.name}}</h1>
+  <h1>組員：{% for member in members %}({{member.seat}}){{member.student.first_name}}{% endfor %}</h1>
+  <h1>{{ show.title }}</h1>
+
+    作品：<a target=_blank href="https://scratch.mit.edu/projects/{{show.number}}/#editor">{{show.number}}</a>
+    <BR>
+  <iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ show.number  }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
+  <BR></BR>
+  <p class="date">
+    {{ show.publish|timezone:'Asia/Taipei' }}
+  </p>
+  {{ show.body|linebreaks }}
+<H1>評分結果({{scores.3}}人)</h1>
+美工設計：{{scores.0}}  程式難度：{{scores.1}} 創意表現：{{scores.2}}<BR>
+評語：<BR>
+{% for review in reviews %}
+{{review.comment}}<BR>
+{% endfor %}
+{% endblock %}

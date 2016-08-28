@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}My Blog{% endblock %}
+{% load tz %}
+{% block content %}
+<table>
+<tr>
+<td>張貼者</td>
+<td>張貼時間</td>
+<td>主旨</td>
+<td>Debugger</td>
+</tr>
+  {% for bug in bugs %}
+    <tr>
+	<td>
+	{{ bug.0.author.first_name }}
+	</td>
+   <td>
+      {{ bug.0.publish|timezone:'Asia/Taipei' }}
+    </td>	
+	<td>
+      <a href="{{ bug.0.get_absolute_url }}">
+        {{ bug.0.title }}
+      </a>
+    </td>
+     <td>
+	 {% for debug in bug.1 %}
+	 {{debug.author.first_name}} {{debug.publish}}<BR>
+	 {% endfor %}
+     </td>
+	</tr>	
+  {% endfor %}
+</table>
+  {% include "pagination.html" with page=page_obj %}  
+{% endblock %}

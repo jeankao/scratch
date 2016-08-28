@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% load tag %}
+{% block content %}
+        <h1>私訊來源：<a href="/account/profile/{{message.author_id}}">{{message.author_id|name}}</a></h1>
+        <h1>私訊對象：{{messagepoll.reader_id|name}}{% if messagepoll.read %}(已讀){% else %}(未讀){% endif %}</h1>
+        <table>
+            <tr>
+                <td>時間</td><td>{{message.time| date:"DATE_FORMAT"}}</td>
+            </tr>
+            <tr>
+                <td>主旨</td> <td>{{message.title}}</td>
+            </tr>
+            <tr>
+                <td>內容</td><td>{{message.content|safe}}</td>
+            </tr>
+           
+        </table>
+{% endblock %}

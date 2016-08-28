@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Log-in{% endblock %}
+
+{% block content %}
+  <h1>Log-in</h1>
+  {% if message %}
+    <p>
+     帳號或密碼錯誤，請再試一次。{{message}}
+    </p>
+  {% else %}
+   <p>請輸入帳號與密碼登入系統。如果您還沒有帳號，請 <a href="{% url "register" %}">註冊新帳號</a></p>
+  {% endif %}
+  <div class="login-form">
+    <form action="{% url 'login' %}" method="post">
+      {{ form.as_p }}
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}" />
+      <p><input type="submit" value="Log-in"></p>
+    </form>
+  </div>
+{% endblock %}

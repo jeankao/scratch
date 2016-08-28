@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% load tag %}
+{% block content %}
+        <table>
+            <tr>
+                <td>編號</td>
+                <td>登入時間</td>
+                <td>訪客姓名</td>                
+                <td>訪客來源</td>
+            </tr>
+        {% for visitorlog in visitorlogs %}
+            <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{visitorlog.time| date:"DATE_FORMAT"}}</a></td>
+            <td>{% if visitorlog.user_id|is_classmate:request or request.user.id == 1 %}<a href="/account/profile/{{visitorlog.user_id}}">{% endif %}{{visitorlog.user_id|name}}</a></td>
+            <td>{{ visitorlog.IP }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+ {% include "pagination.html" with page=page_obj %}          
+{% endblock %}

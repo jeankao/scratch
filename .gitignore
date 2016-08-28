@@ -1,0 +1,12 @@
+# .gitignore
+
+*.pyc
+__pycache__
+staticfiles
+db.sqlite3
+static/certificate/0/
+static/certificate/1/
+static/certificate/2/
+static/certificate/3/
+static/certificate/4/
+static/show/

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+        班級名稱：{{ classroom_name }}<BR>
+        <table>
+        <tr>   
+            <td>姓名</td>
+            <td>心得</td>
+            <td>姓名</td>
+            <td>心得</td>
+            <td>姓名</td>
+            <td>心得</td>
+            <td>姓名</td>
+            <td>心得</td>			
+			</tr>
+        {% for enroll in enrolls %}
+            <tr>
+            <td>{{enroll.seat}}){{enroll.student.first_name}}</td>
+            <td><a href="/student/memo_show/{{enroll.student_id}}/1/{{enroll.classroom_id}}/{{enroll.score_memo1}}">12堂課{% if enroll.score_memo1 > 0 %}({{enroll.score_memo1}}){% endif%}</a></td>
+            <td>{{enroll.seat}}){{enroll.student.first_name}}</td>
+            <td><a href="/student/memo_show/{{enroll.student_id}}/2/{{enroll.classroom_id}}/{{enroll.score_memo2}}">實戰入門{% if enroll.score_memo2 > 0 %}({{enroll.score_memo2}}){% endif%}</a></td>
+            <td>{{enroll.seat}}){{enroll.student.first_name}}</td>
+            <td><a href="/student/memo_show/{{enroll.student_id}}/3/{{enroll.classroom_id}}/{{enroll.score_memo3}}">實戰進擊{% if enroll.score_memo3 > 0 %}({{enroll.score_memo3}}){% endif%}</a></td>
+            <td>{{enroll.seat}}){{enroll.student.first_name}}</td>
+            <td><a href="/student/memo_show/{{enroll.student_id}}/4/{{enroll.classroom_id}}/{{enroll.score_memo4}}">實戰高手{% if enroll.score_memo4 > 0 %}({{enroll.score_memo4}}){% endif%}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% load tag %}
+{% block content %}
+<h1>前置作業</h1>
+<pre>
+sudo apt-get update
+sudo apt-get install python-pip
+pip install django==1.9.2
+sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib nginx
+sudo apt-get install python-lxml
+sudo pip install XlsxWriter
+sudo pip install python-docx
+sudo apt-get install libjpeg-dev
+sudo pip install Pillow
+sudo apt-get build-dep python-psycopg2
+pip install psycopg2 
+sudo pip install psycopg2
+sudo pip install dj-static
+</pre>
+<BR>
+<h1>Step1:下載專案</h1>
+<pre>
+cd /var/www
+git clone http://github.com/
+</pre>
+<BR>
+<h1>Step2:設定資料庫</h1>
+<pre>
+sudo su - postgres
+psql
+CREATE DATABASE scratch;
+CREATE USER scratch WITH PASSWORD '1234';
+GRANT ALL PRIVILEGES ON DATABASE scratch TO scratch;
+\q
+exit
+sudo python manage.py migrate
+sudo python manage.py createsuperuser
+填入資料:admin, koma@mail.nksh.tp.edu.tw, 密碼:pump2246
+sudo python manage.py runserver 0.0.0.0:8000
+測試網站：http://server_domain_or_IP:8000
+</pre>
+<BR>
+<h1>Step3:Deploy網站</h1>
+<pre>
+sudo pip install uwsgi
+sudo mkdir -p /etc/uwsgi/sites
+sudo nano /etc/uwsgi/sites/scratch.ini
+------------------------------------Start
+[uwsgi]
+project = scratch
+base = /var/www/scratch
+chdir = /var/www/scratch
+module = scratch.wsgi:application
+master = true
+processes = 5
+socket = 127.0.0.1:8001
+chmod-socket = 664
+vacuum = true
+------------------------------------End
+sudo nano /etc/init/uwsgi.conf
+------------------------------------Start
+description "uWSGI"
+start on runlevel [2345]
+stop on runlevel [06]
+respawn
+env UWSGI=/usr/local/bin/uwsgi
+env LOGTO=/var/log/uwsgi.log
+exec $UWSGI --master --emperor /etc/uwsgi/sites --die-on-term --uid www-data --gid www-data --logto $LOG$
+------------------------------------End
+sudo nano /etc/nginx/sites-available/scratch
+------------------------------------Start
+server {
+    listen 80;
+    server_name 127.0.0.1;
+    access_log   /var/log/nginx/ccess.log;
+    error_log    /var/log/nginx/error.log;
+    location = /biconcave {
+         return  404;
+    }
+    location  /static/ {
+        root  /var/www/scratch;
+    }
+    location  /media/ {
+        root  /var/www/scratch;                                                                                                   
+    location  / {
+        uwsgi_pass      127.0.0.1:8001;
+        include         /var/www/scratch/uwsgi_params;
+        uwsgi_param     SCRIPT_NAME '';
+    }
+}
+-------------------------------------End
+sudo ln -s /etc/nginx/sites-available/scratch /etc/nginx/sites-enabled
+sudo service nginx configtest
+sudo service uwsgi start
+sudo service nginx start
+</pre>
+{% endblock %}
