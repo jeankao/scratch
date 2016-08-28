@@ -289,8 +289,9 @@ def lesson(request, lesson):
             user = User.objects.get(id=request.user.id)
             profile = Profile.objects.get(user=user)
             if lesson in lock:
-                if profile.lock < lock[lesson] :
-                    return redirect("/")    
+                if profile.lock < lock[lesson]:
+                    if not user.groups.filter(name='teacher').exists():
+                        return redirect("/")    
             classrooms = Classroom.objects.filter(teacher_id=request.user.id)
             notes = Note.objects.filter(user_id=request.user.id, lesson = lesson).order_by('-id')
             return render_to_response('student/lesson.html', {'lesson':lesson, 'notes':notes, 'classrooms':classrooms}, context_instance=RequestContext(request))

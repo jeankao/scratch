@@ -109,7 +109,7 @@ def user_login(request):
                                         # 記錄訪客資訊
                                         admin_user = User.objects.get(id=1)
                                         try:
-                                        		profile = Profile.objects.get(user=admin_user)
+                                            profile = Profile.objects.get(user=admin_user)
                                         except ObjectDoesNotExist:
                                             profile = Profile(user=admin_user)
                                             profile.save()
