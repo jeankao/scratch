@@ -29,18 +29,7 @@
 			<a href="/student/bug/add/{{enroll.classroom_id}}">Bug求救</a>｜			
 			</td>
 		</tr>
-{% if enroll.classroom_id < 28 %}
-        <tr>
-            <td>創意秀：
-			<a href="/blog/add/{{enroll.classroom_id}}">發表創意</a>｜
-			<a href="/blog/person/{{enroll.classroom_id}}/{{request.user.id}}">我的創意秀</a>｜
-			<a href="/blog/class/{{enroll.classroom_id}}">班級創意秀</a>｜		
-			</td>
-		</tr>
-{% else %}
-<tr></tr>
-{% endif %}		
-        <tr>
+    <tr>
             <td>創意秀：
 			<a href="/show/group/{{enroll.classroom_id}}">組別</a>｜
 			{% if enroll.group_show > 0 %}
