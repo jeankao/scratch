@@ -80,17 +80,17 @@ WSGI_APPLICATION = 'scratch.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    #'default': {
-    #'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #'NAME': 'scratch',
-    #'USER': 'scratch',
-    #'PASSWORD': '1234',
-    #'HOST': 'localhost',
-    #'PORT': '',   
-    
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    'NAME': 'scratch',
+    'USER': 'scratch',
+    'PASSWORD': '1234',
+    'HOST': 'localhost',
+    'PORT': '',   
+    
+    #'default': {
+    #    'ENGINE': 'django.db.backends.sqlite3',
+    #    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
