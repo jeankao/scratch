@@ -83,6 +83,7 @@ server {
     }
     location  /media/ {
         root  /var/www/scratch;                                                                                                   
+    }
     location  / {
         uwsgi_pass      127.0.0.1:8001;
         include         /var/www/scratch/uwsgi_params;
