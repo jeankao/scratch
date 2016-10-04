@@ -160,7 +160,7 @@ $(function () {
         var tab_header = $("ul.tabs a[href='"+tabID+"']").parent();
         var tab_link = tab_header.find('a');
         var tab_content = $(tabID);
-        if (tab_link.text().startsWith('影片')) {
+        if (tab_link.text().match(/^影片/)) {
             $.post('/account/video/log/',
                 {
                     'tabName' : tab_link.text(),
