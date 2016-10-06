@@ -2,7 +2,7 @@
 {% block title %} Teachers {% endblock %}
 {% load tag %}
 {% block content %}
-<h1>前置作業</h1>
+<h1>Ubuntu16.04 前置作業</h1>
 <pre>
 sudo apt-get update
 sudo apt-get install python-pip
@@ -15,7 +15,6 @@ sudo apt-get install libjpeg-dev
 sudo pip install Pillow
 sudo apt-get build-dep python-psycopg2
 sudo pip install psycopg2 
-sudo pip install psycopg2
 sudo pip install dj-static
 </pre>
 <BR>
@@ -58,15 +57,21 @@ socket = 127.0.0.1:8001
 chmod-socket = 664
 vacuum = true
 ------------------------------------End
-sudo nano /etc/init/uwsgi.conf
+sudo nano /etc/systemd/system/uwsgi.service
 ------------------------------------Start
-description "uWSGI"
-start on runlevel [2345]
-stop on runlevel [06]
-respawn
-env UWSGI=/usr/local/bin/uwsgi
-env LOGTO=/var/log/uwsgi.log
-exec $UWSGI --master --emperor /etc/uwsgi/sites --die-on-term --uid www-data --gid www-data --logto $LOG$
+[Unit]
+Description=uWSGI Emperor service
+
+[Service]
+ExecStartPre=/bin/bash -c 'mkdir -p /var/run/uwsgi; chown www-data:www-data /var/run/uwsgi'
+ExecStart=/usr/local/bin/uwsgi --emperor /etc/uwsgi/sites
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
 ------------------------------------End
 sudo nano /etc/nginx/sites-available/scratch
 ------------------------------------Start
@@ -93,7 +98,8 @@ server {
 -------------------------------------End
 sudo ln -s /etc/nginx/sites-available/scratch /etc/nginx/sites-enabled
 sudo service nginx configtest
-sudo service uwsgi start
+sudo systemctl daemon-reload
+sudo systemctl start uwsgi
 sudo service nginx start
 </pre>
 {% endblock %}
