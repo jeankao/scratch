@@ -6,35 +6,32 @@
 <BR>
         <table>
         <tr>
-            <td>姓名</td>
-            <td>1</td>
-			<td>2</td>
-            <td>3</td>
-            <td>4</td>
-			<td>5</td>
-            <td>6</td>
-            <td>7</td>
-			<td>8</td>
-            <td>9</td>
-            <td>10</td>
-			<td>11</td>
+            <th>姓名</th>
+            <th>1</th>
+			<th>2</th>
+            <th>3</th>
+            <th>4</th>
+			<th>5</th>
+            <th>6</th>
+            <th>7</th>
+			<th>8</th>
+            <th>9</th>
+            <th>10</th>
+			<th>11</th>
+			<th>12</th>			
         </tr>
-        {% for event in events %}
-		{% if forloop.counter0|divisibleby:11 %}
-		<tr>
-            <td nowrap>({{event.0}}){{event.1|name}}</td>		
-		{% endif %}
-		    <td>
-		  {% with event.2.0.publish as date %}			
-            <a href="/teacher/event12/{{event.1}}/{{forloop.counter|modulo:11}}">{{event.2.last.publish|timesince:date}}</a>
-		  {% endwith %}
-			</td>
-		{% if forloop.counter|divisibleby:11 %}
-		</tr>
-		{% endif %}		
+        {% for student in events %}
+            <tr>
+                <td nowrap>({{student.seat}}){{student.sid|name}}</td>
+                {% for duration in student.durations %}
+                    <td>
+                        {% if duration %}
+                        <a href="/teacher/event12/{{student.sid}}/{{forloop.counter}}">{{duration}}</a>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
         {% endfor %}
         </table>
         {% include "pagination.html" with page=page_obj %}
-        
-        <BR>
 {% endblock %}

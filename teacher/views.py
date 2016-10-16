@@ -968,13 +968,33 @@ class Event12ListView(ListView):
         if is_event_open(self.request) :           
             log = Log(user_id=self.request.user.id, event=u'查看班級12堂課事件<'+classroom.name+'>')
             log.save()       
-        enrolls = Enroll.objects.filter(classroom_id=self.kwargs['classroom_id']).order_by("seat");
+        enrolls = [enroll for enroll in Enroll.objects.filter(classroom_id=self.kwargs['classroom_id'], seat__gt=0).order_by("seat")]
+        student_ids = [enroll.student_id for enroll in enrolls] # 取得所有修課學生的 id
+        # 一次取得所有修課學生查看課程內容的紀錄
+        logs = [log for log in Log.objects.filter(user_id__in=student_ids, event__regex='查看課程內容<\d+>').order_by('-id')]
+        regex = re.compile(u'查看課程內容<(\d+)>')        
         events = []
+        student_log = {}
+        # 初始化 student_log
         for enroll in enrolls:
-            if enroll.seat > 0 :
-                for i in range(11):
-                    queryset = Log.objects.filter(user_id=enroll.student_id, event__icontains="查看課程內容<"+str(i+1)+">").order_by('-id')
-                    events.append([enroll.seat, enroll.student_id, queryset])
+            student_log[enroll.student_id] = {}
+            for i in range(12):
+                student_log[enroll.student_id][i+1] = [] 
+        # 將紀錄填入相對應的 student_log 位置
+        for log in logs:
+            cid = int(regex.match(log.event).group(1)) # 取出課程編號 1~11
+            student_log[log.user_id][cid].append(log)
+        # 計算每位學生每個課程的耗用時間
+        for enroll in enrolls:
+            durations = []
+            for key in student_log[enroll.student_id]:
+                log = student_log[enroll.student_id][key]
+                if len(log) > 0:
+                    duration = str(log[0].publish - log[-1].publish)
+                    durations.append(duration.rsplit(':', 1)[0])
+                else:
+                    durations.append(0)
+            events.append({'seat': enroll.seat, 'sid': enroll.student_id, 'durations': durations})
         return events
         
     def get_context_data(self, **kwargs):
