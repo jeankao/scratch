@@ -28,7 +28,7 @@ File: Layout CSS
 #topbar{padding:5px 0 8px; font-size:16px; text-transform:uppercase;}
 #topbar a:hover{color:black}
 #topbar .nospace.linklist{}
-#topbar .nospace.linklist li{display:inline; margin-right:5px; padding-right:8px;}
+#topbar .nospace.linklist li{display:inline; margin-right:5px; padding-right:5px;}
 #topbar .nospace.linklist li:last-child{margin:0; padding:0; border:none;}
 
 #top > .wrapper.row0 {position:fixed; z-index: 999}
