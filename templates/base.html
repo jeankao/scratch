@@ -6,7 +6,7 @@ Author URI: http://www.os-templates.com/
 Licence: Free to use under our free template licence terms
 Licence URI: http://www.os-templates.com/template-terms
 -->
-<html>
+<html lang="zh-Hant-TW">
 <head>
 	<title>程式設計輕鬆學─使用Scratch2| {% block title %}Homepage{% endblock %}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -37,6 +37,7 @@ Licence URI: http://www.os-templates.com/template-terms
         </div>
         </div>
 		<li><a href="/show/gallery"><img  width=16 src="/static/images/icon_gallery.png">藝廊</a></li>		
+		<li><img src="/static/images/icon_master.png" width=16><a href="/account/author">作者</a></li>		
 		{% if not user.is_authenticated %}
 		<li><a href="http://www.books.com.tw/products/0010703424" target="_blank"><img src="/static/images/icon_book.png" width=16>參考書</a></li>
         <div class="dropdown">			
@@ -45,15 +46,26 @@ Licence URI: http://www.os-templates.com/template-terms
             <a href="/account/manual/student">學生版手冊</a>
             <a href="/account/manual/teacher">教師版手冊</a></a>
             <a href="/account/manual/ubuntu">Ubuntu架站</a>
+            <a href="/account/manual/windows">Windows架站</a>
             <a href="/account/manual/heroku">Heroku架站</a>            
         </div>
         </div>
+        <div class="dropdown">			
+		<li><img src="/static/images/icon_article.png" width=16>網路資源</li>
+        <div class="dropdown-content">
+            <a href="/account/article">網路文章</a>
+            <a target=_blank href="http://s4a.cat/">S4A</a>
+            <a target=_blank href="http://www.mblock.cc/">Mblock</a>
+			<a target=_blank href="https://www.raspberrypi.org/documentation/usage/scratch/gpio/README.md">Pi GPIO</a>
+            <a target=_blank href="http://developers.gausstoys.com/tutorials/scratch2-gausssense-desktop?locale=zh">GaussToys</a>          
+        </div>
+		</div>	
 		{% endif %}
 		{% if user.is_authenticated %}
 		<li><a href="/student/classroom"><img  width=16 src="/static/images/icon_class.png">班級</a></li>			
 		<li><a href="/account"><img  width=16 src="/static/images/icon_message.png">訊息{% if request.user.id|unread > 0 %}({{request.user.id|unread}}){% endif %}</a></li>
         <div class="dropdown">	
-	    <li><img  width=16 src="/static/images/icon_doc.png">個人檔案</li>		
+	    <li><img  width=16 src="/static/images/icon_doc.png">檔案</li>		
         <div class="dropdown-content">
             <a href="/account/profile/{{user.id}}#tab1">積分</a>
             <a href="/account/profile/{{user.id}}#tab2">作業</a>
@@ -68,20 +80,11 @@ Licence URI: http://www.os-templates.com/template-terms
 			{% endif %}
 			{% if user.id == 1 %}
     		<li><a href="/account/userlist"><img  width=16 src="/static/images/icon_admin.png">帳號</a></li>
+			<!--
 			<li><a href="/account/event/admin"><img  width=16 src="/static/images/icon_event.png">事件</a></li>		
+			-->
 			{% else %}
-        <div class="dropdown">			
-		<li><img src="/static/images/icon_article.png" width=16>網路資源</li>
-        <div class="dropdown-content">
-            <a href="/account/article">網路文章</a>
-            <a target=_blank href="http://s4a.cat/">S4A</a>
-            <a target=_blank href="http://www.mblock.cc/">Mblock</a>
-			<a target=_blank href="https://www.raspberrypi.org/documentation/usage/scratch/gpio/README.md">Pi GPIO</a>
-            <a target=_blank href="http://developers.gausstoys.com/tutorials/scratch2-gausssense-desktop?locale=zh">GaussToys</a>          
-        </div>
-		</div>
-
-			{% endif %}
+            {% endif %}
 	    {% endif %}
 		<li><a href="/account/visitor"><img src="/static/images/icon_visitor.png">訪客</a></li>	    
       </ul>

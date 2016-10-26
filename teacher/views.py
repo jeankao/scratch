@@ -132,6 +132,46 @@ def work(request, classroom_id):
             log.save()              
         return render_to_response('teacher/work.html', {'lesson_list':lesson_list, 'classroom': classroom}, context_instance=RequestContext(request))
 
+# 列出分組12堂課所有作業
+def work1(request, classroom_id):
+         # 限本班任課教師
+        if not is_teacher(request.user, classroom_id):
+            return redirect("homepage")    
+        classroom_name = Classroom.objects.get(id=classroom_id).name
+        lessons = []
+        groups = EnrollGroup.objects.filter(classroom_id=classroom_id)
+        for lesson in range(34):
+          student_groups = []					
+          for group in groups:
+              enrolls = Enroll.objects.filter(classroom_id=classroom_id, group=group.id)
+              group_assistants = []
+              works = []
+              scorer_name = ""
+              for enroll in enrolls: 
+                  try:    
+                      work = Work.objects.get(user_id=enroll.student_id, index=lesson+1)
+                      if work.scorer > 0 :
+                          scorer = User.objects.get(id=work.scorer)
+                          scorer_name = scorer.first_name
+                      else :
+                          scorer_name = "X"
+                  except ObjectDoesNotExist:
+                      work = Work(index=lesson, user_id=1, number="0")
+                  works.append([enroll, work.score, scorer_name, work.number])
+                  try :
+                      assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson)
+                      group_assistants.append(enroll)
+                  except ObjectDoesNotExist:
+                      pass
+              student_groups.append([group, works, group_assistants])
+          lessons.append([lesson_list[lesson], student_groups])
+        # 記錄系統事件
+        if is_event_open(request) :            
+            log = Log(user_id=request.user.id, event=u'以分組顯示12堂課作業<'+classroom_name+'>')
+            log.save()         
+        return render_to_response('teacher/work1.html', {'lessons':lessons, 'classroom_id':classroom_id}, context_instance=RequestContext(request))
+			
+			
 # 列出某作業所有同學名單
 def score(request, classroom_id, index):
     # 限本班任課教師

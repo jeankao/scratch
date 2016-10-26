@@ -75,6 +75,12 @@ def homepage(request):
         admin_profile = ""
     return render_to_response('homepage.html', {'row_count':row_count, 'user_count':len(users), 'admin_profile': admin_profile}, context_instance=RequestContext(request))
 
+# 作者
+def author(request):
+    return render_to_response('account/author.html', context_instance=RequestContext(request))
+
+	
+	
 # 使用者登入功能
 def user_login(request):
         message = None

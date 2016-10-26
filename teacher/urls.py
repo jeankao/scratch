@@ -3,7 +3,6 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from . import views
 from teacher.views import ClassroomListView, ClassroomCreateView, AnnounceListView, AnnounceCreateView
-#, ClassroomDetails
 
 urlpatterns = [
     # post views
@@ -21,16 +20,17 @@ urlpatterns = [
     url(r'^scoring/(?P<classroom_id>[^/]+)/(?P<user_id>\d+)/(?P<index>\d+)/$', views.scoring),     
     url(r'^score/(?P<classroom_id>\d+)/(?P<index>\d+)/$', views.score),   
     url(r'^work/group/(?P<lesson>\d+)/(?P<classroom_id>\d+)/$', views.work_group),   	
+    url(r'^work1/(?P<classroom_id>\d+)/$', views.work1),   		
 
     #測驗卷
     url(r'^exam/(?P<classroom_id>\d+)/$', views.exam_list),
-	url(r'^exam_detail/(?P<classroom_id>\d+)/(?P<student_id>\d+)/(?P<exam_id>\d+)/$', views.exam_detail), 
+		url(r'^exam_detail/(?P<classroom_id>\d+)/(?P<student_id>\d+)/(?P<exam_id>\d+)/$', views.exam_detail), 
     
     # 心得
     url(r'^memo/(?P<classroom_id>\d+)/$', views.memo),	
-	url(r'^check/(?P<user_id>[^/]+)/(?P<unit>[^/]+)/(?P<classroom_id>\d+)/$', views.check), 	
+		url(r'^check/(?P<user_id>[^/]+)/(?P<unit>[^/]+)/(?P<classroom_id>\d+)/$', views.check), 	
 	
-	#結算成績
+	 #結算成績
     url(r'^grade/(?P<classroom_id>\d+)/$', views.grade),
     url(r'^grade1/(?P<classroom_id>\d+)/$', views.grade_unit1),
     url(r'^grade2/(?P<classroom_id>\d+)/$', views.grade_unit2),
@@ -53,5 +53,5 @@ urlpatterns = [
     
     #教學筆記
     url(r'^note/(?P<classroom_id>\d+)/$', views.NoteListView.as_view()),
-	url(r'^note/doc/(?P<classroom_id>\d+)/$', views.doc_download),     
+		url(r'^note/doc/(?P<classroom_id>\d+)/$', views.doc_download),     
 ]
