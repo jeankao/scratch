@@ -159,7 +159,7 @@ def work1(request, classroom_id):
                       work = Work(index=lesson, user_id=1, number="0")
                   works.append([enroll, work.score, scorer_name, work.number])
                   try :
-                      assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson)
+                      assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson+1)
                       group_assistants.append(enroll)
                   except ObjectDoesNotExist:
                       pass
@@ -167,7 +167,7 @@ def work1(request, classroom_id):
           lessons.append([lesson_list[lesson], student_groups])
         # 記錄系統事件
         if is_event_open(request) :            
-            log = Log(user_id=request.user.id, event=u'以分組顯示12堂課作業<'+classroom_name+'>')
+            log = Log(user_id=request.user.id, event=u'以分組顯示作業<'+classroom_name+'>')
             log.save()         
         return render_to_response('teacher/work1.html', {'lessons':lessons, 'classroom_id':classroom_id}, context_instance=RequestContext(request))
 			
