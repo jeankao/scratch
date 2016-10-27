@@ -96,7 +96,7 @@ def is_classmate(user_id, request):
             if len(members) > 0: 
                 return True
     return False
-    
+	
 @register.filter(name='td_range')
 def td_range(num, val):
     return range(val - (num % val))

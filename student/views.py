@@ -974,11 +974,12 @@ class AnnounceListView(ListView):
 def work1(request, classroom_id):
         classroom_name = Classroom.objects.get(id=classroom_id).name
         lessons = []
-        group = Enroll.objects.get(student_id=request.user.id).group
+        group = Enroll.objects.get(student_id=request.user.id, classroom_id=classroom_id).group
         for lesson in range(41):
           student_groups = []					         
           enrolls = Enroll.objects.filter(classroom_id=classroom_id, group=group)
           group_assistants = []
+          assistants = []
           works = []
           scorer_name = ""
           for enroll in enrolls: 
@@ -995,9 +996,10 @@ def work1(request, classroom_id):
               try :
                   assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson+1)
                   group_assistants.append(enroll)
+                  assistants.append(enroll.student_id)
               except ObjectDoesNotExist:
                   pass
-          student_groups.append([group, works, group_assistants])
+          student_groups.append([group, works, group_assistants, assistants])
           lessons.append([lesson_list[lesson], student_groups])
         # 記錄系統事件
         if is_event_open(request) :            
