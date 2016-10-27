@@ -18,7 +18,7 @@
 				<td>
 				{% for enroll in group.1 %}
 				    <a href="/teacher/scoring/{{classroom_id}}/{{enroll.0.student_id}}/{{lesson}}">({{enroll.0.seat}}){{enroll.0.student.first_name}}</a>
-					{% if enroll.1 != -1 %} -{{enroll.1}}-{{enroll.2}}{% else %}-{% if enroll.3 == "0"%}尚未繳交{% else %}尚未評分{% endif %}{% endif %}
+					{% if enroll.1 != -1 %} -{{enroll.1}}-{{enroll.2}}{% else %}-{% if enroll.3 == "0"%}<font color=green>尚未繳交</font>{% else %}<font color=red>尚未評分</font>{% endif %}{% endif %}
 				{% endfor %}
 				</td>
                 <td>
