@@ -140,7 +140,7 @@ def work1(request, classroom_id):
         classroom_name = Classroom.objects.get(id=classroom_id).name
         lessons = []
         groups = EnrollGroup.objects.filter(classroom_id=classroom_id)
-        for lesson in range(34):
+        for lesson in range(41):
           student_groups = []					
           for group in groups:
               enrolls = Enroll.objects.filter(classroom_id=classroom_id, group=group.id)
