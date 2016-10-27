@@ -969,3 +969,39 @@ class AnnounceListView(ListView):
         except ObjectDoesNotExist :
             return redirect('/')
         return super(AnnounceListView, self).render_to_response(context)        
+			
+# 列出分組12堂課所有作業
+def work1(request, classroom_id):
+        classroom_name = Classroom.objects.get(id=classroom_id).name
+        lessons = []
+        group = Enroll.objects.get(student_id=request.user.id).group
+        for lesson in range(41):
+          student_groups = []					         
+          enrolls = Enroll.objects.filter(classroom_id=classroom_id, group=group)
+          group_assistants = []
+          works = []
+          scorer_name = ""
+          for enroll in enrolls: 
+              try:    
+                  work = Work.objects.get(user_id=enroll.student_id, index=lesson+1)
+                  if work.scorer > 0 :
+                      scorer = User.objects.get(id=work.scorer)
+                      scorer_name = scorer.first_name
+                  else :
+                      scorer_name = "X"
+              except ObjectDoesNotExist:
+                  work = Work(index=lesson, user_id=1, number="0")
+              works.append([enroll, work.score, scorer_name, work.number])
+              try :
+                  assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson+1)
+                  group_assistants.append(enroll)
+              except ObjectDoesNotExist:
+                  pass
+          student_groups.append([group, works, group_assistants])
+          lessons.append([lesson_list[lesson], student_groups])
+        # 記錄系統事件
+        if is_event_open(request) :            
+            log = Log(user_id=request.user.id, event=u'查詢作業小老師<'+classroom_name+'>')
+            log.save()         
+        return render_to_response('student/work1.html', {'lessons':lessons, 'classroom_id':classroom_id}, context_instance=RequestContext(request))
+						

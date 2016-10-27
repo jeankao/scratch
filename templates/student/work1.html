@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %} Students {% endblock %}
+{% block content %}
+{% for lesson in lessons %}
+{{lesson.0.1}} : {{lesson.0.2}}
+<table>
+<tr>
+<td>小老師</td>
+<td>組員</td>  
+</tr>	
+                <tr>
+                <td>
+				{% for assistant in lesson.1.2 %}
+				    ({{assistant.seat}}){{assistant.student.first_name}}
+				{% endfor %}                                 
+                </td>
+									<td>
+				{% for enroll in lesson.1.0.1 %}
+          {% if assistant.id == user.id %}<a target=_blank href="/teacher/scoring/{{classroom_id}}/{{enroll.0.student_id}}/{{forloop.parentloop.parentloop.counter}}">{% endif %}({{enroll.0.seat}}){{enroll.0.student.first_name}}{% if assistant.id == user.id %}</a>{% endif %}
+					{% if enroll.1 != -1 %} -{{enroll.1}}-{{enroll.2}}{% else %}-{% if enroll.3 == "0"%}<font color=green>尚未繳交</font>{% else %}<font color=red>尚未評分</font>{% endif %}{% endif %}
+				{% endfor %}
+				</td>
+</table>
+{% endfor %}
+{% endblock %}
