@@ -9,7 +9,8 @@ urlpatterns = [
     url(r'^progress/(?P<classroom_id>\d+)/(?P<unit>\d+)$', views.progress),   
 
     # 作業上傳
-    url(r'^work/(?P<classroom_id>\d+)/$', views.work),       
+    url(r'^work/(?P<classroom_id>\d+)/$', views.work),  
+    url(r'^work/download/(?P<index>\d+)/(?P<user_id>\d+)/(?P<workfile_id>\d+)/$', views.work_download),  	
     url(r'^work1/(?P<classroom_id>\d+)/$', views.work1),  	
     url(r'^submit/(?P<lesson>[^/]+)/(?P<index>\d+)/$', views.submit),         
     # 同學

@@ -34,11 +34,11 @@ class GroupSizeForm(forms.ModelForm):
 class SubmitForm(forms.ModelForm):
         class Meta:
            model = Work
-           fields = ['number','memo']
+           fields = ['file','memo']
            
         def __init__(self, *args, **kwargs):
             super(SubmitForm, self).__init__(*args, **kwargs)
-            self.fields['number'].label = "作品編號"
+            self.fields['file'].label = "作品檔案"
             self.fields['memo'].label = "心得感想"
 
 class SeatForm(forms.ModelForm):

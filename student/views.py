@@ -11,7 +11,7 @@ from django.views.generic import ListView, CreateView
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group
 from teacher.models import Classroom
-from student.models import Enroll, EnrollGroup, Work, Assistant, Exam, Bug, Debug
+from student.models import Enroll, EnrollGroup, Work, Assistant, Exam, Bug, Debug, WorkFile
 from account.models import Log, Message, MessagePoll, Profile, VisitorLog, Note
 from certificate.models import Certificate
 from student.forms import EnrollForm, GroupForm, SubmitForm, SeatForm, BugForm, DebugForm, DebugValueForm, GroupSizeForm
@@ -31,6 +31,8 @@ from django.utils.timezone import localtime
 import string
 import base64
 import sys
+from django.core.files.storage import FileSystemStorage
+from uuid import uuid4
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -298,14 +300,23 @@ def lesson(request, lesson):
         
 def submit(request, lesson, index):
         scores = []
-        if request.method == 'POST':
-            form = SubmitForm(request.POST)
-            work = Work.objects.filter(index=index, user_id=request.user.id)
+        workfiles = []
+        work = Work.objects.filter(index=index, user_id=request.user.id)
+        if request.method == 'POST' and request.FILES['file']:
+            myfile = request.FILES['file']
+            fs = FileSystemStorage()
+            filename = uuid4().hex+".sb2"
+            fs.save("static/work/"+str(request.user.id)+"/"+filename, myfile)
+						
+            form = SubmitForm(request.POST, request.FILES)
+
             if not work.exists():
                 if form.is_valid():
-                    work2 = Work(index=index, user_id=request.user.id, number=form.cleaned_data['number'], memo=form.cleaned_data['memo'], publication_date=timezone.now())
-                    work2.save()
-					# credit
+                    work = Work(index=index, user_id=request.user.id, memo=form.cleaned_data['memo'], publication_date=timezone.now())
+                    work.save()
+                    workfile = WorkFile(work_id=work.id, filename=filename)
+                    workfile.save()
+										# credit
                     update_avatar(request.user.id, 1, 2)
                     # History
                     history = PointHistory(user_id=request.user.id, kind=1, message='2分--繳交作業<'+lesson_list[int(index)-1][2]+'>', url=request.get_full_path().replace("submit", "submitall"))
@@ -322,26 +333,42 @@ def submit(request, lesson, index):
                     profile.save()
             else:
                 if form.is_valid():
-                    work.update(number=form.cleaned_data['number'], memo=form.cleaned_data['memo'])
+                    work.file = form.cleaned_data['file']
+                    work.memo = form.cleaned_data['memo']
+                    work.update()
+                    workfile = WorkFile(work_id=work[0].id, filename=filename)
+                    workfile.save()
                     # 記錄系統事件 
                     if is_event_open(request) :                      
                         log = Log(user_id=request.user.id, event=u'查看課程內容<'.encode("UTF-8")+lesson+u'> | 更新作業成功<'.encode("UTF-8")+index+'><'+lesson_list[int(index)-1][2]+'>')
                         log.save()                        
                 else :
                     work.update(memo=form.cleaned_data['memo'])           
-                return redirect('/student/submit/'+lesson+'/'+index)
+            return redirect('/student/submit/'+lesson+'/'+index)
         else:
-            work = Work.objects.filter(index=index, user_id=request.user.id)
             if not work.exists():
                 form = SubmitForm()
             else:
+                workfiles = WorkFile.objects.filter(work_id=work[0].id).order_by("-id")							
                 form = SubmitForm(instance=work[0])
                 if work[0].scorer>0: 
                     score_name = User.objects.get(id=work[0].scorer).first_name
                     scores = [work[0].score, score_name]
         lesson_name = lesson_list[int(index)-1]							
-        return render_to_response('student/submit.html', {'form':form, 'scores':scores, 'index':index, 'lesson':lesson_name}, context_instance=RequestContext(request))
+        return render_to_response('student/submit.html', {'form':form, 'scores':scores, 'index':index, 'lesson':lesson_name, 'workfiles': workfiles}, context_instance=RequestContext(request))
 
+def work_download(request, index, user_id, workfile_id):
+    workfile = WorkFile(id=workfile_id)
+    username = User.objects.get(id=user_id).first_name
+    filename = username + "_" + lesson_list[int(index)-1][2]  + ".sb2"
+    response = HttpResponse(content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename={0}'.format(filename.encode('utf8'))
+    response['X-Sendfile'] = "/static/work/{{request.user.id}}/{{workfile}}"
+    # It's usually a good idea to set the 'Content-Length' header too.
+    # You can also set any other required headers: Cache-Control, etc.
+    return response
+
+			
 # 列出所有作業        
 def work(request, classroom_id):
     del lesson_list[:]

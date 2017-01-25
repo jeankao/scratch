@@ -4,9 +4,6 @@ from django.contrib.auth.models import User
 from teacher.models import Classroom
 from django.utils import timezone
 
-def upload_path_handler(instance, filename):
-    return "static/certificate/0/{filename}".format(filename=instance.id+".jpg")
-
 # 學生選課資料
 class Enroll(models.Model):
     # 學生序號
@@ -62,7 +59,7 @@ class EnrollGroup(models.Model):
 class Work(models.Model):
     user_id = models.IntegerField(default=0) 
     index = models.IntegerField()
-    number = models.CharField(max_length=30, unique=True)
+    file = models.FileField()
     memo = models.TextField()
     publication_date = models.DateTimeField(default=timezone.now)
     score = models.IntegerField(default=-1)
@@ -73,6 +70,11 @@ class Work(models.Model):
         index = self.index
         return user.first_name+"("+str(index)+")"
 
+class WorkFile(models.Model):
+    work_id = models.IntegerField(default=0) 
+    filename = models.TextField()
+    upload_date = models.DateTimeField(default=timezone.now)
+		
 # 小老師        
 class Assistant(models.Model):
     student_id = models.IntegerField(default=0)

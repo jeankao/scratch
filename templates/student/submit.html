@@ -1,12 +1,26 @@
+{% load tag %}
+
+<script>
+function checkvalue() { 
+    var mystring = document.getElementById('id_memo').value; 
+    if(!mystring.match(/\S/)) {
+        alert ('請填寫心得~~');
+        return false;
+    } else {
+        return true;
+    }
+}
+</script>
+
     {{lesson.1}} / {{lesson.2}}<BR>
-        {% if form.number.value %}
+        {% if workfiles %}
             {% if scores.1 > 0 %}
             分數：{{ scores.0 }} / 
             評分者：{{ scores.1 }}
             {% else %}
             尚未評分        
-            <form action="." method="post">{% csrf_token %}
-            作品編號：{{ form.number }}<a target=_blank href="/student/work_help"><img src="/static/images/help.png"></a><BR>
+            <form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
+            作品編號：{{ form.file }}<BR>
             心得感想：{{form.memo}}<BR>
             <input type="submit" value="送出" />
             </form>
@@ -14,13 +28,40 @@
         {% else %}
             狀態：未繳交
             <br>
-            <form action="." method="post">{% csrf_token %}
-            作品編號：{{ form.number }}<a target=_blank href="/student/work_help"><img src="/static/images/help.png"></a><BR>
+            <form onsubmit="return checkvalue(this)" action="." method="post"enctype="multipart/form-data">{% csrf_token %}
+            作品編號：{{ form.file }}<BR>
             心得感想：{{form.memo}}<BR>
             <input type="submit" value="送出" />
             </form>
         {% endif %}
         <br>
-        {% if form.number.value %}
-        <iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ form.number.value }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
-        {% endif %}
+{% if workfiles %}
+<script type="text/javascript" src="/static/sb2/swfobject.js"></script>
+ 
+<script >   
+var flashvars = {
+project: "/static/work/{{request.user.id}}/{{workfiles.0.filename}}" ,
+autostart: "false"
+};
+
+var params = {
+bgcolor: "#FFFFFF",
+allowScriptAccess: "always",
+allowFullScreen: "true",
+wmode: "window",
+menu:"‘false"
+
+};
+var attributes = {};
+
+swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent", "482", "387", "10.2.0","expressInstall.swf", flashvars, params, attributes);
+
+</script>
+              
+<div id="flashContent" >
+ 
+</div>   
+{% endif %}
+        {% for workfile in workfiles %}
+              <BR>第{{workfiles|length|subtract:forloop.counter|add:1}}版：<A href="/student/work/download/{{index}}/{{request.user.id}}/{{workfile.id}}">{{workfile.upload_date}}</A>
+        {% endfor %}

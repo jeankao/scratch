@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^teacher/', include('teacher.urls')),    
     url(r'^student/', include('student.urls')),        
     url(r'^certificate/', include('certificate.urls')),     
+    url(r'^survey/', include('survey.urls')),       
     url(r'^show/', include('show.urls')),     
     url(r'^download/(?P<filename>[^/]+)/$', views.download), 
     url(r'^$', views.homepage, name='homepage'),

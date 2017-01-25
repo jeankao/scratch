@@ -3,7 +3,7 @@ lesson_list = []
 
 def reset():
     lesson_list.append(["1","第1堂課：Scratch基本介紹","範例：綜合應用"])
-    lesson_list.append(["2","第2堂課：第一個動畫故事","範例：貓狗對話"])
+    lesson_list.append(["2","第2堂課：第一個動畫故事","範例：第一個動畫"])
     lesson_list.append(["3-1","第3堂課：計次式迴圈","範例：馬兒跑步"])
     lesson_list.append(["3-2","第3堂課：計次式迴圈","練習：變大變小"])
     lesson_list.append(["4-1","第4堂課：條件式迴圈","範例：貓狗賽跑"])
