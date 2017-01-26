@@ -16,4 +16,17 @@
             </tr>
            
         </table>
+{% if not request.user.id == message.author_id %}
+<h1><a href="/account/line/add/{{classroom_id}}/{{message.author_id}}">回覆訊息</a></h1>
+{% endif %}
+{% if lists %}
+        <h1>歷史私訊</h1>
+        <table>
+        {% for list in lists %}
+        <tr><td>{{list.time}}<a href="/account/line/detail/{{classroom_id}}/{{list.id}}">{{list.title}}</a></td></tr>
+        {% empty %}
+        <tr><td>無</td></tr>
+        {% endfor %}
+        </table>
+{% endif %}
 {% endblock %}

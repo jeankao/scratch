@@ -35,7 +35,7 @@ CKEDITOR.plugins.add('dreamerpasteimage', {
         <h1>歷史私訊</h1>
         <table>
         {% for message, read in messages %}
-        <tr><td>{{message.time}}<a href="/account/line/detail/{{message.id}}">{{message.title}}{% if not read %}(未讀){% endif %}</a></td></tr>
+        <tr><td>{{message.time}}<a href="/account/line/detail/{{classroom_id}}/{{message.id}}">{{message.title}}{% if not read %}(未讀){% endif %}</a></td></tr>
         {% empty %}
         <tr><td>無</td></tr>
         {% endfor %}

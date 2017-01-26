@@ -40,7 +40,7 @@ urlpatterns = [
     url(r'^line/(?P<classroom_id>\d+)/$', views.LineListView.as_view()),    
     url(r'^line/class/(?P<classroom_id>\d+)/$', views.LineClassListView.as_view()),        
     url(r'^line/add/(?P<classroom_id>\d+)/(?P<user_id>\d+)/$', views.LineCreateView.as_view()),
-    url(r'^line/detail/(?P<message_id>\d+)/$', views.line_detail),
+    url(r'^line/detail/(?P<classroom_id>\d+)/(?P<message_id>\d+)/$', views.line_detail),
     #訪客
     url(r'^visitor/$', views.VisitorListView.as_view()),    
     url(r'^visitorlog/(?P<visitor_id>\d+)/$', views.VisitorLogListView.as_view()),       

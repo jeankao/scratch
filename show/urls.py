@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from . import views
 from django.contrib.auth.decorators import login_required
-from show.views import ShowUpdateView, ReviewListView, RankListView, TeacherListView, GalleryListView, ReviewUpdateView
+from show.views import ShowUpdateView, ReviewListView, RankListView, TeacherListView, GalleryListView, ReviewUpdateView, ScoreListView
 urlpatterns = [
     # post views
 	url(r'^group/delete/(?P<group_id>[^/]+)/(?P<round_id>[^/]+)/$', views.group_delete), 	
@@ -16,8 +16,12 @@ urlpatterns = [
     url(r'^detail/(?P<show_id>[^/]+)/$', login_required(ReviewUpdateView.as_view())),      
     #url(r'^detail/(?P<show_id>[^/]+)/$', 'show.views.detail'),  	
     url(r'^score/(?P<show_id>[^/]+)/$', login_required(ReviewListView.as_view())),  	
-    url(r'^rank/(?P<rank_id>[^/]+)/(?P<classroom_id>[^/]+)/$', login_required(RankListView.as_view())), 
+    url(r'^rank/(?P<rank_id>[^/]+)/(?P<round_id>[^/]+)/$', login_required(RankListView.as_view())), 
     url(r'^teacher/(?P<classroom_id>[^/]+)/$', views.classroom),
+    url(r'^teacher/comment/(?P<round_id>[^/]+)/$', views.commentall),	
+    url(r'^teacher/comment/(?P<round_id>[^/]+)/(?P<user_id>[^/]+)/$', views.comment),		
+    url(r'^teacher/grading/(?P<round_id>[^/]+)/$', login_required(TeacherListView.as_view())),	
+    url(r'^teacher/scoring/(?P<round_id>[^/]+)/$', login_required(ScoreListView.as_view())),		
     url(r'^teacher/add/(?P<classroom_id>[^/]+)/$', views.round_add),		
     url(r'^gallery/$', GalleryListView.as_view()),    
     url(r'^gallery/make/$', views.make, name='make'),   	

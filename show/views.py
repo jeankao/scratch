@@ -318,7 +318,7 @@ class ReviewListView(ListView):
         if is_event_open(self.request) :         
             log = Log(user_id=self.request.user.id, event=u'查看創意秀所有評分<'+show.name+'>')
             log.save()  
-        return ShowReview.objects.filter(show_id=self.kwargs['show_id'])  		
+        return ShowReview.objects.filter(show_id=self.kwargs['show_id'], done=True).order_by("-publish")
 
     def get_context_data(self, **kwargs):
         ctx = super(ReviewListView, self).get_context_data(**kwargs)
@@ -338,12 +338,14 @@ class ReviewListView(ListView):
             score1 = score1 / reviews.count()     
             score2 = score2 / reviews.count()  
             score3 = score3 / reviews.count()          
-            scores = [math.ceil(score1*10)/10, math.ceil(score2*10)/10, math.ceil(score3*10)/10,  reviews.count()]
+            scores = [math.ceil(score1*10)/10, math.ceil(score2*10)/10, math.ceil(score3*10)/10,  score1+score2+score3, reviews.count()]
         else :
             scores = [0,0,0,0]        
         ctx['scores'] = scores
         ctx['show'] = show
         ctx['members'] = members
+        round = Round.objects.get(id=show.round_id)
+        ctx['teacher'] = is_teacher(self.request.user, round.classroom_id)
         return ctx
 
 # 排行榜
@@ -414,7 +416,7 @@ class TeacherListView(ListView):
                     except ObjectDoesNotExist:
                         review = ShowReview(show_id=show.id)
                     lists[enroll.id].append([enroll, review, show, members])
-		lists = OrderedDict(sorted(lists.items(), key=lambda x: x[1][0][0].seat))
+        lists = OrderedDict(sorted(lists.items(), key=lambda x: x[1][0][0].seat))
         # 記錄系統事件
         if is_event_open(self.request) :         
             log = Log(user_id=self.request.user.id, event=u'查看創意秀評分狀況<'+classroom_name+'>')
@@ -422,7 +424,37 @@ class TeacherListView(ListView):
 		
         return lists
         
-        
+# 教師查看創意秀評分情況
+class ScoreListView(ListView):
+    context_object_name = 'lists'
+    template_name = 'show/scorelist.html'
+    def get_queryset(self):
+        lists = {}
+        counter = 0
+        show = Round.objects.get(id=self.kwargs['round_id'])
+        classroom_id = show.classroom_id								
+        enrolls = Enroll.objects.filter(classroom_id=classroom_id).order_by('seat')
+        classroom_name = Classroom.objects.get(id=classroom_id).name
+        shows = ShowGroup.objects.filter(round_id=show.id)
+        for showa in shows:
+            reviews = ShowReview.objects.filter(show_id=showa.id, done=True)
+            score1 = reviews.aggregate(Sum('score1')).values()[0]
+            score2 = reviews.aggregate(Sum('score2')).values()[0]
+            score3 = reviews.aggregate(Sum('score3')).values()[0]
+            if reviews.count() > 0 :
+                score1 = score1 / reviews.count()     
+                score2 = score2 / reviews.count()  
+                score3 = score3 / reviews.count()          
+                scores = [math.ceil(score1*10)/10, math.ceil(score2*10)/10, math.ceil(score3*10)/10,  score1+score2+score3, reviews.count()]
+            else :
+                scores = [0,0,0,0]        
+            lists[showa.id] = [showa, scores]
+        # 記錄系統事件
+        if is_event_open(self.request) :         
+            log = Log(user_id=self.request.user.id, event=u'查看創意秀平均分數<'+classroom_name+'>')
+            log.save()  
+        lists = OrderedDict(sorted(lists.items(), key=lambda x: x[0]))
+        return lists
 
 # 藝廊                  
 class GalleryListView(ListView):
@@ -641,5 +673,28 @@ def excel(request, classroom_id):
 
 def classroom(request, classroom_id):
     rounds = Round.objects.filter(classroom_id=classroom_id)
-    return render(request, 'show/classroom.html', {'rounds': rounds})
+    classroom = Classroom.objects.get(id=classroom_id)
+    return render(request, 'show/classroom.html', {'classroom':classroom, 'rounds': rounds})
+
+def commentall(request, round_id):
+    round = Round.objects.get(id=round_id)
+    classroom = Classroom.objects.get(id=round.classroom_id)
+    enrolls = Enroll.objects.filter(classroom_id=round.classroom_id)
+    return render(request, 'show/commentall.html', {'classroom':classroom, 'round':round, 'enrolls': enrolls})
+
+def comment(request, round_id, user_id):
+    classroom_id = Round.objects.get(id=round_id).classroom_id
+    rounds = Round.objects.filter(classroom_id=classroom_id)
+    classroom = Classroom.objects.get(id=classroom_id)
     
+    reviews = ShowReview.objects.filter(student_id=user_id)
+    user = User.objects.get(id=user_id)
+    lists = []
+    for review in reviews:
+        show = ShowGroup.objects.get(id=review.show_id)
+        classroom_ids = []
+        for round in rounds:
+            classroom_ids.append(round.classroom_id)
+        if Round.objects.get(id=show.round_id).classroom_id in classroom_ids:
+            lists.append([show, review])
+    return render(request, 'show/comment.html', {'user':user, 'classroom':classroom, 'lists': lists})

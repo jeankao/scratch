@@ -24,7 +24,22 @@ CKEDITOR.plugins.add('dreamerpasteimage', {
 {% block content %}
         <h1>班級名稱：{{classroom.name}}</h1>
          <form action="" enctype="multipart/form-data"  method="post">
-            <table>
+           <table>
+             <tr>
+             <th>公告班級</th>
+             <td>
+                         {% for class in classrooms %}
+           <div class="checkbox checkbox-success checkbox-inline">
+           <input type="checkbox" class="styled" id="cbox{{forloop.counter}}" value="{{class.id}}" {% if class.id == classroom.id %}checked{% endif %}> <label for="cbox{{forloop.counter}}">{{class.name}}</label>
+           </div>
+          {% endfor %}
+             </td>
+             </tr>
+             <tr>
+               <th>附加檔案</th><td><input type=file multiple>
+             </td>
+             </tr>
+             
                 {{ form.as_table }}
             </table>
             {% csrf_token %}

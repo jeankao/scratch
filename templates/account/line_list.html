@@ -12,7 +12,7 @@
             <tr>
             <td>{{message.time}}</td>
             <td>{{message.id|reader_name}}</td>
-            <td><a href="/account/line/detail/{{message.id}}">{{message.title}}</a></td>
+            <td><a href="/account/line/detail/{{classroom_id}}/{{message.id}}">{{message.title}}</a></td>
             </tr>
         {% endfor %}
         </table>

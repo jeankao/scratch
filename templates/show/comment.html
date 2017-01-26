@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}My Blog{% endblock %}
+{% load tz %}
+{% block content %}
+{% load tag %}
+<h1>
+班級名稱：{{classroom.name}}
+<BR>
+學生姓名：{{user.first_name}}
+</h1>
+<table>
+  <tr>
+  <td>組別</td>
+  <td>主題</td>
+  <td>評語</td>
+  </tr>  
+{% for list in lists %}
+  <tr>
+  <td>{{list.0.name}}</td>
+    <td><a href="/show/detail/{{list.0.id}}">{{list.0.title}}</a></td>
+  <td>{{list.1.comment}}</td>
+  </tr>  
+{% endfor %}
+
+</table>
+<BR>
+{% endblock %}

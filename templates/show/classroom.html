@@ -3,9 +3,14 @@
 {% block title %}My Blog{% endblock %}
 {% load tz %}
 {% block content %}
+<h1>
+班級名稱：{{classroom.name}}
+</h1>
 {% for round in rounds %}
 創意秀({{forloop.counter}})：
-<A href="/show/gradeing/{{round.id}}">評分情形</A>
+<A href="/show/teacher/grading/{{round.id}}">評分情形</A>|
+<A href="/show/teacher/scoring/{{round.id}}">評分結果</A>|
+<A href="/show/teacher/comment/{{round.id}}">個人評語</A>|
 <BR>
 {% endfor %}
 {% endblock %}

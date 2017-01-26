@@ -934,6 +934,7 @@ class AnnounceCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super(AnnounceCreateView, self).get_context_data(**kwargs)
         context['classroom'] = Classroom.objects.get(id=self.kwargs['classroom_id'])
+        context['classrooms'] = Classroom.objects.filter(teacher_id=self.request.user.id)
         return context	   
         
     # 限本班任課教師        

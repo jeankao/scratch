@@ -31,7 +31,7 @@ File: Layout CSS
 #topbar .nospace.linklist li{display:inline; margin-right:5px; padding-right:5px;}
 #topbar .nospace.linklist li:last-child{margin:0; padding:0; border:none;}
 
-#top > .wrapper.row0 {position:fixed; z-index: 999}
+#top > .wrapper.row0 {position:fixed; z-index: 999; top:0%;}
 
 /* Header
 --------------------------------------------------------------------------------------------------------------- */
@@ -484,4 +484,8 @@ a.button {
 .block article[id^="tab"] iframe {
 	display: inherit;
 	margin: 0 auto;
+}
+
+table.tablesorter tr:hover td {
+    background: #faffbc;
 }

@@ -12,34 +12,29 @@
 <TD>美工設計</TD>
 <TD>程式難度</TD>
 <TD>創意表現</TD>
+<TD>總分</TD>	
 <TD>評語</TD>
 <TD>時間</TD>
 </tr>
     <tr>
-        <td>平均({{scores.3}}人)</td>
+        <td>平均({{scores.4}}人)</td>
         <td>{{scores.0}}</td>
         <td>{{scores.1}}</td>
         <td>{{scores.2}}</td>
+        <td>{{scores.3}}</td>			
         <td></td>
         <td></td>
         
     </tr>
   {% for review in reviews %}
 	<tr>
-	<td>{% if not review.done %}<font color=red>{% endif %}{{review.student.first_name}}{% if not review.done %}(尚未評分)</font>{% endif %}</td>
-	{% if review.done %}
+	<td>{% if teacher %}{{review.student.first_name}}{% endif %}</td>
 	<td>{{review.score1}}</td>
 	<td>{{review.score2}}</td>
 	<td>{{review.score3}}</td>
+	<td>{{review.score1|add:review.score2|add:review.score3}}</td>
 	<td>{{review.comment}}</td>	
 	<td>{{review.publish}}</td>
-    {% else %}
-	<td></td>
-	<td></td>
-	<td></td>
-	<td></td>
-	<td></td>
-    {% endif %}	
 	</tr>
   {% endfor %}
 </table>

@@ -4,7 +4,6 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-
 # 個人檔案資料
 class Profile(models.Model):
 	user = models.OneToOneField(settings.AUTH_USER_MODEL,related_name="profile")
@@ -117,3 +116,4 @@ class Note(models.Model):
         user = User.objects.get(id=self.user_id)
         classroom_id = self.classroom_id
         return user.first_name+"("+str(classroom_id)+")<"+self.lesson+'>'
+			

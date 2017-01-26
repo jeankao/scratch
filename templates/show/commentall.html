@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}My Blog{% endblock %}
+{% load tz %}
+{% block content %}
+{% load tag %}
+<h1>
+班級名稱：{{classroom.name}}
+</h1>
+<table>
+  <tr>
+{% for enroll in enrolls %}
+    <td><a href="/show/teacher/comment/{{round.id}}/{{enroll.student_id}}">({{enroll.seat}}){{enroll.student.first_name}}</a></td>
+    {% if forloop.last %}
+    {% for i in forloop.counter|td_range:5 %}
+    <td></td>    
+    {% endfor %}
+    {% endif %}
+    {% if forloop.counter|divisibleby:5 and not forloop.last %}</tr><tr>{% endif %}
+{% endfor %}
+  </tr>
+</table>
+<BR>
+{% endblock %}

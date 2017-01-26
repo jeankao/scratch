@@ -460,6 +460,11 @@ class LineListView(ListView):
             log.save()        
         queryset = Message.objects.filter(author_id=self.request.user.id, classroom_id=0-int(self.kwargs['classroom_id'])).order_by("-id")
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(LineListView, self).get_context_data(**kwargs)
+        context['classroom_id'] = self.kwargs['classroom_id']
+        return context	 
         
 # 列出同學以私訊
 class LineClassListView(ListView):
@@ -494,7 +499,7 @@ class LineCreateView(CreateView):
         self.object.title = u"[私訊]" + user_name + ":" + self.object.title
         self.object.author_id = self.request.user.id
         self.object.save()
-        self.object.url = "/account/line/detail/" + str(self.object.id)
+        self.object.url = "/account/line/detail/" + self.kwargs['classroom_id'] + "/" + str(self.object.id)
         self.object.classroom_id = 0 - int(self.kwargs['classroom_id'])
         self.object.save()
         # 訊息
@@ -520,13 +525,14 @@ class LineCreateView(CreateView):
         return context	 
         
 # 查看私訊內容
-def line_detail(request, message_id):
+def line_detail(request, classroom_id, message_id):
     message = Message.objects.get(id=message_id)
+    messes = Message.objects.filter(author_id=message.author_id).order_by("-id")
     try:
         messagepoll = MessagePoll.objects.get(message_id=message_id)
     except :
         pass
-    return render_to_response('account/line_detail.html', {'message':message, 'messagepoll':messagepoll}, context_instance=RequestContext(request))
+    return render_to_response('account/line_detail.html', {'lists':messes, 'classroom_id':classroom_id, 'message':message, 'messagepoll':messagepoll}, context_instance=RequestContext(request))
 
 
 # 列出所有日期訪客
