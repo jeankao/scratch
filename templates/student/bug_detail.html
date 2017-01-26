@@ -1,13 +1,50 @@
 {% extends "base.html" %}
 {% block title %}{{ bug.title }}{% endblock %}
 {% block content %}
+<script>
+function checkvalue() { 
+    var mystring = document.getElementById('id_body').value; 
+    if(!mystring.match(/\S/)) {
+        alert ('請填寫除錯說明~~');
+        return false;
+    } else {
+        return true;
+    }
+}
+</script>
   <h1>{{ bug.title }}</h1>
   {{ bug.body|linebreaks }}  
   <p class="date">
-  {{ bug.publish}}{{ bug.author.first_name }}提出一個bug：<a target=_blank href="https://scratch.mit.edu/projects/{{bug.number}}/#editor">{{bug.number}}</a>
+		{{ bug.publish}}{{ bug.author.first_name }}提出一個bug：<A href="/student/bug/download/{{bug.id}}">原始檔下載</a>
   </p>
-  <iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ bug.number  }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
-  <BR></BR>
+
+<script type="text/javascript" src="/static/sb2/swfobject.js"></script>
+ 
+<script >   
+var flashvars = {
+project: "/{{bug.file}}" ,
+autostart: "false"
+};
+
+var params = {
+bgcolor: "#FFFFFF",
+allowScriptAccess: "always",
+allowFullScreen: "true",
+wmode: "window",
+menu:"‘false"
+
+};
+var attributes = {};
+
+swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent", "482", "387", "10.2.0","expressInstall.swf", flashvars, params, attributes);
+
+</script>
+              
+<div id="flashContent" >
+ 
+</div>   
+
+<BR></BR>
   <hr>
 
 {% with debugs.count as total_debug %}
@@ -18,7 +55,7 @@
   <div class="debug">
     <p class="info">
     {{ debug.0.publish}} by debugger {{ debug.0.author.first_name }}
-    作品：<a target=_blank href="https://scratch.mit.edu/projects/{{debug.number}}/#editor">{{debug.0.number}}</a>
+    作品：<A href="/student/debug/download/{{debug.0.id}}">原始檔下載</a>
     <br>
     {{ debug.0.body|linebreaks }}
     
@@ -42,15 +79,38 @@
   </form>  
   {% endif %}
   </p>
-	<iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ debug.0.number  }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
-  <hr>
+
+<script >   
+var flashvars = {
+project: "/{{debug.0.file}}" ,
+autostart: "false"
+};
+
+var params = {
+bgcolor: "#FFFFFF",
+allowScriptAccess: "always",
+allowFullScreen: "true",
+wmode: "window",
+menu:"‘false"
+
+};
+var attributes = {};
+
+swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent{{forloop.counter}}", "482", "387", "10.2.0","expressInstall.swf", flashvars, params, attributes);
+
+</script>		
+<div id="flashContent{{forloop.counter}}" >
+ 
+</div> 		
+
+<hr>
   </div>
 {% empty %}
   <p>目前沒有人幫忙除錯</p>
 {% endfor %}  
 {% endwith %}  
-  <h2>Add a new debug</h2>
-  <form action="." method="Post">
+  <h2>張貼除錯資料</h2>
+  <form onsubmit="return checkvalue(this)" action="." method="Post" enctype="multipart/form-data">
     {{ debug_form.as_p }}
     {% csrf_token %}
     <p><input type="submit" value="送出"></p>

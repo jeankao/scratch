@@ -1,8 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Create a question{% endblock %}
 {% block content %}
-
-            <form action="" method="post">{% csrf_token %}
+<script>
+function checkvalue() { 
+    var mystring = document.getElementById('id_name').value; 
+    if(!mystring.match(/\S/)) {
+        alert ('請填寫名稱~~');
+        return false;
+    } else {
+        return true;
+    }
+}
+</script>
+            <form onsubmit="return checkvalue(this)" action="" method="post">{% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="Submit" />
             </form>

@@ -8,11 +8,12 @@
         {% for list in classmate_work  %}
                 <tr>
                 <td>
-                {% if not list.1.number = "0" %} 
+                {% if workfiles %} 
                         <a href="/teacher/scoring/{{classroom_id}}/{{list.0.id}}/{{index}}">{{list.0.first_name}}
                     {% if list.1.score > 0 %}
                         ({{list.1.score}}-{{list.3}})
                     {%  endif %}
+                        --{{list.1.publication_date}}
                         </a><br/>
                 {% else %}
                         {{list.0.first_name}}<br/>

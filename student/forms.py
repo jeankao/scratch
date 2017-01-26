@@ -49,24 +49,24 @@ class SeatForm(forms.ModelForm):
 class BugForm(forms.ModelForm):
         class Meta:
            model = Bug
-           fields = ['number','title', 'body']
+           fields = ['file','title', 'body']
            
         def __init__(self, *args, **kwargs):
             super(BugForm, self).__init__(*args, **kwargs)
             self.fields['title'].label = "問題主旨"
-            self.fields['number'].label = "作品編號"
+            self.fields['file'].label = "作品檔案"
             self.fields['body'].label = "問題說明"
-           
+
 class DebugForm(forms.ModelForm):
         class Meta:
             model = Debug
-            fields = ['number', 'body']
+            fields = ['file', 'body']
         
         def __init__(self, *args, **kwargs):
             super(DebugForm, self).__init__(*args, **kwargs)
             self.fields['body'].label = "除錯內容"
-            self.fields['number'].label = "作品編號"
-			
+            self.fields['file'].label = "作品檔案"
+						
 class DebugValueForm(forms.ModelForm):
         RELEVANCE_CHOICES = (
             (0, "沒有解決"),

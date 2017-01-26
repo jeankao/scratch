@@ -55,7 +55,8 @@ urlpatterns = [
     url(r'^bug/(?P<bug_id>[^/]+)/$',views.bug_detail, name='bug_detail'),
 		url(r'^bug/add/(?P<classroom_id>[^/]+)/$', login_required(BugCreateView.as_view()), name='bug-add'),    
 		url(r'^bug/value/(?P<bug_id>[^/]+)/$', views.debug_value, name='bug-add'),    
-	
+    url(r'^bug/download/(?P<bug_id>\d+)/$', views.bug_download),
+    url(r'^debug/download/(?P<debug_id>\d+)/$', views.debug_download),	
 		#作品編號
 		url(r'^work_help/$', views.work_help), 
 	

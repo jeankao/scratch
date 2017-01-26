@@ -9,10 +9,12 @@ from django.template import RequestContext
 #from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView, CreateView
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.models import Group
 from teacher.models import Classroom
 from student.models import Enroll, EnrollGroup, Work, Assistant, Exam, Bug, Debug, WorkFile
 from account.models import Log, Message, MessagePoll, Profile, VisitorLog, Note
+from show.models import Round
 from certificate.models import Certificate
 from student.forms import EnrollForm, GroupForm, SubmitForm, SeatForm, BugForm, DebugForm, DebugValueForm, GroupSizeForm
 from django.utils import timezone
@@ -31,8 +33,11 @@ from django.utils.timezone import localtime
 import string
 import base64
 import sys
+import os
+from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from uuid import uuid4
+from wsgiref.util import FileWrapper
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -191,12 +196,16 @@ def group_open(request, classroom_id, action):
 	
 # 列出選修的班級
 def classroom(request):
+        classrooms = []
         enrolls = Enroll.objects.filter(student_id=request.user.id).order_by("-id")
+        for enroll in enrolls:
+            shows = Round.objects.filter(classroom_id=enroll.classroom_id)
+            classrooms.append([enroll, shows])
         # 記錄系統事件 
         if is_event_open(request) :          
             log = Log(user_id=request.user.id, event='查看選修班級')
             log.save()          
-        return render_to_response('student/classroom.html',{'enrolls': enrolls}, context_instance=RequestContext(request))    
+        return render_to_response('student/classroom.html',{'classrooms': classrooms}, context_instance=RequestContext(request))    
     
 # 查看可加入的班級
 def classroom_add(request):
@@ -301,16 +310,21 @@ def lesson(request, lesson):
 def submit(request, lesson, index):
         scores = []
         workfiles = []
-        work = Work.objects.filter(index=index, user_id=request.user.id)
-        if request.method == 'POST' and request.FILES['file']:
-            myfile = request.FILES['file']
-            fs = FileSystemStorage()
-            filename = uuid4().hex+".sb2"
-            fs.save("static/work/"+str(request.user.id)+"/"+filename, myfile)
+        works = Work.objects.filter(index=index, user_id=request.user.id)
+        try:
+            filepath = request.FILES['file']
+        except :
+            filepath = False
+        if request.method == 'POST':
+            if filepath :
+                myfile = request.FILES['file']
+                fs = FileSystemStorage()
+                filename = uuid4().hex+".sb2"
+                fs.save("static/work/"+str(request.user.id)+"/"+filename, myfile)
 						
             form = SubmitForm(request.POST, request.FILES)
 
-            if not work.exists():
+            if not works.exists():
                 if form.is_valid():
                     work = Work(index=index, user_id=request.user.id, memo=form.cleaned_data['memo'], publication_date=timezone.now())
                     work.save()
@@ -333,41 +347,44 @@ def submit(request, lesson, index):
                     profile.save()
             else:
                 if form.is_valid():
-                    work.file = form.cleaned_data['file']
-                    work.memo = form.cleaned_data['memo']
-                    work.update()
-                    workfile = WorkFile(work_id=work[0].id, filename=filename)
+                    #works[0].file = form.cleaned_data['file']
+                    #works[0].memo = form.cleaned_data['memo']
+                    #works[0].publication_date = timezone.localtime(timezone.now())
+                    works.update(memo=form.cleaned_data['memo'],publication_date=timezone.localtime(timezone.now()))
+                    workfile = WorkFile(work_id=works[0].id, filename=filename)
                     workfile.save()
                     # 記錄系統事件 
                     if is_event_open(request) :                      
                         log = Log(user_id=request.user.id, event=u'查看課程內容<'.encode("UTF-8")+lesson+u'> | 更新作業成功<'.encode("UTF-8")+index+'><'+lesson_list[int(index)-1][2]+'>')
                         log.save()                        
                 else :
-                    work.update(memo=form.cleaned_data['memo'])           
+                    works.update(memo=form.cleaned_data['memo'])           
             return redirect('/student/submit/'+lesson+'/'+index)
         else:
-            if not work.exists():
+            if not works.exists():
                 form = SubmitForm()
             else:
-                workfiles = WorkFile.objects.filter(work_id=work[0].id).order_by("-id")							
-                form = SubmitForm(instance=work[0])
-                if work[0].scorer>0: 
-                    score_name = User.objects.get(id=work[0].scorer).first_name
-                    scores = [work[0].score, score_name]
+                workfiles = WorkFile.objects.filter(work_id=works[0].id).order_by("-id")							
+                form = SubmitForm(instance=works[0])
+                if works[0].scorer>0: 
+                    score_name = User.objects.get(id=works[0].scorer).first_name
+                    scores = [works[0].score, score_name]
         lesson_name = lesson_list[int(index)-1]							
         return render_to_response('student/submit.html', {'form':form, 'scores':scores, 'index':index, 'lesson':lesson_name, 'workfiles': workfiles}, context_instance=RequestContext(request))
 
 def work_download(request, index, user_id, workfile_id):
-    workfile = WorkFile(id=workfile_id)
+    workfile = WorkFile.objects.get(id=workfile_id)
     username = User.objects.get(id=user_id).first_name
     filename = username + "_" + lesson_list[int(index)-1][2]  + ".sb2"
-    response = HttpResponse(content_type='application/force-download')
+    download =  settings.BASE_DIR + "/static/work/" + str(user_id) + "/" + workfile.filename
+    wrapper = FileWrapper(file( download, "r" ))
+    response = HttpResponse(wrapper, content_type = 'application/force-download')
+    #response = HttpResponse(content_type='application/force-download')
     response['Content-Disposition'] = 'attachment; filename={0}'.format(filename.encode('utf8'))
-    response['X-Sendfile'] = "/static/work/{{request.user.id}}/{{workfile}}"
     # It's usually a good idea to set the 'Content-Length' header too.
     # You can also set any other required headers: Cache-Control, etc.
     return response
-
+    #return render_to_response('student/download.html', {'download':download})
 			
 # 列出所有作業        
 def work(request, classroom_id):
@@ -716,16 +733,26 @@ def bug_detail(request, bug_id):
     debugs = Debug.objects.filter(bug_id=bug.id)
     datas = []
     for debug in debugs:
-	    datas.append([debug, DebugValueForm(instance=debug)])	
+	    datas.append([debug, DebugValueForm(instance=debug)])
+    try:
+        filepath = request.FILES['file']
+    except :
+        filepath = False
     if request.method == 'POST':
         # A comment was posted
-        debug_form = DebugForm(data=request.POST)
+        debug_form = DebugForm(request.POST, request.FILES)
+        if filepath :
+            myfile = request.FILES['file']
+            fs = FileSystemStorage()
+            filename = "static/debug/"+str(request.user.id)+"/"+uuid4().hex+".sb2"
+            fs.save(filename, myfile)				
         if debug_form.is_valid():
             # Create Comment object but don't save to database yet
             new_debug = debug_form.save(commit=False)
             # Assign the current bug to the comment
             new_debug.bug_id = bug.id
             new_debug.author_id = request.user.id
+            new_debug.file = filename
             # Save the comment to the database
             new_debug.save()
             
@@ -748,7 +775,34 @@ def bug_detail(request, bug_id):
     else:
         debug_form = DebugForm()      	
     return render_to_response('student/bug_detail.html',{'bug': bug,'datas': datas, 'debug_form': debug_form}, context_instance=RequestContext(request))
-                          
+       
+def bug_download(request, bug_id):
+    bug = Bug.objects.get(id=bug_id)
+    username = bug.author.first_name
+    filename = "Bug_"+username + "_" + bug.title + ".sb2"
+    download =  settings.BASE_DIR + "/" + str(bug.file)
+    wrapper = FileWrapper(file( download, "r" ))
+    response = HttpResponse(wrapper, content_type = 'application/force-download')
+    #response = HttpResponse(content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename={0}'.format(filename.encode('utf8'))
+    # It's usually a good idea to set the 'Content-Length' header too.
+    # You can also set any other required headers: Cache-Control, etc.
+    return response
+
+def debug_download(request, debug_id):
+    debug = Debug.objects.get(id=debug_id)
+    bug = Bug.objects.get(id=debug.bug_id)
+    username = debug.author.first_name
+    filename = "Debug_"+username + "_" + bug.title + ".sb2"
+    download =  settings.BASE_DIR + "/" + str(debug.file)
+    wrapper = FileWrapper(file( download, "r" ))
+    response = HttpResponse(wrapper, content_type = 'application/force-download')
+    #response = HttpResponse(content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename={0}'.format(filename.encode('utf8'))
+    # It's usually a good idea to set the 'Content-Length' header too.
+    # You can also set any other required headers: Cache-Control, etc.
+    return response
+	
 class BugListClassView(ListView):
     context_object_name = 'bugs'
     paginate_by = 10
@@ -776,9 +830,19 @@ class BugCreateView(CreateView):
     model = Bug
     form_class = BugForm
     def form_valid(self, form):
+        try:
+            filepath = self.request.FILES['file']
+        except :
+            filepath = False
+        if filepath :
+                myfile = self.request.FILES['file']
+                fs = FileSystemStorage()
+                filename = "static/bug/"+str(self.request.user.id)+"/"+uuid4().hex+".sb2"
+                fs.save(filename, myfile)
         self.object = form.save(commit=False)
         self.object.author_id = self.request.user.id
         self.object.classroom_id = self.kwargs['classroom_id']
+        self.object.file = filename
         self.object.save()
 
         # create Message
@@ -1018,7 +1082,7 @@ def work1(request, classroom_id):
                   else :
                       scorer_name = "X"
               except ObjectDoesNotExist:
-                  work = Work(index=lesson, user_id=1, number="0")
+                  work = Work(index=lesson, user_id=1)
               works.append([enroll, work.score, scorer_name, work.number])
               try :
                   assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson+1)
