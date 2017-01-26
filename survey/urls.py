@@ -5,4 +5,6 @@ from . import views
 
 urlpatterns = [
     url(r'^before/$', views.before),
+    url(r'^pre_survey/$', views.pre_survey),
+    url(r'^post_survey/$', views.post_survey),
 ]

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %} 課後問卷 {% endblock %}
+{% block content %}
+    <h1>課後問卷</h1>
+    <form action="" enctype="multipart/form-data"  method="post">
+        {% csrf_token %}
+        <p>親愛的同學：這份問卷最主要是希望能了解同學們對於程式設計的想法，本問卷填寫的結果，並不會影響你的成績，請同學據實填答。</p>
+        <div>
+            <h2>壹、請依據題意在下列四個選項中，選填一個最適當的選項</h2>
+            <table class="table table-hover">
+                <tr>
+                    <th class="col-md-8">&nbsp;</th>
+                    <th class="col-md-1">非常同意</th>
+                    <th class="col-md-1">同意</th>
+                    <th class="col-md-1">不同意</th>
+                    <th class="col-md-1">非常不同意</th>
+                </tr>
+                {% for question in questions %}
+                <tr class="form-group has-error">
+                    <th colspan="5">{{ question.0 }}</th>
+                    {% comment %}
+                    <td>{{ question }}</td>
+                    <td class="form-group has-error"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_4" value="4" /></td>
+                    <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_3" value="3" /></td>
+                    <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_2" value="2" /></td>
+                    <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_1" value="1" /></td>
+                    {% endcomment %}
+                </tr>
+                    {% for q in question.1 %}
+                    <tr>
+                        <td>{{ q }}</td>
+                        <td class="form-group has-error"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_4" value="4" /></td>
+                        <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_3" value="3" /></td>
+                        <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_2" value="2" /></td>
+                        <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_1" value="1" /></td>
+                    </tr>
+                    {% endfor %}
+                {% endfor %}
+            </table>
+        </div>
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
+
+{% block domready %}
+$('#psp1_t').click(function(){
+    $('#psp1_desc_tr').show();
+    $('#psp1_desc').focus();
+});
+$('#psp1_f').click(function(){
+    $('#psp1_desc_tr').hide();
+    $('#psp1_desc').val('');
+});
+
+{% endblock %}
