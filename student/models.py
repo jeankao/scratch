@@ -99,7 +99,7 @@ class Exam(models.Model):
 # Bug求救
 class Bug(models.Model):
     title = models.CharField(max_length=250)
-    number = models.CharField(max_length=30, unique=True)    
+    file = models.FileField()
     author_id = models.IntegerField(default=0)
     classroom_id = models.IntegerField(default=0)
     body = models.TextField()
@@ -119,7 +119,7 @@ class Bug(models.Model):
 class Debug(models.Model):
     bug_id = models.IntegerField(default=0)
     author_id = models.IntegerField(default=0)
-    number = models.CharField(max_length=30, unique=True)   	
+    file = models.FileField()	
     body = models.TextField()
     publish = models.DateTimeField(auto_now_add=True)
     reward = models.IntegerField(default=-1)

@@ -11,9 +11,9 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.core.exceptions import ObjectDoesNotExist
 #from django.contrib.auth.models import Group
 from teacher.models import Classroom
-from student.models import Enroll
 from account.models import Log, Message, MessagePoll, Profile, Note
-from student.models import Enroll, Work, EnrollGroup, Assistant, Exam
+from student.models import Enroll, Work, EnrollGroup, Assistant, Exam, WorkFile
+from show.models import Round
 from .forms import ClassroomForm, ScoreForm,  CheckForm1, CheckForm2, CheckForm3, CheckForm4, AnnounceForm
 #from django.views.generic.edit import ModelFormMixin
 #from django.http import HttpResponseRedirect
@@ -78,6 +78,9 @@ class ClassroomCreateView(CreateView):
         # 將教師設為0號學生
         enroll = Enroll(classroom_id=self.object.id, student_id=self.request.user.id, seat=0)
         enroll.save()     
+        # 新增1次班級創意秀
+        show = Round(classroom_id=self.object.id)
+        show.save()
         # 記錄系統事件
         if is_event_open(self.request) :            
             log = Log(user_id=self.request.user.id, event=u'新增任課班級<'+self.object.name+'>')
@@ -227,8 +230,10 @@ def scoring(request, classroom_id, user_id, index):
     try:
         work3 = Work.objects.get(user_id=user_id, index=index)
     except ObjectDoesNotExist:
-        work3 = Work(index=index, user_id=user_id, number="0")
-        
+        work3 = Work(index=index, user_id=user_id)
+				
+    workfiles = WorkFile.objects.filter(work_id=work3.id).order_by("-id")
+		
     if request.method == 'POST':
         form = ScoreForm(request.user, request.POST)
         if form.is_valid():
@@ -296,7 +301,7 @@ def scoring(request, classroom_id, user_id, index):
         else:
             form = ScoreForm(instance=work[0], user=request.user)
     lesson = lesson_list[int(index)-1]
-    return render_to_response('teacher/scoring.html', {'form': form,'work':work3, 'student':user, 'classroom_id':classroom_id, 'lesson':lesson}, context_instance=RequestContext(request))
+    return render_to_response('teacher/scoring.html', {'form': form,'workfiles':workfiles, 'index': index, 'work':work3, 'student':user, 'classroom_id':classroom_id, 'lesson':lesson}, context_instance=RequestContext(request))
 
 # 小老師評分名單
 def score_peer(request, index, classroom_id, group):
@@ -317,14 +322,15 @@ def score_peer(request, index, classroom_id, group):
                     scorer = User.objects.get(id=work.scorer)
                     scorer_name = scorer.first_name
             except ObjectDoesNotExist:
-                work = Work(index=index, user_id=1, number="0")        
+                work = Work(index=index, user_id=1)
+            workfiles = WorkFile.objects.filter(work_id=work.id)
             classmate_work.append([enroll.student,work,1, scorer_name])
         lesson = lesson_list[int(index)-1]
     # 記錄系統事件
     if is_event_open(request) :        
         log = Log(user_id=request.user.id, event=u'小老師評分名單<'+index+'><'+group+'>')
         log.save()    
-    return render_to_response('teacher/score_peer.html',{'enrolls':enrolls, 'classmate_work': classmate_work, 'classroom_id':classroom_id, 'lesson':lesson, 'index': index}, context_instance=RequestContext(request))
+    return render_to_response('teacher/score_peer.html',{'enrolls':enrolls, 'workfiles': workfiles, 'classmate_work': classmate_work, 'classroom_id':classroom_id, 'lesson':lesson, 'index': index}, context_instance=RequestContext(request))
 
 # 設定為小老師
 def assistant(request, classroom_id, user_id, lesson):

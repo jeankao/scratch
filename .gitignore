@@ -11,4 +11,9 @@ static/certificate/3/
 static/certificate/4/
 static/show/
 static/work/
+<<<<<<< HEAD
 .vscode/
+=======
+static/bug/
+static/debug/
+>>>>>>> develope

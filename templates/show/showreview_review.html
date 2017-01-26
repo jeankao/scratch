@@ -2,6 +2,7 @@
 {% block title %}{{ show.title }}
 {% endblock %}
 {% block head_ext %}
+{% load tag %}
 <!-- bootstrap javascript library: BEGIN -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
@@ -21,14 +22,41 @@
   <h1>組員：{% for member in members %}<A href="/account/profile/{{member.student.id}}"><img src="/static/avatar/s{{ member.student.profile.avatar }}.png"></a>({{member.seat}}){{member.student.first_name}}{% endfor %}</h1>
   <h1>{{ show.title }}</h1>
 
-    作品：<a target=_blank href="https://scratch.mit.edu/projects/{{show.number}}/#editor">{{show.number}}</a>
-    <BR>
-  <iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ show.number  }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
-  <BR></BR>
+<script type="text/javascript" src="/static/sb2/swfobject.js"></script>
+ 
+<script >   
+var flashvars = {
+project: "/{{show.file}}" ,
+autostart: "false"
+};
+
+var params = {
+bgcolor: "#FFFFFF",
+allowScriptAccess: "always",
+allowFullScreen: "true",
+wmode: "window",
+menu:"‘false"
+
+};
+var attributes = {};
+
+swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent", "482", "387", "10.2.0","expressInstall.swf", flashvars, params, attributes);
+
+</script>
+			
   <p class="date">
     {{ show.publish|timezone:'Asia/Taipei' }}
   </p>
-  {{ show.body|linebreaks }}
+  {{ show.body|linebreaks }}              
+    作品：<BR>
+<div id="flashContent" >
+ 
+</div> 
+
+        {% for showfile in showfiles %}
+              <BR>第{{showfiles|length|subtract:forloop.counter|add:1}}版：<A href="/show/download/{{show.id}}/{{showfile.id}}">{{showfile.upload_date}}</A>
+        {% endfor %}
+<BR><BR>
 <H1>評分</H1>
   <form action="." method="post" onsubmit="return checkRegistration()">
 <table>
@@ -49,10 +77,10 @@
 美工設計：{{scores.0}}  程式難度：{{scores.1}} 創意表現：{{scores.2}}<BR>
 評語：<BR>
 {% for review in reviews %}
-{{review.student.first_name}}:{{review.comment}}<BR>
+{{review.comment}}<BR>
 {% endfor %}
+<BR>
 {% if show.picture %}
-<A name=drscratch>
 <h1>Dr. Scratch分析圖</h1>
 <img src="/{{show.picture}}">
 {% endif %}

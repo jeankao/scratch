@@ -18,12 +18,12 @@ class GroupForm(forms.ModelForm):
 class ShowForm(forms.ModelForm):
         class Meta:
            model = ShowGroup
-           fields = ['number','title','body']
+           fields = ['file','title','body']
            
         def __init__(self, *args, **kwargs):
             super(ShowForm, self).__init__(*args, **kwargs)
             self.fields['title'].label = "作品主題"
-            self.fields['number'].label = "作品編號"
+            self.fields['file'].label = "作品檔案"
             self.fields['body'].label = "作品說明"
 			
 # 評分

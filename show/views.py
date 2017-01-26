@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from django.shortcuts import render
-from show.models import ShowGroup, ShowReview
+from show.models import ShowGroup, ShowReview, Round, ShowFile
 from django.core.exceptions import ObjectDoesNotExist
 from student.models import Enroll
 from django.shortcuts import render_to_response, redirect
@@ -28,6 +28,10 @@ import StringIO
 import xlsxwriter
 from datetime import datetime
 from django.utils.timezone import localtime
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from uuid import uuid4
+from wsgiref.util import FileWrapper
 
 def is_teacher(user, classroom_id):
     return user.groups.filter(name='teacher').exists() and Classroom.objects.filter(teacher_id=user.id, id=classroom_id).exists()
@@ -43,11 +47,13 @@ def is_event_open(request):
 
 
 # 所有組別
-def group(request, classroom_id):
+def group(request, round_id):
+        show = Round.objects.get(id=round_id)
+        classroom_id = show.classroom_id
         classroom = Classroom.objects.get(id=classroom_id)   
         student_groups = []
         group_show_open = Classroom.objects.get(id=classroom_id).group_show_open
-        groups = ShowGroup.objects.filter(classroom_id=classroom_id)
+        groups = ShowGroup.objects.filter(round_id=round_id)
         try:
                 student_group = Enroll.objects.get(student_id=request.user.id, classroom_id=classroom_id).group_show
         except ObjectDoesNotExist :
@@ -70,15 +76,17 @@ def group(request, classroom_id):
         if is_event_open(request) :         
             log = Log(user_id=request.user.id, event=u'查看創意秀組別<'+classroom.name+'>')
             log.save()              
-        return render_to_response('show/group.html', {'nogroup': nogroup, 'group_show_open':group_show_open, 'teacher':is_teacher(request.user, classroom_id), 'student_groups':student_groups, 'classroom_id':classroom_id, 'student_group':student_group}, context_instance=RequestContext(request))
+        return render_to_response('show/group.html', {'round_id':round_id, 'nogroup': nogroup, 'group_show_open':group_show_open, 'teacher':is_teacher(request.user, classroom_id), 'student_groups':student_groups, 'classroom_id':classroom_id, 'student_group':student_group}, context_instance=RequestContext(request))
 
 # 新增組別
-def group_add(request, classroom_id):
+def group_add(request, round_id):
+        show = Round.objects.get(id=round_id)
+        classroom_id = show.classroom_id
         classroom_name = Classroom.objects.get(id=classroom_id).name
         if request.method == 'POST':
             form = GroupForm(request.POST)
             if form.is_valid():
-                group = ShowGroup(name=form.cleaned_data['name'],classroom_id=int(classroom_id))
+                group = ShowGroup(name=form.cleaned_data['name'],round_id=int(round_id))
                 group.save()
                 enrolls = Enroll.objects.filter(classroom_id=classroom_id)
                 for enroll in enrolls :
@@ -89,13 +97,21 @@ def group_add(request, classroom_id):
                 if is_event_open(request) :                 
                     log = Log(user_id=request.user.id, event=u'新增創意秀組別<'+group.name+'><'+classroom_name+'>')
                     log.save()                      
-                return redirect('/show/group/'+classroom_id)
+                return redirect('/show/group/'+round_id)
         else:
             form = GroupForm()
         return render_to_response('show/group_add.html', {'form':form}, context_instance=RequestContext(request))
 
+# 新增創意秀
+def round_add(request, classroom_id):
+        round = Round(classroom_id=classroom_id)
+        round.save()                  
+        return redirect('/show/group/'+str(round.id))
+			
 # 設定組別人數
 def group_size(request, classroom_id):
+        show = Round.objects.get(id=round_id)
+        classroom_id = show.classroom_id	
         if request.method == 'POST':
             form = GroupShowSizeForm(request.POST)
             if form.is_valid():
@@ -115,7 +131,9 @@ def group_size(request, classroom_id):
         return render_to_response('show/group_size.html', {'form':form}, context_instance=RequestContext(request))        
 
 # 加入組別
-def group_enroll(request, classroom_id,  group_id):
+def group_enroll(request, round_id,  group_id):
+        show = Round.objects.get(id=round_id)
+        classroom_id = show.classroom_id	
         classroom_name = Classroom.objects.get(id=classroom_id).name    
         group_name = ShowGroup.objects.get(id=group_id).name
         enroll = Enroll.objects.filter(student_id=request.user.id, classroom_id=classroom_id)
@@ -124,7 +142,7 @@ def group_enroll(request, classroom_id,  group_id):
         if is_event_open(request) :         
             log = Log(user_id=request.user.id, event=u'加入創意秀組別<'+group_name+'><'+classroom_name+'>')
             log.save()                      
-        return redirect('/show/group/'+classroom_id)
+        return redirect('/show/group/'+round_id)
 
 # 刪除組別
 def group_delete(request, group_id, classroom_id):
@@ -139,7 +157,9 @@ def group_delete(request, group_id, classroom_id):
         return redirect('/show/group/'+classroom_id)    
 
 # 開放選組
-def group_open(request, classroom_id, action):
+def group_open(request, round_id, action):
+    show = Round.objects.get(id=round_id)
+    classroom_id = show.classroom_id	
     classroom = Classroom.objects.get(id=classroom_id)
     if action == "1":
         classroom.group_show_open=True
@@ -155,7 +175,7 @@ def group_open(request, classroom_id, action):
         if is_event_open(request) :         
             log = Log(user_id=request.user.id, event=u'關閉創意秀選組<'+classroom.name+'>')
             log.save()          
-    return redirect('/show/group/'+classroom_id)  	
+    return redirect('/show/group/'+round_id)  	
 	
 
 # 上傳創意秀
@@ -180,7 +200,12 @@ class ShowUpdateView(UpdateView):
 		
     def form_valid(self, form):
         obj = form.save(commit=False)
-        
+        showfiles = []
+        try:
+            filepath = self.request.FILES['file']
+        except :
+            filepath = False
+          
         # 限制小組成員才能上傳
         members = Enroll.objects.filter(group_show=self.kwargs['group_show'])
         is_member = False
@@ -188,7 +213,21 @@ class ShowUpdateView(UpdateView):
             if self.request.user.id == member.student_id:
                 is_member = True
         
-        if is_member :        
+        if is_member : 
+            if filepath :
+                myfile = self.request.FILES['file']
+                fs = FileSystemStorage()
+                filename = "static/show/"+self.kwargs['group_show']+"/"+uuid4().hex+".sb2"
+                fs.save(filename, myfile)
+                #save object
+                obj.publish = timezone.now()
+                obj.file = filename
+                obj.done = True
+                obj.save()
+								#save file
+                showfile = ShowFile(show_id=self.kwargs['group_show'], filename=filename)
+                showfile.save()								
+								
             if obj.done == False:
                 for member in members:			
 			        # credit
@@ -196,16 +235,12 @@ class ShowUpdateView(UpdateView):
                     # History
                     history = PointHistory(user_id=member.student_id, kind=4, message=u'3分--繳交創意秀<'+obj.title+'>', url='/show/detail/'+str(obj.id))
                     history.save()
-            #save object
-            obj.publish = timezone.now()
-            obj.done = True
-            obj.save()
         
             # 記錄系統事件
             if is_event_open(self.request) :             
                 log = Log(user_id=self.request.user.id, event=u'上傳創意秀<'+obj.name+'>')
                 log.save()
-            return redirect('/show/group/'+self.kwargs['classroom_id'])
+            return redirect('/show/group/'+self.kwargs['round_id'])
         else :
             return redirect('homepage')
 
@@ -238,7 +273,8 @@ class ReviewUpdateView(UpdateView):
         members = Enroll.objects.filter(group_show=self.kwargs['show_id'])
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        context = self.get_context_data(show=show, form=form, members=members, review=self.object, scores=scores, score=score, reviews=reviews)
+        showfiles = ShowFile.objects.filter(show_id=self.kwargs['show_id']).order_by("-id")
+        context = self.get_context_data(showfiles=showfiles, show=show, form=form, members=members, review=self.object, scores=scores, score=score, reviews=reviews)
         return self.render_to_response(context)
 
     def get_object(self, queryset=None):
@@ -254,7 +290,8 @@ class ReviewUpdateView(UpdateView):
         #save object
         obj = form.save(commit=False)
         if obj.done == False:
-            classroom_id = ShowGroup.objects.get(id=self.kwargs['show_id']).classroom_id
+            round_id = ShowGroup.objects.get(id=self.kwargs['show_id']).round_id
+            classroom_id = Round.objects.get(id=round_id).classroom_id
             member = Enroll.objects.get(classroom_id=classroom_id, student_id=self.request.user.id)
             # credit
             update_avatar(member.student, 4, 1)
@@ -317,7 +354,9 @@ class RankListView(ListView):
         def getKey(custom):
             return custom[2]	
         lists = []
-        shows = ShowGroup.objects.filter(classroom_id=self.kwargs['classroom_id'])
+        show = Round.objects.get(id=self.kwargs['round_id'])
+        classroom_id = show.classroom_id				
+        shows = ShowGroup.objects.filter(classroom_id=classroom_id)
         for show in shows :
             students = Enroll.objects.filter(group_show=show.id)
             reviews = ShowReview.objects.filter(show_id=show.id, done=True)	
@@ -333,6 +372,24 @@ class RankListView(ListView):
             log.save()  
         return lists
 
+def show_download(request, show_id, showfile_id):
+    showfile = ShowFile.objects.get(id=showfile_id)
+    show = ShowGroup.objects.get(id=show_id)
+    members = Enroll.objects.filter(group_show=show_id)
+    username = ""
+    for member in members:
+        username = username + member.student.first_name + "_"
+    filename = show_id + "_" + username + "_" + show.title + ".sb2"
+    download =  settings.BASE_DIR + "/" + showfile.filename
+    wrapper = FileWrapper(file( download, "r" ))
+    response = HttpResponse(wrapper, content_type = 'application/force-download')
+    #response = HttpResponse(content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename={0}'.format(filename.encode('utf8'))
+    # It's usually a good idea to set the 'Content-Length' header too.
+    # You can also set any other required headers: Cache-Control, etc.
+    return response
+    #return render_to_response('student/download.html', {'download':download})
+			
 # 教師查看創意秀評分情況
 class TeacherListView(ListView):
     context_object_name = 'lists'
@@ -340,11 +397,13 @@ class TeacherListView(ListView):
     def get_queryset(self):
         lists = {}
         counter = 0
-        enrolls = Enroll.objects.filter(classroom_id=self.kwargs['classroom_id']).order_by('seat')
-        classroom_name = Classroom.objects.get(id=self.kwargs['classroom_id']).name
+        show = Round.objects.get(id=self.kwargs['round_id'])
+        classroom_id = show.classroom_id								
+        enrolls = Enroll.objects.filter(classroom_id=classroom_id).order_by('seat')
+        classroom_name = Classroom.objects.get(id=classroom_id).name
         for enroll in enrolls:
             lists[enroll.id] = []	            
-            shows = ShowGroup.objects.filter(classroom_id=self.kwargs['classroom_id'])
+            shows = ShowGroup.objects.filter(round_id=show.id)
             if not shows.exists():
                 lists[enroll.id].append([enroll])
             else :
@@ -579,3 +638,8 @@ def excel(request, classroom_id):
     xlsx_data = output.getvalue()
     response.write(xlsx_data)
     return response
+
+def classroom(request, classroom_id):
+    rounds = Round.objects.filter(classroom_id=classroom_id)
+    return render(request, 'show/classroom.html', {'rounds': rounds})
+    
