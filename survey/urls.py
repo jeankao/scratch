@@ -6,4 +6,6 @@ from . import views
 urlpatterns = [
     url(r'^pre_survey/$', views.pre_survey),
     url(r'^post_survey/$', views.post_survey),
+    url(r'^pre_result/(?P<classroom_id>\d+)/$', views.pre_result),
+    url(r'^post_result/(?P<classroom_id>\d+)/$', views.post_result),  
 ]

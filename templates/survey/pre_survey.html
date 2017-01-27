@@ -6,33 +6,33 @@
         {% csrf_token %}
         <div>
             <h2>壹、請依據下列題意填答</h2>
-            <table class="table table-condensed">
+            <table class="table table-condensed tablesorter tablesorter">
                 <tr>
-                    <th>&nbsp;</th><th>是</th><th>否</th>
+                    <th>問題</th><th></th><th></th>
                 </tr>
                 <tr>
                     <td>1.我曾經學過程式設計。</td>
-                    <td><input type="radio" name="p1" id="psp1_t" value="1" /></td>
-                    <td><input type="radio" name="p1" id="psp1_f" value="0" /></td>                    
+                    <td><div class="radio"><input type="radio" name="p1" id="psp1_t" value="1" /><label for="psp1_t">是</label></div></td>
+                    <td><div class="radio"><input type="radio" name="p1" id="psp1_f" value="0" /><label for="psp1_f">否</label></div></td>                    
                 </tr>
                 <tr id="psp1_desc_tr" style="display: none"><td colspan="3"><input class="form-control" type="text" name="p1" id="psp1_desc" placeholder="請輸入學過的程式語言名稱" /></td></tr>
             </table>
             <h2>貳、請依據題意在下列四個選項中，選填一個最適當的選項</h2>
-            <table class="table table-hover">
+            <table class="table tablesorter">
                 <tr>
-                    <th class="col-md-8">&nbsp;</th>
-                    <th class="col-md-1">非常同意</th>
-                    <th class="col-md-1">同意</th>
-                    <th class="col-md-1">不同意</th>
-                    <th class="col-md-1">非常不同意</th>
+                    <th class="col-md-8">問題</th>
+                    <th class="col-md-1"></th>
+                    <th class="col-md-1"></th>
+                    <th class="col-md-1"></th>
+                    <th class="col-md-1"></th>
                 </tr>
                 {% for question in questions %}
                 <tr class="form-group has-error">
                     <td>{{ question }}</td>
-                    <td class="form-group has-error"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_4" value="4" /></td>
-                    <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_3" value="3" /></td>
-                    <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_2" value="2" /></td>
-                    <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_1" value="1" /></td>
+                    <td nowrap class="form-group has-error"><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_4" value="4"/><label for="psp2_{{ forloop.counter }}_4">非常同意</label></div></td>
+                    <td nowrap><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_3" value="3" /><label for="psp2_{{ forloop.counter }}_3">同意</label></div></td>
+                    <td nowrap><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_2" value="2" /><label for="psp2_{{ forloop.counter }}_2">不同意</label></div></td>
+                    <td nowrap><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_1" value="1" ><label for="psp2_{{ forloop.counter }}_1">非常不同意</label></div></td>
                 </tr>
                 {% endfor %}
             </table>

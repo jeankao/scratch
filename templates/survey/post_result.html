@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block head_ext %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+{% endblock %}
+{% block title %} 課後問卷 {% endblock %}
+{% block content %}
+ <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+{% for sections in questions %}
+{% for question in sections.1 %}
+        var data{{forloop.parentloop.counter}}_{{forloop.counter}} = google.visualization.arrayToDataTable([
+          ['選項', '次數'],        
+          ['非常同意',     {{question.1}}],
+          ['同意',      {{question.2}}],
+          ['不同意',  {{question.3}}],
+          ['非常不同意', {{question.4}}],
+        ]);
+
+        var options = {
+          title: "{{question.0}}"
+        };
+
+        var chart{{forloop.parentloop.counter}}_{{forloop.counter}} = new google.visualization.PieChart(document.getElementById('piechart{{forloop.parentloop.counter}}_{{forloop.counter}}'));
+
+        chart{{forloop.parentloop.counter}}_{{forloop.counter}}.draw(data{{forloop.parentloop.counter}}_{{forloop.counter}}, options);
+{% endfor %}
+{% endfor %}        
+      }
+    </script>
+{% for sections in questions %}
+<h1>{{sections.0}}</h1>
+    {% for question in sections.1 %}
+    <div id="piechart{{forloop.parentloop.counter}}_{{forloop.counter}}" style="width: 900px; height: 500px;"></div>
+    {% endfor %}
+{% endfor %}
+{% endblock %}
