@@ -150,3 +150,16 @@ def pre_survey(request):
 
 def post_survey(request):
     return render_to_response('survey/post_survey.html', {'questions': post_questions, 'sections': sections},context_instance=RequestContext(request))
+
+def pre_teacher(request, classroom_id):
+    enrolls = Enroll.objects.filter(classroom_id=classroom_id).order_by("seat")
+    classroom = Classroom.objects.get(id=classroom_id)
+    questionaires = []
+    for enroll in enrolls:
+        try:
+            questionaire = PreSurvey.objects.get(student_id=request.user.id)
+        except ObjectDoesNotExist :
+            questionaire = PreSurvey(student_id=request.user.id)
+        questionaires.append([enroll, questionaire])						
+    return render_to_response('survey/pre_teacher.html', {'classroom':classroom,'questionaires':questionaires, 'pre_questions':pre_questions},context_instance=RequestContext(request))
+	
