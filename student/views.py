@@ -1041,11 +1041,14 @@ class AnnounceListView(ListView):
         if is_event_open(self.request) :    
             log = Log(user_id=self.request.user.id, event='查看班級公告')
             log.save()        
-        messages = Message.objects.filter(classroom_id=self.kwargs['classroom_id'], author_id=classroom.teacher_id).order_by("-id")
+        messages = Message.objects.filter(classroom_id=classroom.id, author_id=classroom.teacher_id).order_by("-id")
         queryset = []
         for message in messages:
-            messagepoll = MessagePoll.objects.get(message_id=message.id, reader_id=self.request.user.id, classroom_id=self.kwargs['classroom_id'])
-            queryset.append([messagepoll, message])
+            try: 
+                messagepoll = MessagePoll.objects.get(message_id=message.id, reader_id=self.request.user.id, classroom_id=classroom.id)
+                queryset.append([messagepoll, message])
+            except ObjectDoesNotExist :
+                pass
         return queryset
         
     def get_context_data(self, **kwargs):

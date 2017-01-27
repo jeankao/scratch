@@ -30,6 +30,8 @@ from django.utils import timezone
 from django.apps import apps
 import json
 import urllib
+from django.db.models import Q
+
 # 判斷是否開啟事件記錄
 def is_event_open(request):
         enrolls = Enroll.objects.filter(student_id=request.user.id)
@@ -394,8 +396,18 @@ class UserListView(ListView):
         if is_event_open(self.request) :           
             log = Log(user_id=1, event='管理員查看帳號')
             log.save()         
-        queryset = User.objects.all().order_by('-id')
+        if self.request.GET.get('account') != None:
+            keyword = self.request.GET.get('account')
+            queryset = User.objects.filter(Q(username__icontains=keyword) | Q(first_name__icontains=keyword)).order_by('-id')
+        else :
+            queryset = User.objects.all().order_by('-id')				
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(UserListView, self).get_context_data(**kwargs)
+        account = self.request.GET.get('account')
+        context.update({'account': account})
+        return context	
     
 # Ajax 設為教師、取消教師
 def make(request):
@@ -529,7 +541,7 @@ class LineCreateView(CreateView):
 # 查看私訊內容
 def line_detail(request, classroom_id, message_id):
     message = Message.objects.get(id=message_id)
-    messes = Message.objects.filter(author_id=message.author_id).order_by("-id")
+    messes = Message.objects.filter(author_id=message.author_id, classroom_id__lt=0).order_by("-id")
     try:
         messagepoll = MessagePoll.objects.get(message_id=message_id)
     except :

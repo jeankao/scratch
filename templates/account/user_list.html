@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block title %} Teachers {% endblock %}
 {% block content %}
-        <table>
+ 搜尋帳號：
+    <form action="."  method="get">
+      <input type="text" name = "account"><input type="submit" value="送出"/>
+    </form>
         <tr>
+        <table>
             <td>帳號</td>
             <td>姓名</td>
             <td>最新登入</td>
