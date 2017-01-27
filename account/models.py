@@ -21,6 +21,7 @@ class Profile(models.Model):
 	# 大頭貼等級
 	avatar = models.IntegerField(default=0)
 	# 訪客人次
+	home_count = models.IntegerField(default=0)
 	visitor_count = models.IntegerField(default=0)
 	# 開站時間
 	open_time = models.DateTimeField(auto_now_add=True)
