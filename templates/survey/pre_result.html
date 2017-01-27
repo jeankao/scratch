@@ -2,14 +2,31 @@
 {% block head_ext %}
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 {% endblock %}
-{% block title %} 課後問卷 {% endblock %}
-{% block content %}=
+{% block title %} 課前問卷 {% endblock %}
+{% block content %}
+<h1>
+{{classroom.name}}班的課前問卷：{{enrolls|length}}位學生，共{{questionaires|length}}份問卷 
+</h1>
  <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
-{% for question in questions %}
-        var data{{forloop.counter}} = google.visualization.arrayToDataTable([
+      var data = google.visualization.arrayToDataTable([
+          ['選項', '次數'],        
+          ['是',     {{result.0.1}}],
+          ['否',      {{result.0.2}}],
+        ]);        
+        var options = {
+          title: "{{result.0.0}}(N={{questionaires|length}})"
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+        
+{% for question in result %}
+        {% if forloop.counter > 1 %}
+        var data{{forloop.counter|add:"-1"}} = google.visualization.arrayToDataTable([
           ['選項', '次數'],        
           ['非常同意',     {{question.1}}],
           ['同意',      {{question.2}}],
@@ -18,15 +35,17 @@
         ]);
 
         var options = {
-          title: "{{question.0}}"
+          title: "{{question.0}}(N={{questionaires|length}})"
         };
 
-        var chart{{forloop.counter}} = new google.visualization.PieChart(document.getElementById('piechart{{forloop.counter}}'));
+        var chart{{forloop.counter|add:"-1"}} = new google.visualization.PieChart(document.getElementById('piechart{{forloop.counter|add:"-1"}}'));
 
-        chart{{forloop.counter}}.draw(data{{forloop.counter}}, options);
+        chart{{forloop.counter|add:"-1"}}.draw(data{{forloop.counter|add:"-1"}}, options);
+        {% endif %}
 {% endfor %}        
       }
     </script>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
     {% for question in questions %}
     <div id="piechart{{forloop.counter}}" style="width: 900px; height: 500px;"></div>
     {% endfor %}

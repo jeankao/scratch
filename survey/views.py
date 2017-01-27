@@ -2,18 +2,23 @@
 from django.shortcuts import render
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
+from django.core.exceptions import ObjectDoesNotExist
+from survey.models import PreSurvey, PostSurvey
+from student.models import Enroll
+from teacher.models import Classroom
+from account.models import Log
 
 pre_questions = [
-        ['1. 我很崇拜程式設計很厲害的人',11,2,3,4],
-        ['2. 我對學習程式設計感到有興趣',2,5,7,3],
-        ['3. 我認為程式設計可以讓我創作有趣的作品',3,6,8,3],
-        ['4. 我希望將來能夠自己設計應用軟體或電腦遊戲',1,5,8,6],
-        ['5. 學好程式設計在現代社會中是很重要的',2,6,9,6],
-        ['6. 我自信能夠將程式設計所教的基本概念學好',2,4,6,8],
-        ['7. 我會盡力將程式設計課程的作業寫好',7,3,5,9],
-        ['8. 我覺得程式設計的過程將會非常單調、枯燥',3,8,4,7],
-        ['9. 如果老師出的程式設計作業很難，我想我會直接放棄',3,8,5,2],
-        ['10. 我和同學或朋友聊天時會談到程式設計相關的事情',3,6,4,8],
+        '1. 我很崇拜程式設計很厲害的人',
+        '2. 我對學習程式設計感到有興趣',
+        '3. 我認為程式設計可以讓我創作有趣的作品',
+        '4. 我希望將來能夠自己設計應用軟體或電腦遊戲',
+        '5. 學好程式設計在現代社會中是很重要的',
+        '6. 我自信能夠將程式設計所教的基本概念學好',
+        '7. 我會盡力將程式設計課程的作業寫好',
+        '8. 我覺得程式設計的過程將會非常單調、枯燥',
+        '9. 如果老師出的程式設計作業很難，我想我會直接放棄',
+        '10. 我和同學或朋友聊天時會談到程式設計相關的事情',
 ]
 
 
@@ -62,17 +67,86 @@ post_questions = [
             ['25. 學完此課程後，我認為我能夠將程式設計課程所學到的（如問題解決、邏輯思考、自學能力與創造力等），運用到其他科目上',11,2,3,4],
         ]],
 ]
+	
+# 判斷是否開啟事件記錄
+def is_event_open(request):
+        enrolls = Enroll.objects.filter(student_id=request.user.id)
+        for enroll in enrolls:
+            classroom = Classroom.objects.get(id=enroll.classroom_id)
+            if classroom.event_open:
+                return True
+        return False
 
 # Create your views here.
 def pre_result(request, classroom_id):
-     return render_to_response('survey/pre_result.html', {'questions': pre_questions},context_instance=RequestContext(request))
+    classroom = Classroom.objects.get(id=classroom_id)
+    enrolls = Enroll.objects.filter(classroom_id=classroom_id)
+    questionaires = []
+    questions = []
+    questions.append(['我曾經學過程式設計。',0,0])
+    for index, question in enumerate(pre_questions):
+        questions.append([pre_questions[index],0,0,0,0])
+    for enroll in enrolls:
+        try:
+            questionaire = PreSurvey.objects.get(student_id=enroll.student_id)
+            questions[0][2-questionaire.p]+=1
+            questions[1][5-questionaire.p1]+=1
+            questions[2][5-questionaire.p2]+=1
+            questions[3][5-questionaire.p3]+=1
+            questions[4][5-questionaire.p4]+=1
+            questions[5][5-questionaire.p5]+=1
+            questions[6][5-questionaire.p6]+=1
+            questions[7][5-questionaire.p7]+=1
+            questions[8][5-questionaire.p8]+=1
+            questions[9][5-questionaire.p9]+=1
+            questions[10][5-questionaire.p10]+=1
+            questionaires.append(questionaire)						
+        except ObjectDoesNotExist : 
+            pass
+    return render_to_response('survey/pre_result.html', {'enrolls':enrolls, 'result':questions, 'questions': pre_questions, 'classroom':classroom, 'questionaires':questionaires},context_instance=RequestContext(request))
 
 
 def post_result(request, classroom_id):
     return render_to_response('survey/post_result.html', {'questions': post_questions},context_instance=RequestContext(request))
 	
 def pre_survey(request):
-    return render_to_response('survey/pre_survey.html', {'questions': pre_questions},context_instance=RequestContext(request))
+    try:
+        questionaire = PreSurvey.objects.get(student_id=request.user.id)
+    except ObjectDoesNotExist :
+        questionaire = PreSurvey(student_id=request.user.id)
+    questions = []
+    questions.append([pre_questions[0], questionaire.p1])		
+    questions.append([pre_questions[1], questionaire.p2])		
+    questions.append([pre_questions[2], questionaire.p3])		
+    questions.append([pre_questions[3], questionaire.p4])
+    questions.append([pre_questions[4], questionaire.p5])		
+    questions.append([pre_questions[5], questionaire.p6])		
+    questions.append([pre_questions[6], questionaire.p7])		
+    questions.append([pre_questions[7], questionaire.p8])		
+    questions.append([pre_questions[8], questionaire.p9])		
+    questions.append([pre_questions[9], questionaire.p10])		
+    if request.method == 'POST':
+            questionaire.p = request.POST['p1']
+            questionaire.p_t = request.POST['p1t']
+            questionaire.p1 = request.POST['p2_1']
+            questionaire.p2 = request.POST['p2_2']
+            questionaire.p3 = request.POST['p2_3']
+            questionaire.p4 = request.POST['p2_4']
+            questionaire.p5 = request.POST['p2_5']
+            questionaire.p6 = request.POST['p2_6']
+            questionaire.p7 = request.POST['p2_7']
+            questionaire.p8 = request.POST['p2_8']
+            questionaire.p9 = request.POST['p2_9']
+            questionaire.p10 = request.POST['p2_10']
+            questionaire.save()
+
+            # 記錄系統事
+            if is_event_open(request) :                  
+                log = Log(user_id=request.user.id, event=u'填寫課前問卷'+request.user.first_name+'>')
+                log.save()        
+        
+            return redirect('/student/lesson/1')
+    return render_to_response('survey/pre_survey.html', {'questionaire':questionaire,'questions': questions},context_instance=RequestContext(request))
 
 def post_survey(request):
     return render_to_response('survey/post_survey.html', {'questions': post_questions, 'sections': sections},context_instance=RequestContext(request))

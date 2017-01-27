@@ -9,26 +9,26 @@
             <h2>壹、請依據題意在下列四個選項中，選填一個最適當的選項</h2>
             <table class="table tablesorter">
                 <tr>
-                    <th class="col-md-8">&nbsp;</th>
-                    <th class="col-md-1">非常同意</th>
-                    <th class="col-md-1">同意</th>
-                    <th class="col-md-1">不同意</th>
-                    <th class="col-md-1">非常不同意</th>
+                    <th class="col-md-8">問題</th>
+                    <th class="col-md-1"></th>
+                    <th class="col-md-1"></th>
+                    <th class="col-md-1"></th>
+                    <th class="col-md-1"></th>
                 </tr>
-                {% for question in questions %}
+                {% for sections in questions %}
                 <tr class="form-group has-error">
-                    <th colspan="5">{{ question.0 }}</th>
+                    <th colspan="5">{{ sections.0 }}</th>
                     {% comment %}
-                    <td>{{ question }}</td>
+                    <td>{{ sections.1 }}</td>
                   <td class="form-group has-error">><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_4" value="4" /></td>
                     <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_3" value="3" /></td>
                     <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_2" value="2" /></td>
                     <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_1" value="1" /></td>
                     {% endcomment %}
                 </tr>
-                    {% for q in question.1 %}
+                    {% for q in sections.1 %}
                     <tr>
-                        <td>{{ q }}</td>
+                        <td>{{ q.0 }}</td>
                         <td nowrap class="form-group has-error"><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_4" value="4" /><label for="psp2_{{ forloop.counter }}_4">非常同意</label></div></td>
                         <td nowrap class="form-group has-error"><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_3" value="3" /><label for="psp2_{{ forloop.counter }}_3">同意</label></td>
                         <td nowrap class="form-group has-error"><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_2" value="2" /><label for="psp2_{{ forloop.counter }}_2">不同意</label></td>
