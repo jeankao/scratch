@@ -77,7 +77,10 @@ swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent", "482", "387", "10.
 美工設計：{{scores.0}}  程式難度：{{scores.1}} 創意表現：{{scores.2}}<BR>
 評語：<BR>
 {% for review in reviews %}
-{{review.comment}}<BR>
+{% if teacher %}
+	{{review.student.first_name}}:
+{% endif %}
+	{{review.comment}}<BR>
 {% endfor %}
 <BR>
 {% if show.picture %}

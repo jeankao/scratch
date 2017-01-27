@@ -13,7 +13,7 @@ urlpatterns = [
     #url(r'^group/nogroup/(?P<classroom_id>[^/]+)/$', 'show.views.group_nogroup'), 
     url(r'^group/submit/(?P<round_id>[^/]+)/(?P<group_show>[^/]+)/$', login_required(ShowUpdateView.as_view())), 
     #url(r'^list/(?P<classroom_id>[^/]+)/$', 'show.views.list'),    
-    url(r'^detail/(?P<show_id>[^/]+)/$', login_required(ReviewUpdateView.as_view())),      
+    url(r'^detail/(?P<round_id>[^/]+)/(?P<show_id>[^/]+)/$', login_required(ReviewUpdateView.as_view())),      
     #url(r'^detail/(?P<show_id>[^/]+)/$', 'show.views.detail'),  	
     url(r'^score/(?P<show_id>[^/]+)/$', login_required(ReviewListView.as_view())),  	
     url(r'^rank/(?P<rank_id>[^/]+)/(?P<round_id>[^/]+)/$', login_required(RankListView.as_view())), 

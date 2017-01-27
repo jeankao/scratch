@@ -274,7 +274,9 @@ class ReviewUpdateView(UpdateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         showfiles = ShowFile.objects.filter(show_id=self.kwargs['show_id']).order_by("-id")
-        context = self.get_context_data(showfiles=showfiles, show=show, form=form, members=members, review=self.object, scores=scores, score=score, reviews=reviews)
+        round = Round.objects.get(id=self.kwargs['round_id'])
+        teacher = is_teacher(self.request.user, round.classroom_id)				
+        context = self.get_context_data(teacher=teacher, showfiles=showfiles, show=show, form=form, members=members, review=self.object, scores=scores, score=score, reviews=reviews)
         return self.render_to_response(context)
 
     def get_object(self, queryset=None):
