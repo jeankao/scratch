@@ -13,7 +13,16 @@
             <tr>
                 <td>內容</td><td>{{message.content|safe}}</td>
             </tr>
-           
+          {% if files %}
+            <tr>
+                <td>附件</td>
+              <td>
+              {% for file in files %}
+                <img src="/static/images/icon1.png"><a href="/teacher/announce/download/{{file.id}}">{{file.before_name}}</a><BR>
+              {% endfor %}
+              </td>
+            </tr>      
+          {% endif %}
         </table>
         <table> 
            {% for announce_read in announce_reads %}

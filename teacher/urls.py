@@ -41,6 +41,7 @@ urlpatterns = [
     url(r'^announce/(?P<classroom_id>\d+)/$', login_required(AnnounceListView.as_view()), name='announce-list'),
     url(r'^announce/add/(?P<classroom_id>\d+)/$', login_required(AnnounceCreateView.as_view()), name='announce-add'),  
     url(r'^announce/detail/(?P<message_id>\d+)/$', views.announce_detail),
+    url(r'^announce/download/(?P<messagefile_id>\d+)/$', views.announce_download),	
 
     #系統事件記錄
     url(r'^event/(?P<classroom_id>\d+)/(?P<user_id>\d+)/$', views.EventListView.as_view()),

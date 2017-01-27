@@ -92,7 +92,14 @@ class MessagePoll(models.Model):
     def create(cls, message_id, reader_id):
         messagepoll = cls(message_id=message_id, reader_id=reader_id)
         return messagepoll
-        
+
+
+class MessageFile(models.Model):
+    message_id = models.IntegerField(default=0) 
+    filename = models.TextField()
+    before_name = models.TextField()
+    upload_date = models.DateTimeField(default=timezone.now)
+		
 # 訪客 
 class Visitor(models.Model):
     date = models.IntegerField(default=0)

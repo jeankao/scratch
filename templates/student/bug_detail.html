@@ -15,7 +15,7 @@ function checkvalue() {
   <h1>{{ bug.title }}</h1>
   {{ bug.body|linebreaks }}  
   <p class="date">
-		{{ bug.publish}}{{ bug.author.first_name }}提出一個bug：<A href="/student/bug/download/{{bug.id}}">原始檔下載</a>
+		{{ bug.publish}}{{ bug.author.first_name }}提出一個bug：
   </p>
 
 <script type="text/javascript" src="/static/sb2/swfobject.js"></script>
@@ -43,7 +43,7 @@ swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent", "482", "387", "10.
 <div id="flashContent" >
  
 </div>   
-
+<BR><A href="/student/bug/download/{{bug.id}}">原始檔下載</a>
 <BR></BR>
   <hr>
 
@@ -55,7 +55,7 @@ swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent", "482", "387", "10.
   <div class="debug">
     <p class="info">
     {{ debug.0.publish}} by debugger {{ debug.0.author.first_name }}
-    作品：<A href="/student/debug/download/{{debug.0.id}}">原始檔下載</a>
+    作品：
     <br>
     {{ debug.0.body|linebreaks }}
     
@@ -102,7 +102,7 @@ swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent{{forloop.counter}}",
 <div id="flashContent{{forloop.counter}}" >
  
 </div> 		
-
+<BR><A href="/student/debug/download/{{debug.0.id}}">原始檔下載</a>
 <hr>
   </div>
 {% empty %}

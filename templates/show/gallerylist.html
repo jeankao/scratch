@@ -10,8 +10,33 @@
         {{ post.title }}
       </a>
     </h2>
-  <iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ post.number  }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
-    <p class="date">
+<script type="text/javascript" src="/static/sb2/swfobject.js"></script>
+ 
+<script >   
+var flashvars = {
+project: "/{{post.file}}" ,
+autostart: "false"
+};
+
+var params = {
+bgcolor: "#FFFFFF",
+allowScriptAccess: "always",
+allowFullScreen: "true",
+wmode: "window",
+menu:"‘false"
+
+};
+var attributes = {};
+
+swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent{{forloop.counter}}", "482", "387", "10.2.0","expressInstall.swf", flashvars, params, attributes);
+
+</script>
+              
+<div id="flashContent{{forloop.counter}}" >
+ 
+</div>   
+
+<BR></BR>    <p class="date">
       Published {{ post.publish}} by {{ post.id|show_member }}
     </p>
   {% empty %}

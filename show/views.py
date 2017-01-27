@@ -109,7 +109,7 @@ def round_add(request, classroom_id):
         return redirect('/show/group/'+str(round.id))
 			
 # 設定組別人數
-def group_size(request, classroom_id):
+def group_size(request, round_id):
         show = Round.objects.get(id=round_id)
         classroom_id = show.classroom_id	
         if request.method == 'POST':
@@ -124,7 +124,7 @@ def group_size(request, classroom_id):
                     log = Log(user_id=request.user.id, event=u'設定創意秀組別人數<'+classroom.name+'><'+str(form.cleaned_data['group_show_size'])+'>')
                     log.save()        
         
-                return redirect('/show/group/'+classroom_id)
+                return redirect('/show/group/'+str(classroom_id))
         else:
             classroom = Classroom.objects.get(id=classroom_id)
             form = GroupShowSizeForm(instance=classroom)
@@ -358,7 +358,7 @@ class RankListView(ListView):
         lists = []
         show = Round.objects.get(id=self.kwargs['round_id'])
         classroom_id = show.classroom_id				
-        shows = ShowGroup.objects.filter(classroom_id=classroom_id)
+        shows = ShowGroup.objects.filter(round_id=self.kwargs['round_id'])
         for show in shows :
             students = Enroll.objects.filter(group_show=show.id)
             reviews = ShowReview.objects.filter(show_id=show.id, done=True)	
@@ -494,8 +494,10 @@ def GalleryDetail(request, show_id):
     else :
         log = Log(user_id=0, event=u'查看藝廊<'+show.name+'>')
     log.save() 
+    classroom_id = Round.objects.get(id=show.round_id).classroom_id
+    showfiles = ShowFile.objects.filter(show_id=show.id)
     
-    return render(request, 'show/gallerydetail.html', {'show': show, 'members':members, 'scores':scores, 'reviews':reviews, 'teacher':is_teacher(request.user, show.classroom_id)})
+    return render(request, 'show/gallerydetail.html', {'show': show, 'showfiles':showfiles, 'members':members, 'scores':scores, 'reviews':reviews, 'teacher':is_teacher(request.user, classroom_id)})
 
 # 將創意秀開放到藝廊
 def make(request):
@@ -582,7 +584,7 @@ def upload_pic(request, show_id):
         form = ImageUploadForm()
     return render_to_response('show/drscratch.html', {'form':form, 'show': m}, context_instance=RequestContext(request))
 
-def excel(request, classroom_id):
+def excel(request, round_id):
     # 記錄系統事件
     if is_event_open(request) :       
         log = Log(user_id=request.user.id, event=u'下載創意秀到Excel')
@@ -591,14 +593,14 @@ def excel(request, classroom_id):
     output = StringIO.StringIO()
     workbook = xlsxwriter.Workbook(output)    
             
-    shows = ShowGroup.objects.filter(classroom_id=classroom_id)
+    shows = ShowGroup.objects.filter(round_id=round_id)
     
     worksheet = workbook.add_worksheet(u"分組")
     c = 0
     for show in shows:
         worksheet.write(c, 0, show.name)
         worksheet.write(c, 1, show.title)
-        worksheet.write(c, 2, "https://scratch.mit.edu/projects/"+show.number)
+        #worksheet.write(c, 2, "https://scratch.mit.edu/projects/"+show.number)
         number = 3
         members = Enroll.objects.filter(group_show=show.id)
         for member in members:
@@ -614,11 +616,11 @@ def excel(request, classroom_id):
             worksheet.write(0, number, "("+str(member.seat)+")"+member.student.first_name)
             number = number + 1
         worksheet.write(1,0, u"作品名稱") 
-        worksheet.write(1,1, show.name)
+        worksheet.write(1,1, show.title)
         worksheet.write(2,0, u"上傳時間") 
         worksheet.write(2,1, str(localtime(show.publish)))        
         worksheet.write(3,0, u"作品位置")
-        worksheet.write(3,1, "https://scratch.mit.edu/projects/"+str(show.number))
+        #worksheet.write(3,1, "https://scratch.mit.edu/projects/"+str(show.number))
 
         worksheet.write(4,0, u"評分者")
         worksheet.write(4,1, u"美工設計")
@@ -646,6 +648,7 @@ def excel(request, classroom_id):
         index = 6
         
         reviews = []
+        classroom_id = Round.objects.get(id=round_id).classroom_id
         for showreview in showreviews:
             enroll = Enroll.objects.get(classroom_id=classroom_id, student_id=showreview.student_id)
             reviews.append([showreview, enroll])

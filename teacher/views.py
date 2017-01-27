@@ -11,7 +11,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.core.exceptions import ObjectDoesNotExist
 #from django.contrib.auth.models import Group
 from teacher.models import Classroom
-from account.models import Log, Message, MessagePoll, Profile, Note
+from account.models import Log, Message, MessagePoll, Profile, Note, MessageFile
 from student.models import Enroll, Work, EnrollGroup, Assistant, Exam, WorkFile
 from show.models import Round
 from .forms import ClassroomForm, ScoreForm,  CheckForm1, CheckForm2, CheckForm3, CheckForm4, AnnounceForm
@@ -30,7 +30,14 @@ from django.utils.timezone import localtime
 from django.utils import timezone
 from docx import *
 from docx.shared import Inches
-#from django.contrib.auth.decorators import login_required, user_passes_test
+import string
+import base64
+import sys
+import os
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from uuid import uuid4
+from wsgiref.util import FileWrapper#from django.contrib.auth.decorators import login_required, user_passes_test
 
 # 判斷是否為授課教師
 def is_teacher(user, classroom_id):
@@ -193,7 +200,7 @@ def score(request, classroom_id, index):
             else :
                 scorer_name = "1"
         except ObjectDoesNotExist:
-            work = Work(index=index, user_id=1, number="0")
+            work = Work(index=index, user_id=0)
         try:
 			group_name = EnrollGroup.objects.get(id=enroll.group).name
         except ObjectDoesNotExist:
@@ -313,6 +320,7 @@ def score_peer(request, index, classroom_id, group):
     enrolls = Enroll.objects.filter(classroom_id=classroom_id, group=group)
     lesson = ""
     classmate_work = []
+    workfiles = []
     for enroll in enrolls:
         if not enroll.student_id == request.user.id : 
             scorer_name = ""
@@ -913,18 +921,32 @@ class AnnounceCreateView(CreateView):
     form_class = AnnounceForm
     template_name = 'teacher/announce_form.html'     
     def form_valid(self, form):
+        classrooms = self.request.POST.getlist('classrooms')
+        files = self.request.FILES.getlist('files')
         self.object = form.save(commit=False)
-        self.object.title = u"[公告]" + self.object.title
-        self.object.author_id = self.request.user.id
-        self.object.classroom_id = self.kwargs['classroom_id']
-        self.object.save()
-        self.object.url = "/teacher/announce/detail/" + str(self.object.id)
-        self.object.save()
-        # 班級學生訊息
-        enrolls = Enroll.objects.filter(classroom_id=self.kwargs['classroom_id'])
-        for enroll in enrolls:
-            messagepoll = MessagePoll(message_id=self.object.id, reader_id=enroll.student_id)
-            messagepoll.save()
+        filenames = []
+        for file in files:
+            fs = FileSystemStorage()
+            filename = uuid4().hex
+            fs.save("static/message/"+filename, file)
+            filenames.append([filename, file.name])
+        for classroom_id in classrooms:
+            message = Message()
+            message.title = u"[公告]" + self.object.title
+            message.author_id = self.request.user.id	
+            message.classroom_id = classroom_id
+            message.content = self.object.content
+            message.save()
+            message.url = "/teacher/announce/detail/" + str(message.id)
+            message.save()
+            for filename in filenames:
+                    messagefile = MessageFile(message_id=message.id, filename=filename[0], before_name=filename[1])
+                    messagefile.save()
+            # 班級學生訊息
+            enrolls = Enroll.objects.filter(classroom_id=classroom_id)
+            for enroll in enrolls:
+                messagepoll = MessagePoll(message_id=message.id, reader_id=enroll.student_id, classroom_id=classroom_id)
+                messagepoll.save()
         # 記錄系統事件
         if is_event_open(self.request) :            
             log = Log(user_id=self.request.user.id, event=u'新增公告<'+self.object.title+'>')
@@ -950,7 +972,7 @@ def announce_detail(request, message_id):
     
     announce_reads = []
     
-    messagepolls = MessagePoll.objects.filter(message_id=message_id)
+    messagepolls = MessagePoll.objects.filter(message_id=message_id, classroom_id=classroom.id)
     for messagepoll in messagepolls:
         enroll = Enroll.objects.get(classroom_id=message.classroom_id, student_id=messagepoll.reader_id)
         announce_reads.append([enroll.seat, enroll.student.first_name, messagepoll])
@@ -961,10 +983,24 @@ def announce_detail(request, message_id):
     
     if is_event_open(request) :            
         log = Log(user_id=request.user.id, event=u'查看公告<'+message.title+'>')
-        log.save()  
-    return render_to_response('teacher/announce_detail.html', {'message':message, 'classroom':classroom, 'announce_reads':announce_reads}, context_instance=RequestContext(request))
+        log.save()
 
-        
+    files = MessageFile.objects.filter(message_id=message_id)
+    return render_to_response('teacher/announce_detail.html', {'files':files, 'message':message, 'classroom':classroom, 'announce_reads':announce_reads}, context_instance=RequestContext(request))
+
+def announce_download(request, messagefile_id):
+    messagefile = MessageFile.objects.get(id=messagefile_id)
+    download =  settings.BASE_DIR + "/static/message/" + messagefile.filename
+    wrapper = FileWrapper(file( download, "r" ))
+    filename = messagefile.before_name
+    response = HttpResponse(wrapper, content_type = 'application/force-download')
+    #response = HttpResponse(content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename={0}'.format(filename.encode('utf8'))
+    # It's usually a good idea to set the 'Content-Length' header too.
+    # You can also set any other required headers: Cache-Control, etc.
+    return response
+    #return render_to_response('student/download.html', {'download':download})
+
 # 記錄系統事件
 class EventListView(ListView):
     context_object_name = 'events'

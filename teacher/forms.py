@@ -93,12 +93,12 @@ class CheckForm4(forms.ModelForm):
 class AnnounceForm(forms.ModelForm):
         class Meta:
            model = Message
-           fields = ['title','content']
+           fields = ['title', 'content']
         
         def __init__(self, *args, **kwargs):
             super(AnnounceForm, self).__init__(*args, **kwargs)
             self.fields['title'].label = "公告主旨"
-            self.fields['title'].widget.attrs['size'] = 50
+            self.fields['title'].widget.attrs['size'] = 50	
             self.fields['content'].label = "公告內容"
             self.fields['content'].widget.attrs['cols'] = 50
             self.fields['content'].widget.attrs['rows'] = 20        

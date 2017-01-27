@@ -30,16 +30,15 @@ CKEDITOR.plugins.add('dreamerpasteimage', {
              <td>
                          {% for class in classrooms %}
            <div class="checkbox checkbox-success checkbox-inline">
-           <input type="checkbox" class="styled" id="cbox{{forloop.counter}}" value="{{class.id}}" {% if class.id == classroom.id %}checked{% endif %}> <label for="cbox{{forloop.counter}}">{{class.name}}</label>
+           <input type="checkbox" name="classrooms" class="styled" id="cbox{{forloop.counter}}" value="{{class.id}}" {% if class.id == classroom.id %}checked{% endif %}> <label for="cbox{{forloop.counter}}">{{class.name}}</label>
            </div>
           {% endfor %}
              </td>
              </tr>
-             <tr>
-               <th>附加檔案</th><td><input type=file multiple>
+              <tr>
+               <th>附加檔案</th><td><input name=files type=file multiple>
              </td>
-             </tr>
-             
+             </tr>       
                 {{ form.as_table }}
             </table>
             {% csrf_token %}

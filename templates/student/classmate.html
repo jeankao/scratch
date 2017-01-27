@@ -25,7 +25,8 @@
 			{% for group in user.groups.all %}
 			{% if group.name == 'teacher' %}
 			<A href="/teacher/unenroll/{{enroll.id}}/{{enroll.classroom_id}}" onclick="return confirm('確定要刪除嗎?')">退選</a>
-			<a href="/account/password/{{enroll.student.id}}">密碼</a>
+			<a href="/student/classroom/seat/{{enroll.id}}/{{enroll.classroom_id}}">座號</a>
+		  <a href="/account/password/{{enroll.student.id}}">密碼</a>
 			{% endif %}
 			{% endfor %}
 			{{enroll.student.last_name}}

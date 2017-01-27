@@ -192,18 +192,31 @@ def make_image(unit, enroll_id, teacher_id):
     #red = (255,0,0)    # color of our text
     #text_pos = (10,10) # top-left position of our text
     # Now, we'll do the drawing: 
-    font_student = ImageFont.truetype(settings.BASE_DIR+'/static/cwTeXQKai-Medium.ttf',80)
-    font_teacher = ImageFont.truetype(settings.BASE_DIR+'/static/cwTeXQKai-Medium.ttf',60)    
+    font_student = ImageFont.truetype(settings.BASE_DIR+'/static/cwTeXQKai-Medium.ttf',60)
+    font_school = ImageFont.truetype(settings.BASE_DIR+'/static/cwTeXQKai-Medium.ttf',40)		
+    font_teacher = ImageFont.truetype(settings.BASE_DIR+'/static/cwTeXQKai-Medium.ttf',50)    
+    font_date = ImageFont.truetype(settings.BASE_DIR+'/static/cwTeXQKai-Medium.ttf',50)  		
     draw = ImageDraw.Draw(im)
     enroll = Enroll.objects.get(id=enroll_id)
     #studnet_id = enroll.student.id
     student_name = User.objects.get(id=enroll.student.id).first_name
-    teacher_name = User.objects.get(id=teacher_id).first_name    
+    school_name = User.objects.get(id=teacher_id).last_name  
+    lesson_name = "高慧君老師"
+    teacher_name = User.objects.get(id=teacher_id).first_name+"老師"
+    year = timezone.localtime(timezone.now()).year
+    month = timezone.localtime(timezone.now()).month
+    day = timezone.localtime(timezone.now()).day
+    date_name = "中 華 民 國 "+ str(year-1911) + " 年 "+ str(month) + " 月 " + str(day) + " 日"
     student = smart_text(student_name, encoding='utf-8', strings_only=False, errors='strict')
+    school = smart_text(school_name, encoding='utf-8', strings_only=False, errors='strict')		
+    lesson = smart_text(lesson_name, encoding='utf-8', strings_only=False, errors='strict')			
     teacher = smart_text(teacher_name, encoding='utf-8', strings_only=False, errors='strict')
-    draw.text((340,162), student,(0,0,0),font=font_student)
-    draw.text((500,387), teacher,(0,0,200),font=font_teacher)
-    draw.text((410,448), timezone.localtime(timezone.now()).strftime("%Y/%m/%d"),(0,0,0),font=font_teacher)    
+    date_string = smart_text(date_name, encoding='utf-8', strings_only=False, errors='strict')		
+    draw.text((370,190), student,(0,0,200),font=font_student)
+    draw.text((490-len(school_name)*20,100), school,(0,0,0),font=font_school)		
+    draw.text((470,410), teacher,(0,0,0),font=font_teacher)
+    draw.text((160,410), lesson,(0,0,0),font=font_teacher)		
+    draw.text((160,475), date_string ,(0,0,0),font=font_date)    
     del draw # I'm done drawing so I don't need this anymore
     
     # We need an HttpResponse object with the correct mimetype
@@ -218,6 +231,8 @@ def make_image(unit, enroll_id, teacher_id):
     temp_handle.seek(0)
     
     # open file write mode  
+    if not os.path.exists(settings.BASE_DIR+"/static/certificate/"+unit):
+        os.mkdir(settings.BASE_DIR+"/static/certificate/"+unit)
     context = {'error':''}
     fileName = settings.BASE_DIR+"/static/certificate/"+unit+"/"+enroll_id+".jpg"
     writeFile(temp_handle.read(), fileName, context)

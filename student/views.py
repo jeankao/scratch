@@ -319,7 +319,7 @@ def submit(request, lesson, index):
             if filepath :
                 myfile = request.FILES['file']
                 fs = FileSystemStorage()
-                filename = uuid4().hex+".sb2"
+                filename = uuid4().hex
                 fs.save("static/work/"+str(request.user.id)+"/"+filename, myfile)
 						
             form = SubmitForm(request.POST, request.FILES)
@@ -744,7 +744,7 @@ def bug_detail(request, bug_id):
         if filepath :
             myfile = request.FILES['file']
             fs = FileSystemStorage()
-            filename = "static/debug/"+str(request.user.id)+"/"+uuid4().hex+".sb2"
+            filename = "static/debug/"+str(request.user.id)+"/"+uuid4().hex
             fs.save(filename, myfile)				
         if debug_form.is_valid():
             # Create Comment object but don't save to database yet
@@ -837,7 +837,7 @@ class BugCreateView(CreateView):
         if filepath :
                 myfile = self.request.FILES['file']
                 fs = FileSystemStorage()
-                filename = "static/bug/"+str(self.request.user.id)+"/"+uuid4().hex+".sb2"
+                filename = "static/bug/"+str(self.request.user.id)+"/"+uuid4().hex
                 fs.save(filename, myfile)
         self.object = form.save(commit=False)
         self.object.author_id = self.request.user.id
@@ -1044,7 +1044,7 @@ class AnnounceListView(ListView):
         messages = Message.objects.filter(classroom_id=self.kwargs['classroom_id'], author_id=classroom.teacher_id).order_by("-id")
         queryset = []
         for message in messages:
-            messagepoll = MessagePoll.objects.get(message_id=message.id, reader_id=self.request.user.id)
+            messagepoll = MessagePoll.objects.get(message_id=message.id, reader_id=self.request.user.id, classroom_id=self.kwargs['classroom_id'])
             queryset.append([messagepoll, message])
         return queryset
         

@@ -28,5 +28,5 @@ urlpatterns = [
     url(r'^gallery/(?P<show_id>[^/]+)/$', views.GalleryDetail),  
     url(r'^drscratch/(?P<show_id>[^/]+)/$', views.upload_pic),    
     url(r'^download/(?P<show_id>\d+)/(?P<showfile_id>\d+)/$', views.show_download),	
-    #url(r'^excel/(?P<classroom_id>[^/]+)/$', views.excel),
+    url(r'^excel/(?P<round_id>[^/]+)/$', views.excel),
 ]
