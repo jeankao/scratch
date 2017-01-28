@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^pre_result/(?P<classroom_id>\d+)/$', views.pre_result),
     url(r'^post_result/(?P<classroom_id>\d+)/$', views.post_result),  
     url(r'^pre_survey/teacher/(?P<classroom_id>\d+)/$', views.pre_teacher),  
+    url(r'^post_survey/teacher/(?P<classroom_id>\d+)/$', views.post_teacher),    
 ]

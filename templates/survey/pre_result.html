@@ -45,7 +45,13 @@
 {% endfor %}        
       }
     </script>
-    <div id="piechart" style="width: 900px; height: 500px;"></div>
+    <div id="piechart" style="width: 900px; height: 500px;">      
+    </div>
+<table>
+    {% for answer in result.0.3 %}
+    <tr><td>{{answer}}</td></tr>
+    {% endfor %}
+</table>
     {% for question in questions %}
     <div id="piechart{{forloop.counter}}" style="width: 900px; height: 500px;"></div>
     {% endfor %}

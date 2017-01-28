@@ -198,6 +198,7 @@ def group_open(request, classroom_id, action):
 def classroom(request):
         classrooms = []
         enrolls = Enroll.objects.filter(student_id=request.user.id).order_by("-id")
+        profile = Profile.objects.get(user_id=request.user.id)
         for enroll in enrolls:
             shows = Round.objects.filter(classroom_id=enroll.classroom_id)
             classrooms.append([enroll, shows])
@@ -205,7 +206,7 @@ def classroom(request):
         if is_event_open(request) :          
             log = Log(user_id=request.user.id, event='查看選修班級')
             log.save()          
-        return render_to_response('student/classroom.html',{'classrooms': classrooms}, context_instance=RequestContext(request))    
+        return render_to_response('student/classroom.html',{'classrooms': classrooms, 'profile':profile}, context_instance=RequestContext(request))    
     
 # 查看可加入的班級
 def classroom_add(request):

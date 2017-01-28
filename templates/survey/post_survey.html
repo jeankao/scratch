@@ -1,8 +1,57 @@
 {% extends "base.html" %}
 {% block title %} 課後問卷 {% endblock %}
 {% block content %}
-    <h1>課後問卷</h1>
-    <form action="" enctype="multipart/form-data"  method="post">
+<script>
+  
+function color(element) {
+  element.style.backgroundColor = "";    
+}
+  
+function validateForm() {
+{% for sections in questions %}
+{% for quesiton in sections %}  
+    if (document.forms["myForm"]["p2_{{forloop.parentloop.counter}}_{{forloop.counter}}"].value=="") {
+        alert("請填寫您的答案!!");
+        var row = document.getElementById('trp2_{{forloop.parentloop.counter}}_{{forloop.counter}}');
+        row.style.backgroundColor = "#ffb0aa";        
+        var top = document.getElementById('trp2_{{forloop.parentloop.counter}}_{{forloop.counter}}').offsetTop + 100;
+        window.scrollTo( 0, top );         
+        return false;
+    }
+{% endfor %}
+{% endfor %}
+    if (document.forms["myForm"]["t1"].value=="") {
+        alert("請填寫您的答案!!!!");
+        var row = document.getElementById('t1_tr');
+        row.style.backgroundColor = "#ffb0aa";        
+        var top = document.getElementById('t1_tr').offsetParent.offsetTop-100;
+        window.scrollTo( 0, top );      
+        document.getElementById('t1').focus()
+        return false;
+    }
+    if (document.forms["myForm"]["t2"].value=="") {
+        alert("請填寫您的答案!!!!");
+        var row = document.getElementById('t2_tr');
+        row.style.backgroundColor = "#ffb0aa";        
+        var top = document.getElementById('t2_tr').offsetParent.offsetTop-100;
+        window.scrollTo( 0, top );      
+        document.getElementById('t2').focus()
+        return false;
+    }
+    if (document.forms["myForm"]["t3"].value=="") {
+        alert("請填寫您的答案!!!!");
+        var row = document.getElementById('t3_tr');
+        row.style.backgroundColor = "#ffb0aa";        
+        var top = document.getElementById('t3_tr').offsetParent.offsetTop-100;
+        window.scrollTo( 0, top );      
+        document.getElementById('t3').focus()
+        return false;
+    }
+
+}
+</script>
+    <h1>課後問卷</h1> 
+    <form name="myForm" action="" enctype="multipart/form-data"  method="post" onsubmit="return validateForm()">
         {% csrf_token %}
         <p>親愛的同學：這份問卷最主要是希望能了解同學們對於程式設計的想法，本問卷填寫的結果，並不會影響你的成績，請同學據實填答。</p>
         <div>
@@ -18,38 +67,28 @@
                 {% for sections in questions %}
                 <tr class="form-group has-error">
                     <th colspan="5">{{ sections.0 }}</th>
-                    {% comment %}
-                    <td>{{ sections.1 }}</td>
-                  <td class="form-group has-error">><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_4" value="4" /></td>
-                    <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_3" value="3" /></td>
-                    <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_2" value="2" /></td>
-                    <td><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_1" value="1" /></td>
-                    {% endcomment %}
                 </tr>
-                    {% for q in sections.1 %}
-                    <tr>
-                        <td>{{ q.0 }}</td>
-                        <td nowrap class="form-group has-error"><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_4" value="4" /><label for="psp2_{{ forloop.counter }}_4">非常同意</label></div></td>
-                        <td nowrap class="form-group has-error"><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_3" value="3" /><label for="psp2_{{ forloop.counter }}_3">同意</label></td>
-                        <td nowrap class="form-group has-error"><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_2" value="2" /><label for="psp2_{{ forloop.counter }}_2">不同意</label></td>
-                        <td nowrap class="form-group has-error"><div class="radio"><input type="radio" name="p2_{{ forloop.counter }}" id="psp2_{{ forloop.counter }}_1" value="1" /><label for="psp2_{{ forloop.counter }}_1">非常不同意</label></td>
+                    {% for question in sections.1 %}
+                    <tr onclick="color(this)" id="trp2_{{forloop.parentloop.counter}}_{{forloop.counter}}">
+                        <td>{{ question.0 }}</td>
+                        <td nowrap class="form-group has-error"><div class="radio"><input {% if question.1 == 4 %} checked {% endif %} type="radio" name="p2_{{forloop.parentloop.counter}}_{{ forloop.counter }}" id="psp2_{{forloop.parentloop.counter}}_{{ forloop.counter }}_4" value="4" /><label for="psp2_{{ forloop.counter }}_4">非常同意</label></div></td>
+                        <td nowrap class="form-group has-error"><div class="radio"><input {% if question.1 == 3 %} checked {% endif %} type="radio" name="p2_{{forloop.parentloop.counter}}_{{ forloop.counter }}" id="psp2_{{forloop.parentloop.counter}}_{{ forloop.counter }}_3" value="3" /><label for="psp2_{{ forloop.counter }}_3">同意</label></td>
+                        <td nowrap class="form-group has-error"><div class="radio"><input {% if question.1 == 2 %} checked {% endif %} type="radio" name="p2_{{forloop.parentloop.counter}}_{{ forloop.counter }}" id="psp2_{{forloop.parentloop.counter}}_{{ forloop.counter }}_2" value="2" /><label for="psp2_{{ forloop.counter }}_2">不同意</label></td>
+                        <td nowrap class="form-group has-error"><div class="radio"><input {% if question.1 == 1 %} checked {% endif %} type="radio" name="p2_{{forloop.parentloop.counter}}_{{ forloop.counter }}" id="psp2_{{forloop.parentloop.counter}}_{{ forloop.counter }}_1" value="1" /><label for="psp2_{{ forloop.counter }}_1">非常不同意</label></td>
                     </tr>
                     {% endfor %}
                 {% endfor %}
             </table>
+            <h2>貳、請依據下列三題，簡單敘述你的想法</h2>
+            <table>
+              <tr><th>1.	請說說你在學習Scratch程式設計過程中，覺得最棒的三件事：</th></tr>
+              <tr onclick="color(this)" id="t1_tr" ><td><textarea id="t1" name="t1" class="form-control" rows=5>{{questions_t.0}}</textarea></td></tr>
+              <tr><th>2.	請說說你在學習Scratch程式設計過程中，覺得困難（或糟糕）的三件事：</th></tr>
+              <tr onclick="color(this)" id="t2_tr" ><td><textarea id="t2" name="t2" class="form-control" rows=5>{{questions_t.1}}</textarea></td></tr>
+              <tr><th>3.	此次用Scratch來做遊戲/動畫寫程式的經驗，與你學習電腦有相關嗎？有怎麼樣的相關？(例如：你與電腦互動的方式有改變了嗎？有哪些不同的互動方式？你用了哪些方式來創作你的動畫或故事？)</th></tr>
+              <tr onclick="color(this)" id="t3_tr" ><td><textarea id="t3" name="t3" class="form-control" rows=5>{{questions_t.2}}</textarea></td></tr>          
+          </table>
         </div>
         <input type="submit" value="Submit">
     </form>
-{% endblock %}
-
-{% block domready %}
-$('#psp1_t').click(function(){
-    $('#psp1_desc_tr').show();
-    $('#psp1_desc').focus();
-});
-$('#psp1_f').click(function(){
-    $('#psp1_desc_tr').hide();
-    $('#psp1_desc').val('');
-});
-
 {% endblock %}

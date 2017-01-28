@@ -4,11 +4,11 @@
 {% endblock %}
 {% block title %} 課後問卷 {% endblock %}
 {% block content %}
- <script type="text/javascript">
+<script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
-{% for sections in questions %}
+{% for sections in result %}
 {% for question in sections.1 %}
         var data{{forloop.parentloop.counter}}_{{forloop.counter}} = google.visualization.arrayToDataTable([
           ['選項', '次數'],        
@@ -35,4 +35,22 @@
     <div id="piechart{{forloop.parentloop.counter}}_{{forloop.counter}}" style="width: 900px; height: 500px;"></div>
     {% endfor %}
 {% endfor %}
+<table>
+    <th>1.	請說說你在學習Scratch程式設計過程中，覺得最棒的三件事：</th>
+    {% for answer in questionaires %}
+    <tr><td>{{answer.p2_1}}</td></tr>
+    {% endfor %}
+</table>
+<table>
+    <th>2.	請說說你在學習Scratch程式設計過程中，覺得困難（或糟糕）的三件事：</th>
+    {% for answer in questionaires %}
+    <tr><td>{{answer.p2_2}}</td></tr>
+    {% endfor %}
+</table>
+<table>
+    <th>3.	此次用Scratch來做遊戲/動畫寫程式的經驗，與你學習電腦有相關嗎？有怎麼樣的相關？(例如：你與電腦互動的方式有改變了嗎？有哪些不同的互動方式？你用了哪些方式來創作你的動畫或故事？)</th>
+    {% for answer in questionaires %}
+    <tr><td>{{answer.p2_3}}</td></tr>
+    {% endfor %}
+</table>
 {% endblock %}
