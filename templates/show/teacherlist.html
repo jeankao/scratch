@@ -8,7 +8,7 @@
 <tr>
 <TD>姓名</TD>
 {% for show in lists.items.0.1 %}
-<td>{% if show.2.done %}<a href="/show/detail/{{show.2.id}}">{% endif %}{{show.2.name}}</a><BR>{% for member in show.3 %}({{member.seat}}){{member.student.first_name}}<BR>{% endfor %}</td>
+<td>{% if show.2.done %}<a href="/show/detail/{{round_id}}/{{show.2.id}}">{% endif %}{{show.2.name}}</a><BR>{% for member in show.3 %}({{member.seat}}){{member.student.first_name}}<BR>{% endfor %}</td>
 {% endfor %}
 </tr>
   {% for key, value in lists.items %}

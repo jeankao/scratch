@@ -309,7 +309,7 @@ class ReviewUpdateView(UpdateView):
         if is_event_open(self.request) :         
             log = Log(user_id=self.request.user.id, event=u'評分創意秀<'+show.name+'>')
             log.save()        
-        return redirect('/show/detail/'+self.kwargs['show_id'])
+        return redirect('/show/detail/'+self.kwargs['round_id']+'/'+self.kwargs['show_id'])
 
 # 所有同學的評分		
 class ReviewListView(ListView):
@@ -399,16 +399,22 @@ def show_download(request, show_id, showfile_id):
 class TeacherListView(ListView):
     context_object_name = 'lists'
     template_name = 'show/teacherlist.html'
+			
+    def get_context_data(self, **kwargs):
+        context = super(TeacherListView, self).get_context_data(**kwargs)
+        context['round_id'] = self.kwargs['round_id']
+        return context
+
     def get_queryset(self):
         lists = {}
         counter = 0
-        show = Round.objects.get(id=self.kwargs['round_id'])
-        classroom_id = show.classroom_id								
+        round = Round.objects.get(id=self.kwargs['round_id'])
+        classroom_id = round.classroom_id								
         enrolls = Enroll.objects.filter(classroom_id=classroom_id).order_by('seat')
         classroom_name = Classroom.objects.get(id=classroom_id).name
         for enroll in enrolls:
             lists[enroll.id] = []	            
-            shows = ShowGroup.objects.filter(round_id=show.id)
+            shows = ShowGroup.objects.filter(round_id=round.id)
             if not shows.exists():
                 lists[enroll.id].append([enroll])
             else :
@@ -440,6 +446,7 @@ class ScoreListView(ListView):
         classroom_name = Classroom.objects.get(id=classroom_id).name
         shows = ShowGroup.objects.filter(round_id=show.id)
         for showa in shows:
+            members = Enroll.objects.filter(group_show=showa.id)
             reviews = ShowReview.objects.filter(show_id=showa.id, done=True)
             score1 = reviews.aggregate(Sum('score1')).values()[0]
             score2 = reviews.aggregate(Sum('score2')).values()[0]
@@ -451,7 +458,7 @@ class ScoreListView(ListView):
                 scores = [math.ceil(score1*10)/10, math.ceil(score2*10)/10, math.ceil(score3*10)/10,  score1+score2+score3, reviews.count()]
             else :
                 scores = [0,0,0,0]        
-            lists[showa.id] = [showa, scores]
+            lists[showa.id] = [showa, scores, members]
         # 記錄系統事件
         if is_event_open(self.request) :         
             log = Log(user_id=self.request.user.id, event=u'查看創意秀平均分數<'+classroom_name+'>')
