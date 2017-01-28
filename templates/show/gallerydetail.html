@@ -16,7 +16,7 @@
 {% block content %}
   <h1>組別：{{show.name}}</h1>
   <h1>組員：{% for member in members %}({{member.seat}}){{member.student.first_name}}{% endfor %}</h1>
-
+  <h1>作品名稱：{{show.title}}</h1>
 <script type="text/javascript" src="/static/sb2/swfobject.js"></script>
  
 <script >   

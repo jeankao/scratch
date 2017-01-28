@@ -25,7 +25,7 @@ class ShowForm(forms.ModelForm):
             self.fields['title'].label = "作品主題"
             self.fields['file'].label = "作品檔案"
             self.fields['body'].label = "作品說明"
-			
+            self.fields['file'].required = False
 # 評分
 class ReviewForm(forms.ModelForm):
         class Meta:

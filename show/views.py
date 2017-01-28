@@ -219,14 +219,15 @@ class ShowUpdateView(UpdateView):
                 fs = FileSystemStorage()
                 filename = "static/show/"+self.kwargs['group_show']+"/"+uuid4().hex+".sb2"
                 fs.save(filename, myfile)
-                #save object
-                obj.publish = timezone.now()
                 obj.file = filename
-                obj.done = True
-                obj.save()
-								#save file
+                #save file
                 showfile = ShowFile(show_id=self.kwargs['group_show'], filename=filename)
-                showfile.save()								
+                showfile.save()	
+            #save object
+            obj.publish = timezone.now()
+            obj.done = True
+            obj.save()
+							
 								
             if obj.done == False:
                 for member in members:			
@@ -461,7 +462,7 @@ class ScoreListView(ListView):
 # 藝廊                  
 class GalleryListView(ListView):
     context_object_name = 'lists'
-    paginate_by = 3
+    paginate_by = 10
     template_name = 'show/gallerylist.html'
     def get_queryset(self):
         # 記錄系統事件

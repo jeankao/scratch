@@ -14,7 +14,6 @@ class Round(models.Model):
 class ShowGroup(models.Model):
     round_id = models.IntegerField(default=0)
     name = models.CharField(max_length=30)
-	
     title = models.CharField(max_length=250)
     file = models.FileField()	
     body = models.TextField()

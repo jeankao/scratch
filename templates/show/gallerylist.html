@@ -4,7 +4,11 @@
 {% load tz %}
 {% load tag %}
 {% block content %}
-  {% for post in lists %}
+<table>
+{% for post in lists %}
+{% if forloop.counter|add:1|divisibleby:2 %} 
+<tr><td>
+{% endif %}
     <h2>
       <a href="/show/gallery/{{post.id}}">
         {{ post.title }}
@@ -39,8 +43,14 @@ swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent{{forloop.counter}}",
 <BR></BR>    <p class="date">
       Published {{ post.publish}} by {{ post.id|show_member }}
     </p>
+{% if forloop.counter|add:1|divisibleby:2 %}
+  </td><td>
+{% endif %}
   {% empty %}
   目前藝廊尚無作品
   {% endfor %}
- {% include "pagination.html" with page=page_obj %}  
+</td></tr>  
+</table>  
+ {% include "pagination.html" with page=page_obj %}
+  
 {% endblock %}
