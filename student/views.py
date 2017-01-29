@@ -1008,11 +1008,20 @@ class VideoListView(ListView):
                 searching = True
             if searching and ( action == "PAUSE" or action == "STOP") :
                 if (lesson, tabName) in video_url :
+                    '''
                     if (lesson, tabName) in videos :
                         videos[lesson, tabName].append(str(localtime(start_log_time).strftime("%Y-%m-%d %H:%M:%S"))+"--["+start_time+"]--"+str(localtime(event.publish).strftime("%Y-%m-%d %H:%M:%S"))+"--["+time+ "]")
                     else :
                         videos[lesson, tabName] = []
                         videos[lesson, tabName].append(str(localtime(start_log_time).strftime("%Y-%m-%d %H:%M:%S"))+"--["+start_time+"]--"+str(localtime(event.publish).strftime("%Y-%m-%d %H:%M:%S"))+"--["+time+ "]")
+                    '''
+                    if (lesson, tabName) not in videos:
+                        videos[lesson, tabName] = []
+                    tmp = start_time.split(":")
+                    tfrom = int(tmp[0])*3600+int(tmp[1])*60+int(tmp[2])
+                    tmp = time.split(":")
+                    tto = tfrom + int((event.publish - start_log_time).total_seconds())
+                    videos[lesson, tabName].append({'stamp':str(localtime(start_log_time).strftime("%Y-%m-%d %H:%M:%S")),'from':tfrom,'to':tto,'duration':video_duration[video_url[lesson, tabName.encode("UTF-8")]]})
                     start_time = ""
                     searching = False
         # 記錄系統事件

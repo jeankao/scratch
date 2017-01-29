@@ -467,16 +467,16 @@ a.button {
 .answer_list .wrong {background-color: red}
 .answer_list img {margin-left: -70px}
 
-#videolog tr:hover {
+.videolog tr:hover {
 	background-color: lemonchiffon;
 	cursor: pointer;	
 }
 
-#videolog td:nth-child(1) {
+.videolog td:nth-child(1) {
 	width: 20%;
 }
 
-#videolog td:nth-child(2) {
+.videolog td:nth-child(2) {
 	width: 80%;
 	padding: 5pt 20pt;
 }

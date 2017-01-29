@@ -14,9 +14,4 @@ static/work/
 static/message/
 static/bug/
 static/debug/
-<<<<<<< HEAD
 .vscode/
-=======
-static/bug/
-static/debug/
->>>>>>> develope

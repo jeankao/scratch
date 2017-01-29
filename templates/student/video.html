@@ -1,15 +1,41 @@
 {% extends "base.html" %}
 {% block title %} Exam {% endblock %}
 {% load tag %}
+{% block head_ext %}
+<link rel="stylesheet" href="/static/css/ion.rangeSlider.css" />
+<link rel="stylesheet" href="/static/css/ion.rangeSlider.skinFlat.css" />
+<script type="text/javascript" src="/static/js/ion.rangeSlider.min.js"></script>
+{% endblock %}
 {% block content %}
 {% for key, value in video_url.items %}
 <hr>
 {{key.1}}<BR>
 <iframe width="900" height="520" src="https://www.youtube.com/embed/{{value}}?autoplay=0&autostart=0&enablejsapi=1" frameborder="0" allowfullscreen></iframe>
-<BR>
-{% for video in videos|get_value_from_dict:key %}
-{{video}}<BR>
-{% endfor %}
+{% if videos|length > 0 %}
+<div class="videolog">
+<table>
+    {% for video in videos|get_value_from_dict:key %}
+    <tr><td>{{ video.stamp }}</td>
+    <td><div class="timeslider" data-from="{{ video.from }}" data-to="{{ video.to }}" data-max="{{ video.duration }}"></div></td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+{% endif %}
 {% endfor %}
 
+{% endblock %}
+
+{% block domready %}
+var param = {
+    type: 'double', 
+    min: 0, 
+    grid: true, 
+    from_fixed: true,
+    to_fixed: true,
+    prettify: function(sec) {
+        return (new Date(sec*1000)).toUTCString().split(' ')[4];
+    }
+};
+$(".timeslider").ionRangeSlider(param);
 {% endblock %}
