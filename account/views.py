@@ -114,9 +114,8 @@ def user_login(request):
                                         # 登入成功，導到大廳
                                         login(request, user)
                                         # 記錄系統事件
-                                        if is_event_open(request) :
-                                            log = Log(user_id=request.user.id, event='登入系統')
-                                            log.save()
+                                        log = Log(user_id=request.user.id, event='登入系統')
+                                        log.save()
                                         # 記錄訪客資訊
                                         admin_user = User.objects.get(id=1)
                                         try:

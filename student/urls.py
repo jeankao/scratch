@@ -70,4 +70,5 @@ urlpatterns = [
 	
     #公告
     url(r'^announce/(?P<classroom_id>\d+)/$', login_required(AnnounceListView.as_view()), name='announce-list'),
+		url(r'^test/$', views.test), 
 ]

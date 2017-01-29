@@ -9,16 +9,16 @@
 {% endblock %}
 {% block content %}
   <script type="text/javascript">
-      google.charts.setOnLoadCallback(drawStuff);
-
+     google.charts.setOnLoadCallback(drawStuff);
       function drawStuff() {
         var data = new google.visualization.arrayToDataTable([
-          ['學生', '觀看時間(秒)'],          
+          ['學生', '觀看時間(秒)', 'user_id'],          
           {% for event in events %}
-          ['({{event.0.seat}}){{event.0.student.first_name}}', {{event.1}}],
+          ['({{event.0.seat}}){{event.0.student.first_name}}', {{event.1}}, {{event.0.student_id}}],
           {% endfor %}
         ]);
-
+       var view = new google.visualization.DataView(data);
+       view.setColumns([0, 1]);
         var options = {
           width: 900,
           height: {{height}},    
@@ -34,10 +34,16 @@
           },
           bar: { groupWidth: "90%" }
         };
-
         var chart = new google.charts.Bar(document.getElementById('top_x_div'));
-        chart.draw(data, options);
-      };
-    </script>  </script>
+        chart.draw(view, options);
+       var selectHandler = function(e) {
+          window.location = "/student/video/"+data.getValue(chart.getSelection()[0]['row'], 2 );
+       }
+
+       google.visualization.events.addListener(chart, 'select', selectHandler);
+      
+      };    
+   
+    </script>
     <div id="top_x_div" style="width: 900px;"></div>
 {% endblock %}

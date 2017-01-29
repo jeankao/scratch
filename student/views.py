@@ -1129,3 +1129,6 @@ class LoginCalendarClassView(ListView):
     def get_context_data(self, **kwargs):
         context = super(LoginCalendarClassView, self).get_context_data(**kwargs)
         return context	
+# 說明作品編號
+def test(request):
+        return render_to_response('student/test.html', context_instance=RequestContext(request))			
