@@ -64,7 +64,6 @@ def is_student(user_id, request):
 def is_classmate(user_id, classroom_id):
     return Enroll.objects.filter(student_id=user_id, classroom_id=classroom_id).exists()
 
-
 # 網站首頁
 def homepage(request):
     models = apps.get_models()
@@ -567,7 +566,10 @@ class VisitorListView(ListView):
                 user_id = self.request.user.id
             log = Log(user_id=user_id, event='查看所有訪客')
             log.save()        
-        queryset = Visitor.objects.all().order_by('-id')
+        visitors = Visitor.objects.all().order_by('-id')
+        queryset = []
+        for visitor in visitors:
+            queryset.append([int(str(visitor.date)[0:4]), int(str(visitor.date)[4:6]),int(str(visitor.date)[6:8]),visitor])
         return queryset
         
 # 列出單日日期訪客
@@ -704,8 +706,8 @@ class EventListView(ListView):
         
     # 限本人 
     def render_to_response(self, context):
-        if not is_student(self.kwargs['user_id'], self.request) and not self.request.user.id == int(self.kwargs['user_id']):
-            return redirect('/')
+        #if is_teacher(self.kwargs['user_id'], self.request) :
+        #    return redirect('/')
         return super(EventListView, self).render_to_response(context)      
 
 # 記錄系統事件
@@ -813,7 +815,7 @@ class EventCalendarView(ListView):
     def get_queryset(self):    
         # 記錄系統事件
         user = User.objects.get(id=self.kwargs['user_id'])
-        log = Log(user_id=user.id, event=u'查看登入記錄<'+user.first_name+'>')
+        log = Log(user_id=self.request.user.id, event=u'查看登入記錄<'+user.first_name+'>')
         log.save()
         user_logs = Log.objects.filter(user_id=user.id, event="登入系統")
         logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day))
@@ -825,7 +827,7 @@ class EventCalendarView(ListView):
     def get_context_data(self, **kwargs):
         context = super(EventCalendarView, self).get_context_data(**kwargs)
         user = User.objects.get(id=self.kwargs['user_id'])
-        context['user'] = user
+        context['user1'] = user
         return context	 
 
 # 記錄系統事件
@@ -837,7 +839,7 @@ class EventTimeLineView(ListView):
     def get_queryset(self):    
         # 記錄系統事件
         user = User.objects.get(id=self.kwargs['user_id'])
-        log = Log(user_id=user.id, event=u'查看事件時間軸<'+user.first_name+'>')
+        log = Log(user_id=self.request.user.id, event=u'查看使用記錄<'+user.first_name+'>')
         log.save()
         user_logs = Log.objects.filter(user_id=user.id)
         logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day, localtime(row.publish).hour))
@@ -858,8 +860,70 @@ class EventTimeLineView(ListView):
         context = super(EventTimeLineView, self).get_context_data(**kwargs)
         context['week_number'] = datetime(*(2017,1,30)).isocalendar()[1]
         user = User.objects.get(id=self.kwargs['user_id'])
-        context['user'] = user
+        context['user1'] = user
         return context
+			
+# 記錄系統事件
+class EventVideoView(ListView):
+    context_object_name = 'events'
+    #paginate_by = 50
+    template_name = 'account/event_video.html'
+
+    def get_queryset(self):    
+        # 記錄系統事件
+        enrolls = Enroll.objects.filter(classroom_id=self.kwargs['classroom_id'])
+        classroom = Classroom.objects.get(id=self.kwargs['classroom_id'])
+        log = Log(user_id=self.request.user.id, event=u'查看影片觀看記錄<'+classroom.name+'>')
+        log.save()
+        students = []
+        # 初始化 student_log
+        for enroll in enrolls:
+              students.append(enroll.student_id)
+        user_logs = Log.objects.filter(Q(user_id__in=students) & (Q(event__icontains="PLAY") | Q(event__icontains="PAUSE")))
+        logs = groupby(user_logs, key=lambda row: row.user_id)
+        student_logs = {}
+        datas = {}
+        events = []
+        for key, value in logs:
+            student_log = list(value)
+            student_logs[key] = student_log
+            durations = 0
+            logs = student_logs[key]
+            play_time = ""
+            end_time = ""
+            for log in logs:
+                if "PLAY" in log.event:
+                    play_time = log.publish
+                    playing = True
+                elif "PAUSE" in log.event:
+                    end_time = log.publish
+                    duration = end_time - play_time
+                    durations += duration.seconds
+            datas[key]= durations
+        for enroll in enrolls :
+            if datas.has_key(enroll.student_id):
+                events.append([enroll, datas[enroll.student_id]])
+            else :
+                events.append([enroll, 0])
+        return events
+        
+    def get_context_data(self, **kwargs):
+        context = super(EventVideoView, self).get_context_data(**kwargs)
+        classroom = Classroom.objects.get(id=self.kwargs['classroom_id'])
+        context['classroom'] = classroom
+        enrolls = Enroll.objects.filter(classroom_id=classroom.id)
+        context['height'] = 100 + enrolls.count() * 40
+        return context
+			
+    # 限本班同學
+    def render_to_response(self, context):
+        try:
+            enroll = Enroll.objects.get(student_id=self.request.user.id, classroom_id=self.kwargs['classroom_id'])
+        except ObjectDoesNotExist :
+            return redirect('/')
+        return super(EventVideoView, self).render_to_response(context)        
+	
+			
 
 # 新增教學筆記
 def note_add(request):

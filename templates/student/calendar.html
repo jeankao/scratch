@@ -36,6 +36,7 @@
        chart.draw(dataTable, options);
    }
 </script>
-<div id="calendar_basic{{forloop.counter}}" style="width: 1000px; height: 350px;"></div>
+<div align=right style="width:850px"><a href="/account/event/timeline/{{list.0.student_id}}">使用記錄</a></div>
+<div id="calendar_basic{{forloop.counter}}" style="width: 900px; height: 350px"></div>
 {% endfor %}
 {% endblock %}

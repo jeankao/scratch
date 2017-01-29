@@ -452,8 +452,8 @@ def work_group(request, lesson, classroom_id):
                     else :
                         scorer_name = "X"
                 except ObjectDoesNotExist:
-                    work = Work(index=lesson, user_id=1, number="0")
-                works.append([enroll, work.score, scorer_name, work.number])
+                    work = Work(index=lesson, user_id=1)
+                works.append([enroll, work.score, scorer_name, work.file])
                 try :
                     assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson)
                     group_assistants.append(enroll)
@@ -1029,7 +1029,7 @@ class VideoListView(ListView):
         else :
             context['page'] = 0
         return context  
-    
+
 # 列出所有公告
 class AnnounceListView(ListView):
     model = Message
@@ -1128,5 +1128,4 @@ class LoginCalendarClassView(ListView):
         
     def get_context_data(self, **kwargs):
         context = super(LoginCalendarClassView, self).get_context_data(**kwargs)
-        user_logs = Log.objects.filter(user_id=enroll.student_id, event="登入系統")
         return context	

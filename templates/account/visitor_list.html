@@ -1,16 +1,47 @@
 {% extends "base.html" %}
 {% block title %} Teachers {% endblock %}
 {% load tag %}
+{% block head_ext %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["calendar"]});
+      google.charts.setOnLoadCallback(drawChart);
+
+   function drawChart() {
+       var dataTable = new google.visualization.DataTable();
+       dataTable.addColumn({ type: 'date', id: 'Date' });
+       dataTable.addColumn({ type: 'number', id: 'Won/Loss' });
+       dataTable.addRows([
+        {% for visitor in visitors %}
+          [ new Date({{visitor.0}},{{visitor.1|add:"-1"}}, {{visitor.2}}), {{visitor.3.count}} ],
+        {% endfor %}
+        ]);
+
+       var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+
+       var options = {
+         title: "使用者登入統計",
+         height: 350,
+         noDataPattern: {
+           color: '#ffc147'
+         }
+       };
+
+       chart.draw(dataTable, options);
+   }
+    </script>
+{% endblock %}
 {% block content %}
-        <table>
+    <div id="calendar_basic" style="width: 1000px; height: 350px;"></div>
+<table>
             <tr>
                 <td>日期</td>
                 <td>登入人數</td>                
             </tr>
         {% for visitor in visitors %}
             <tr>
-            <td>{% if user.is_authenticated %}<a href="/account/visitorlog/{{visitor.id}}">{% endif %}{{visitor.date}}--{{visitor.date|week}}{% if not user.is_authenticated %}</a>{% endif %}</td>
-            <td>{{visitor.count}}</td>
+            <td>{% if user.is_authenticated %}<a href="/account/visitorlog/{{visitor.3.id}}">{% endif %}{{visitor.3.date}}--{{visitor.3.date|week}}{% if not user.is_authenticated %}</a>{% endif %}</td>
+            <td>{{visitor.3.count}}</td>
             </tr>
         {% endfor %}
         </table>

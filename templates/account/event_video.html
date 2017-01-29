@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block head_ext %}
+{% load tz %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+      google.charts.load('current', {'packages':['bar']});
+</script>
+{% endblock %}
+{% block content %}
+  <script type="text/javascript">
+      google.charts.setOnLoadCallback(drawStuff);
+
+      function drawStuff() {
+        var data = new google.visualization.arrayToDataTable([
+          ['學生', '觀看時間(秒)'],          
+          {% for event in events %}
+          ['({{event.0.seat}}){{event.0.student.first_name}}', {{event.1}}],
+          {% endfor %}
+        ]);
+
+        var options = {
+          width: 900,
+          height: {{height}},    
+          legend: { position: 'none' },
+          chart: { title: '{{classroom.name}}班的教學影片觀看情形統計',
+                   //subtitle: 'popularity by percentage'
+                   },
+          bars: 'horizontal', // Required for Material Bar Charts.
+          axes: {
+            x: {
+              0: { side: 'top', label: '觀看時間(秒)'} // Top x-axis.
+            }
+          },
+          bar: { groupWidth: "90%" }
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('top_x_div'));
+        chart.draw(data, options);
+      };
+    </script>  </script>
+    <div id="top_x_div" style="width: 900px;"></div>
+{% endblock %}

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load tz %}
+{% load tag %}
 {% block title %} Teachers {% endblock %}
 {% block content %}
         班級名稱：{{ classroom_name }}<BR>
@@ -13,11 +14,11 @@
             <td>最新登入</td>
             <td>登入次數</td>            
 			{% for group in user.groups.all %}
-			{% if group.name == 'teacher' %}            
+			{% if group.name == 'teacher' %}      
 			<td>影片</td>
             <td>事件</td>
-            {% endif %}
-            {% endfor %}
+			{% endif %}
+			{% endfor %}
         </tr>
         {% for enroll, group_name, login_times in enroll_group %}
             <tr>
@@ -37,17 +38,19 @@
             <td>{{group_name}}</td>
             <td>{{enroll.student.last_login}}</td>
             <td><a href="/student/loginlog/{{enroll.student_id}}">{{login_times}}</a></td>
+					
 			{% for group in user.groups.all %}
-			{% if group.name == 'teacher' %}              
+			{% if group.name == 'teacher' %}			
 			<td><a href="/student/video/{{enroll.student_id}}">影片</a>
-            <td>
+            <td> 							
 							<a href="/account/event/{{enroll.student_id}}">全部</a> | <a href="/account/event12/{{enroll.student.id}}">12堂課</a>
 						<BR>
 							<a href="/account/event/calendar/{{enroll.student_id}}">登入記錄</a> | <A href="/account/event/timeline/{{enroll.student_id}}">使用記錄</A>
-						</td>
-            {% endif %}
-            {% endfor %}            
-            </tr>
+					</td>
+			{% endif %}
+			{% endfor %}
+
+					</tr>
         {% endfor %}
         </table>
 

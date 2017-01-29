@@ -61,7 +61,8 @@ urlpatterns = [
     url(r'^event/admin/$', views.EventAdminListView.as_view()),
     url(r'^event/admin/classroom/(?P<classroom_id>\d+)/$', views.EventAdminClassroomListView.as_view()),
     url(r'^event/calendar/(?P<user_id>\d+)/$', views.EventCalendarView.as_view()),	  
-    url(r'^event/timeline/(?P<user_id>\d+)/$', views.EventTimeLineView.as_view()),    
+    url(r'^event/timeline/(?P<user_id>\d+)/$', views.EventTimeLineView.as_view()), 
+    url(r'^event/video/(?P<classroom_id>\d+)/$', views.EventVideoView.as_view()),   
     #筆記
     url(r'^note/add/$', views.note_add),  
     url(r'^note/get/$', views.note_get),  
