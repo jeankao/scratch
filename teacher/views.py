@@ -166,8 +166,8 @@ def work1(request, classroom_id):
                       else :
                           scorer_name = "X"
                   except ObjectDoesNotExist:
-                      work = Work(index=lesson, user_id=1, number="0")
-                  works.append([enroll, work.score, scorer_name, work.number])
+                      work = Work(index=lesson, user_id=1)
+                  works.append([enroll, work.score, scorer_name, work.file])
                   try :
                       assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson+1)
                       group_assistants.append(enroll)

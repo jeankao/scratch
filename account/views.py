@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login
+from django.db.models import *
 from forms import LoginForm, UserRegistrationForm, PasswordForm, RealnameForm, LineForm, SchoolForm, EmailForm
 from django.contrib.auth.models import User
 from account.models import Profile, PointHistory, Log, Message, MessagePoll, Visitor, VisitorLog, Note
@@ -31,7 +32,8 @@ from django.apps import apps
 import json
 import urllib
 from django.db.models import Q
-
+from itertools import groupby
+from collections import OrderedDict
 # 判斷是否開啟事件記錄
 def is_event_open(request):
         enrolls = Enroll.objects.filter(student_id=request.user.id)
@@ -801,7 +803,64 @@ class EventAdminClassroomListView(ListView):
         if not self.request.user.id == 1:
             return redirect('/')
         return super(EventAdminClassroomListView, self).render_to_response(context)     
+from django.utils.dateparse import parse_date
+# 記錄系統事件
+class EventCalendarView(ListView):
+    context_object_name = 'events'
+    #paginate_by = 50
+    template_name = 'account/event_calendar.html'
+
+    def get_queryset(self):    
+        # 記錄系統事件
+        user = User.objects.get(id=self.kwargs['user_id'])
+        log = Log(user_id=user.id, event=u'查看登入記錄<'+user.first_name+'>')
+        log.save()
+        user_logs = Log.objects.filter(user_id=user.id, event="登入系統")
+        logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day))
+        month_lists = []
+        for key, value in logs:
+            month_lists.append([key, list(value)])
+        return month_lists
         
+    def get_context_data(self, **kwargs):
+        context = super(EventCalendarView, self).get_context_data(**kwargs)
+        user = User.objects.get(id=self.kwargs['user_id'])
+        context['user'] = user
+        return context	 
+
+# 記錄系統事件
+class EventTimeLineView(ListView):
+    context_object_name = 'events'
+    #paginate_by = 50
+    template_name = 'account/event_timeline.html'
+
+    def get_queryset(self):    
+        # 記錄系統事件
+        user = User.objects.get(id=self.kwargs['user_id'])
+        log = Log(user_id=user.id, event=u'查看事件時間軸<'+user.first_name+'>')
+        log.save()
+        user_logs = Log.objects.filter(user_id=user.id)
+        logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day, localtime(row.publish).hour))
+        week = OrderedDict()
+        month_list = []
+        for key, value in logs:           
+            month_list = [[key, list(value)]]
+            week_number = datetime(*key).isocalendar()[1]
+            if week.has_key(week_number):
+                pass
+                week[week_number].append(month_list)
+            else:
+                week[week_number] = [month_list]
+        sorted(week.iteritems())
+        return week
+        
+    def get_context_data(self, **kwargs):
+        context = super(EventTimeLineView, self).get_context_data(**kwargs)
+        context['week_number'] = datetime(*(2017,1,30)).isocalendar()[1]
+        user = User.objects.get(id=self.kwargs['user_id'])
+        context['user'] = user
+        return context
+
 # 新增教學筆記
 def note_add(request):
     classroom_id = request.POST.get('classroomid')

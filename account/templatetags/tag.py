@@ -124,4 +124,4 @@ def get_value_from_dict(dict_data, key):
 			
 @register.filter
 def subtract(a, b):
-    return a - b			
+    return a - b	

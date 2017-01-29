@@ -78,6 +78,8 @@ Licence URI: http://www.os-templates.com/template-terms
 			{% if user|event %}
 		    <a href="/account/event/{{user.id}}">事件</a>		
             {% endif %}			
+		    <a href="/account/event/calendar/{{user.id}}">登入記錄</a>			
+		    <a href="/account/event/timeline/{{user.id}}">使用記錄</a>								
         </div>
         </div>
             {% if request.user|has_group:"teacher" %} 	
@@ -95,7 +97,7 @@ Licence URI: http://www.os-templates.com/template-terms
     <div class="fl_right">
       <ul class="nospace linklist">
 		{% if user.is_authenticated %}
-		<li><a href="/account/avatar/"><img src="/static/avatar/s{{ user.profile.avatar }}.png"><strong>{{ user.first_name }}</strong></a></li>
+		<li><a href="/account/avatar/"><img src="/static/avatar/s{{ request.user.profile.avatar }}.png"><strong>{{ request.user.first_name }}</strong></a></li>
 		<li><a href="/account/logout" class='button'>登出</a></li>
 		{% else %}
     	歡迎光臨!

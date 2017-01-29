@@ -38,6 +38,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from uuid import uuid4
 from wsgiref.util import FileWrapper
+from itertools import groupby
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -1102,3 +1103,30 @@ def work1(request, classroom_id):
             log.save()         
         return render_to_response('student/work1.html', {'lessons':lessons, 'classroom_id':classroom_id}, context_instance=RequestContext(request))
 						
+# 日曆：班級登入列表
+class LoginCalendarClassView(ListView):
+    context_object_name = 'lists'
+    #paginate_by = 50
+    template_name = 'student/calendar.html'
+
+    def get_queryset(self):    
+        # 記錄系統事件
+        classroom = Classroom.objects.get(id=self.kwargs['classroom_id'])
+        enrolls = Enroll.objects.filter(classroom_id=classroom.id).order_by("seat")
+        querysets = []
+        for enroll in enrolls:
+            log = Log(user_id=self.request.user.id, event=u'查看班級登入記錄<'+classroom.name+'>')
+            log.save()
+            user_logs = Log.objects.filter(user_id=enroll.student_id, event="登入系統")
+            weeklogs = groupby(user_logs, key=lambda row: (localtime(row.publish).isocalendar()[1]))
+            logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day))
+            month_lists = []
+            for key, value in logs:
+                month_lists.append([key, list(value)])
+            querysets.append([enroll, month_lists])
+        return querysets
+        
+    def get_context_data(self, **kwargs):
+        context = super(LoginCalendarClassView, self).get_context_data(**kwargs)
+        user_logs = Log.objects.filter(user_id=enroll.student_id, event="登入系統")
+        return context	

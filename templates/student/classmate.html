@@ -40,7 +40,11 @@
 			{% for group in user.groups.all %}
 			{% if group.name == 'teacher' %}              
 			<td><a href="/student/video/{{enroll.student_id}}">影片</a>
-            <td><a href="/account/event/{{enroll.student_id}}">全部</a> | <a href="/account/event12/{{enroll.student.id}}">12堂課</a></td>
+            <td>
+							<a href="/account/event/{{enroll.student_id}}">全部</a> | <a href="/account/event12/{{enroll.student.id}}">12堂課</a>
+						<BR>
+							<a href="/account/event/calendar/{{enroll.student_id}}">登入記錄</a> | <A href="/account/event/timeline/{{enroll.student_id}}">使用記錄</A>
+						</td>
             {% endif %}
             {% endfor %}            
             </tr>

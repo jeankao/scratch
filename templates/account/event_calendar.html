@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block head_ext %}
+{% load tz %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+{% endblock %}
+{% block title %} 時間軸 {% endblock %}
+{% block content %}
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["calendar"]});
+      google.charts.setOnLoadCallback(drawChart);
+
+   function drawChart() {
+       var dataTable = new google.visualization.DataTable();
+       dataTable.addColumn({ type: 'date', id: 'Date' });
+       dataTable.addColumn({ type: 'number', id: 'Won/Loss' });
+       dataTable.addRows([
+         {% for event in events %}
+          [ new Date({{event.0.0}}, {{event.0.1|add:"-1"}}, {{event.0.2}}), {{event.1|length}} ],
+         {% endfor %}
+          // Many rows omitted for brevity.
+        ]);
+
+       var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+
+       var options = {
+         title: "{{user.first_name}}的登入記錄",
+         height: 350,
+         noDataPattern: {
+           color: '#ffc147'
+         }
+       };
+
+       chart.draw(dataTable, options);
+   }
+    </script>
+<div id="calendar_basic" style="width: 1000px; height: 350px;"></div>
+{% endblock %}

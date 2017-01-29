@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block head_ext %}
+{% load tz %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['timeline']});
+</script>
+{% endblock %}
+{% block title %} 時間軸 {% endblock %}
+{% block content %}
+<h1>
+	{{user.first_name}}的使用記錄
+</h1>
+{% for key, value in events.items reversed %}
+<script type="text/javascript">
+    google.charts.setOnLoadCallback(drawChart{{forloop.counter}});
+  
+  	function drawChart{{forloop.counter}}() {
+        var container = document.getElementById('timeline');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn({ type: 'string', id: 'dayname' });
+        dataTable.addColumn({ type: 'string', id: 'count' });
+        dataTable.addColumn({ type: 'date', id: 'Start' });
+        dataTable.addColumn({ type: 'date', id: 'End' });
+        dataTable.addRows([
+          {% for hours in value %}
+					{% for event in hours %}
+           [ '{{event.0.0}}-{{event.0.1}}-{{event.0.2}}', "{{event.0.3}} 點，存取 {{event.1|length}} 次" ,  new Date({{event.0.0}}, {{event.0.1|add:"-1"}}, {{event.0.2}}, {{event.0.3}},0,0), new Date({{event.0.0}}, {{event.0.1|add:"-1"}}, {{event.0.2}}, {{event.0.3|add:1}},0,0) ],
+          {% endfor %}
+					{% endfor %}
+        ])
+        var first_day = new Date({{value.0.0.0.0}},{{value.0.0.0.1|add:"-1"}},{{value.0.0.0.2}})
+			  first_day.setDate(first_day.getDate() -  new Date({{value.0.0.0.0}},{{value.0.0.0.1|add:"-1"}},{{value.0.0.0.2}}).getDay() + 1);  			
+        var last_day = new Date({{value.0.0.0.0}},{{value.0.0.0.1|add:"-1"}},{{value.0.0.0.2}},23,59)
+			  last_day.setDate(last_day.getDate() -  new Date({{value.0.0.0.0}},{{value.0.0.0.1|add:"-1"}},{{value.0.0.0.2}}).getDay() + 7);
+
+			  var options = {
+          hAxis: {
+
+            minValue: first_day,
+            maxValue: last_day
+          },
+          timeline: { 
+						groupByRowLabel: true,
+						showBarLabels: false
+					}
+          
+        };
+        chart.draw(dataTable, options);
+    }
+{% endfor %}
+</script>
+<div id="timeline" style="height: 250px;"></div>
+{% endblock %}
