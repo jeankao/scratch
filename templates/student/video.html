@@ -15,7 +15,7 @@
 <div class="videolog">
 <table>
     {% for video in videos|get_value_from_dict:key %}
-    <tr><td>{{ video.stamp }}</td>
+    <tr><td width=20%>{{ video.stamp }}</td>
     <td><div class="timeslider" data-from="{{ video.from }}" data-to="{{ video.to }}" data-max="{{ video.duration }}"></div></td>
     </tr>
     {% endfor %}

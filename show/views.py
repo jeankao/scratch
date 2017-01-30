@@ -25,6 +25,7 @@ from PIL import Image,ImageDraw,ImageFont
 from binascii import a2b_base64
 import os
 import StringIO
+import zipfile
 import xlsxwriter
 from datetime import datetime
 from django.utils.timezone import localtime
@@ -145,8 +146,9 @@ def group_enroll(request, round_id,  group_id):
         return redirect('/show/group/'+round_id)
 
 # 刪除組別
-def group_delete(request, group_id, classroom_id):
-        classroom_name = Classroom.objects.get(id=classroom_id).name    
+def group_delete(request, group_id, round_id):
+        round = Round.objects.get(id=round_id)
+        classroom_name = Classroom.objects.get(id=round.classroom_id).name    
         group_name = ShowGroup(id=group_id).name    
         group = ShowGroup.objects.get(id=group_id)
         # 記錄系統事件
@@ -154,7 +156,7 @@ def group_delete(request, group_id, classroom_id):
             log = Log(user_id=request.user.id, event=u'刪除創意秀組別<'+group_name+'><'+classroom_name+'>')
             log.save()     
         group.delete()
-        return redirect('/show/group/'+classroom_id)    
+        return redirect('/show/group/'+round_id)    
 
 # 開放選組
 def group_open(request, round_id, action):
@@ -595,11 +597,6 @@ def upload_pic(request, show_id):
     return render_to_response('show/drscratch.html', {'form':form, 'show': m}, context_instance=RequestContext(request))
 
 def excel(request, round_id):
-    # 記錄系統事件
-    if is_event_open(request) :       
-        log = Log(user_id=request.user.id, event=u'下載創意秀到Excel')
-        log.save()        
-
     output = StringIO.StringIO()
     workbook = xlsxwriter.Workbook(output)    
             
@@ -629,15 +626,14 @@ def excel(request, round_id):
         worksheet.write(1,1, show.title)
         worksheet.write(2,0, u"上傳時間") 
         worksheet.write(2,1, str(localtime(show.publish)))        
-        worksheet.write(3,0, u"作品位置")
         #worksheet.write(3,1, "https://scratch.mit.edu/projects/"+str(show.number))
 
-        worksheet.write(4,0, u"評分者")
-        worksheet.write(4,1, u"美工設計")
-        worksheet.write(4,2, u"程式難度")
-        worksheet.write(4,3, u"創意表現")
-        worksheet.write(4,4, u"評語")
-        worksheet.write(4,5, u"時間")
+        worksheet.write(3,0, u"評分者")
+        worksheet.write(3,1, u"美工設計")
+        worksheet.write(3,2, u"程式難度")
+        worksheet.write(3,3, u"創意表現")
+        worksheet.write(3,4, u"評語")
+        worksheet.write(3,5, u"時間")
         showreviews = ShowReview.objects.filter(show_id=show.id)        
         score1 = showreviews.aggregate(Sum('score1')).values()[0]
         score2 = showreviews.aggregate(Sum('score2')).values()[0]
@@ -650,12 +646,12 @@ def excel(request, round_id):
         else :
             scores = [0,0,0,0]
         
-        worksheet.write(5,0, u"平均("+str(scores[3])+u"人)")
-        worksheet.write(5,1, scores[0])
-        worksheet.write(5,2, scores[1])
-        worksheet.write(5,3, scores[2])        
+        worksheet.write(4,0, u"平均("+str(scores[3])+u"人)")
+        worksheet.write(4,1, scores[0])
+        worksheet.write(4,2, scores[1])
+        worksheet.write(4,3, scores[2])        
 
-        index = 6
+        index = 5
         
         reviews = []
         classroom_id = Round.objects.get(id=round_id).classroom_id
@@ -678,11 +674,18 @@ def excel(request, round_id):
         worksheet.insert_image(index+1,0, 'static/show/'+str(show.id)+'/Dr-Scratch.png')
     workbook.close()
     # xlsx_data contains the Excel file
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=Show'+str(datetime.now().date())+'.xlsx'
+    #response = HttpResponse(content_type='application/vnd.ms-excel')
+    #response['Content-Disposition'] = 'attachment; filename=Show'+str(datetime.now().date())+'.xlsx'
     xlsx_data = output.getvalue()
-    response.write(xlsx_data)
-    return response
+    #response.write(xlsx_data)
+    xls_file = "static/show/content.xlsx"
+    directory = 'static/show/'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    with open(xls_file, 'wb') as fd:
+        fd.write(xlsx_data)
+        fd.close()
+    #return output
 
 def classroom(request, classroom_id):
     rounds = Round.objects.filter(classroom_id=classroom_id)
@@ -711,3 +714,61 @@ def comment(request, round_id, user_id):
         if Round.objects.get(id=show.round_id).classroom_id in classroom_ids:
             lists.append([show, review])
     return render(request, 'show/comment.html', {'user':user, 'classroom':classroom, 'lists': lists})
+
+def zip(request, round_id):
+    # Files (local path) to put in the .zip
+    # FIXME: Change this (get paths from DB etc)
+    #filenames = [settings.BASE_DIR + "/static/certificate/sample1.jpg", settings.BASE_DIR + "/static/certificate/sample2.jpg"]
+    # Folder name in ZIP archive which contains the above files
+    # E.g [thearchive.zip]/somefiles/file2.txt
+    # FIXME: Set this to something better
+    round = Round.objects.get(id=round_id)
+    classroom = Classroom.objects.get(id=round.classroom_id)
+    zip_subdir = u"創意秀_" + classroom.name + u"班_" + round_id
+    zip_filename = "%s.zip" % zip_subdir
+
+    # Open StringIO to grab in-memory ZIP contents
+    s = StringIO.StringIO()
+
+    # The zip compressor
+    zf = zipfile.ZipFile(s, "w")
+
+    excelfile = excel(request, round_id)
+    filename = "content.xlsx"
+    zip_path = os.path.join(zip_subdir, filename)
+    fdir = settings.BASE_DIR + "/static/show/"
+    fname = "content.xlsx"
+    fpath = fdir + fname    	
+    zf.write(fpath, zip_path)
+
+    shows = ShowGroup.objects.filter(round_id=round_id)
+    for show in shows:
+        try:
+          showfiles = ShowFile.objects.filter(show_id=show.id).order_by("-id")
+          # Calculate path for file in zip
+          #fdir , fname = os.path.split(fpath)
+          if showfiles.exists():
+            fdir = settings.BASE_DIR + "/"
+            fname = showfiles[0].filename
+            fpath = fdir + fname
+            enrolls = Enroll.objects.filter(group_show=show.id)
+            members = ""
+            for enroll in enrolls:
+                members += enroll.student.first_name+"_"
+            filename = show.name + "_" + members + show.title + ".sb2"
+            zip_path = os.path.join(zip_subdir, filename)
+
+            # Add file, at correct path
+            zf.write(fpath, zip_path)
+        except ObjectDoesNotExist:
+            pass
+
+    # Must close zip for all contents to be written
+    zf.close()
+
+    # Grab ZIP file from in-memory, make response with correct MIME-type
+    resp = HttpResponse(s.getvalue(), content_type = "application/x-zip-compressed")
+    # ..and correct content-disposition
+    resp['Content-Disposition'] = 'attachment; filename={0}'.format(zip_filename.encode('utf8'))
+
+    return resp

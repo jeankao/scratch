@@ -3,16 +3,16 @@
 {% block content %}
 {% load tag %}
 {% if group_show_open %}
-<a href="../add/{{round_id}}"><img src="/static/images/icon_group_new.png">新增組別</a>
+<a href="/show/group/add/{{round_id}}"><img src="/static/images/icon_group_new.png">新增組別</a>
 {% endif %}
 {% if teacher %}
-<a href="../size/{{round_id}}"><img src="/static/images/icon_size.png">設定人數</a>
+<a href="/show/group/size/{{round_id}}"><img src="/static/images/icon_size.png">設定人數</a>
 {% if group_show_open %}
-<a href="../open/{{round_id}}/0"><img src="/static/images/icon_close.png">關閉選組</a>
+<a href="/show/group/open/{{round_id}}/0"><img src="/static/images/icon_close.png">關閉選組</a>
 {% else %}
-<a href="../open/{{round_id}}/1"><img src="/static/images/icon_open.png">開放選組</a>
+<a href="/show/group/open/{{round_id}}/1"><img src="/static/images/icon_open.png">開放選組</a>
 {% endif %}
-　<a href="/show/excel/{{round_id}}"><img src="/static/images/icon_excel.png">匯出到Excel</a><BR>
+　<a href="/show/zip/{{round_id}}"><img src="/static/images/icon_zip.gif">匯出到Zip檔</a><BR>
 {% endif %}
 <br>
 <table>

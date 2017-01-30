@@ -9,20 +9,20 @@
 {% block title %} 時間軸 {% endblock %}
 {% block content %}
 <h1>
-	{{user1.first_name}}的使用記錄
+	{{user1.first_name}}的網站使用記錄
 </h1>
 {% for key, value in events.items reversed %}
 <script type="text/javascript">
     google.charts.setOnLoadCallback(drawChart{{forloop.counter}});
   
   	function drawChart{{forloop.counter}}() {
-        var container = document.getElementById('timeline');
+        var container = document.getElementById('timeline{{forloop.counter}}');
         var chart = new google.visualization.Timeline(container);
         var dataTable = new google.visualization.DataTable();
         dataTable.addColumn({ type: 'string', id: 'dayname' });
         dataTable.addColumn({ type: 'string', id: 'count' });
         dataTable.addColumn({ type: 'date', id: 'Start' });
-        dataTable.addColumn({ type: 'date', id: 'End' });
+        dataTable.addColumn({ type: 'date', id: 'End' });	
         dataTable.addRows([
           {% for hours in value %}
 					{% for event in hours %}
@@ -47,9 +47,21 @@
 					}
           
         };
-        chart.draw(dataTable, options);
+       chart.draw(dataTable, options);
+  Date.prototype.yyyymmddhh = function() {
+   var yyyy = this.getFullYear();
+   var mm = this.getMonth() < 9 ? "0" + (this.getMonth() + 1) : (this.getMonth() + 1); // getMonth() is zero-based
+   var dd  = this.getDate() < 10 ? "0" + this.getDate() : this.getDate();
+   var hh = this.getHours() < 10 ? "0" + this.getHours() : this.getHours();
+   return "".concat(yyyy).concat(mm).concat(dd).concat(hh);
+  }; 
+			var selectHandler = function(e) {
+          window.location = "/account/event/timelog/{{user1.id}}/"+dataTable.getValue(chart.getSelection()[0]['row'], 2 ).yyyymmddhh();
+       }
+
+       google.visualization.events.addListener(chart, 'select', selectHandler);			
     }
-{% endfor %}
 </script>
-<div id="timeline" style="height: 250px;"></div>
+<div id="timeline{{forloop.counter}}" style="height: 250px;"></div>
+{% endfor %}
 {% endblock %}

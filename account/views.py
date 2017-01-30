@@ -846,7 +846,7 @@ class EventTimeLineView(ListView):
         month_list = []
         for key, value in logs:           
             month_list = [[key, list(value)]]
-            week_number = datetime(*key).isocalendar()[1]
+            week_number = key[0]*1000 + datetime(*key).isocalendar()[1]
             if week.has_key(week_number):
                 pass
                 week[week_number].append(month_list)
@@ -860,6 +860,37 @@ class EventTimeLineView(ListView):
         context['week_number'] = datetime(*(2017,1,30)).isocalendar()[1]
         user = User.objects.get(id=self.kwargs['user_id'])
         context['user1'] = user
+        return context
+			
+# 記錄系統事件
+class EventTimeLogView(ListView):
+    context_object_name = 'events'
+    paginate_by = 50
+    template_name = 'account/event_timelog.html'
+
+    def get_queryset(self):    
+        # 記錄系統事件
+        user = User.objects.get(id=self.kwargs['user_id'])
+        date_string = self.kwargs['hour']
+        year = date_string[0:4]
+        month = date_string[4:6]
+        day = date_string[6:8]
+        hour = date_string[8:10]
+        log = Log(user_id=self.request.user.id, event=u'查看分時使用記錄<'+user.first_name+'>')
+        log.save()
+        user_logs = Log.objects.filter(user_id=user.id, publish__year=year, publish__month=month, publish__day=day, publish__hour=hour).order_by("-id")
+        return user_logs
+        
+    def get_context_data(self, **kwargs):
+        context = super(EventTimeLogView, self).get_context_data(**kwargs)
+        user = User.objects.get(id=self.kwargs['user_id'])
+        context['user1'] = user
+        date_string = self.kwargs['hour']
+        year = date_string[0:4]
+        month = date_string[4:6]
+        day = date_string[6:8]
+        hour = date_string[8:10]
+        context['hour'] = [year, month, day, hour]
         return context
 			
 # 記錄系統事件
