@@ -291,8 +291,18 @@ def adminrealname(request, user_id):
                 log.save()                
             return redirect('/account/userlist/')
     else:
-        user = User.objects.get(id=user_id)
-        form = RealnameForm(instance=user)
+        teacher = False
+        enrolls = Enroll.objects.filter(student_id=user_id)
+        for enroll in enrolls:
+            classroom = Classroom.objects.get(id=enroll.classroom_id)
+            if request.user.id == classroom.teacher_id:
+                teacher = True
+                break
+        if teacher:
+            user = User.objects.get(id=user_id)
+            form = RealnameForm(instance=user)
+        else:
+            return redirect("/")
 
     return render_to_response('account/realname.html',{'form': form}, context_instance=RequestContext(request))
 	
