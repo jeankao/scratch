@@ -2,7 +2,7 @@
 
 # Import all default settings.
 from .settings import *
-
+from django.conf import settings
 import dj_database_url
 
 DATABASES = {
