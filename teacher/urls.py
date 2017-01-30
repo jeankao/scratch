@@ -55,4 +55,8 @@ urlpatterns = [
     #教學筆記
     url(r'^note/(?P<classroom_id>\d+)/$', views.NoteListView.as_view()),
 		url(r'^note/doc/(?P<classroom_id>\d+)/$', views.doc_download),     
+    
+    #登入統計
+    url(r'^calendar/(?P<user_id>\d+)/$', views.CalendarView.as_view()),
+    url(r'^calendar/(?P<classroom_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)$', views.CalendarLogView.as_view()),	
 ]

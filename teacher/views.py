@@ -38,7 +38,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from uuid import uuid4
 from wsgiref.util import FileWrapper#from django.contrib.auth.decorators import login_required, user_passes_test
-
+from itertools import groupby
 # 判斷是否為授課教師
 def is_teacher(user, classroom_id):
     return user.groups.filter(name='teacher').exists() and Classroom.objects.filter(teacher_id=user.id, id=classroom_id).exists()
@@ -1247,3 +1247,68 @@ def doc_download(request, classroom_id):
 
 
     return response
+	
+# 日曆：班級登入列表
+class CalendarView(ListView):
+    context_object_name = 'lists'
+    #paginate_by = 50
+    template_name = 'teacher/calendar.html'
+
+    def get_queryset(self):    
+        # 記錄系統事件
+        classrooms = Classroom.objects.filter(teacher_id=self.kwargs['user_id']).order_by("-id")
+        log = Log(user_id=self.request.user.id, event=u'查看登入記錄')
+        log.save()
+        querysets = []
+        for classroom in classrooms:
+            enrolls = Enroll.objects.filter(classroom_id=classroom.id).order_by("seat")
+            members = []
+            for enroll in enrolls:
+                  members.append(enroll.student_id)            
+            user_logs = Log.objects.filter(user_id__in=members, event="登入系統")
+            #weeklogs = groupby(user_logs, key=lambda row: (localtime(row.publish).isocalendar()[1]))
+            logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day))
+            month_lists = []
+            for key, value in logs:
+                events = list(value)
+                month_lists.append([key,events])
+            if len(month_lists) > 0 :
+                querysets.append([classroom, month_lists, (month_lists[-1][0][0]-month_lists[0][0][0])*150+200])
+            else :
+                querysets.append([classroom, month_lists,200])
+        return querysets
+        
+    def get_context_data(self, **kwargs):
+        context = super(CalendarView, self).get_context_data(**kwargs)
+        return context	
+			
+# 日曆：班級登入列表
+class CalendarLogView(ListView):
+    context_object_name = 'events'
+    paginate_by = 50
+    template_name = 'teacher/calendar_log.html'
+
+    def get_queryset(self):    
+        classroom = Classroom.objects.get(id=self.kwargs['classroom_id'])
+        year = self.kwargs['year']
+        month = self.kwargs['month']
+        day = self.kwargs['day']
+        members = []
+        enrolls = Enroll.objects.filter(classroom_id=classroom.id) 
+        for enroll in enrolls:
+            members.append(enroll.student_id)
+        # 記錄系統事件
+        if is_event_open(self.request) :           
+            log = Log(user_id=self.request.user.id, event=u'查看班級登入<'+year+"-"+month+"-"+day+'>')
+            log.save()     
+        queryset = Log.objects.filter(user_id__in=members, event="登入系統", publish__year=year, publish__month=month, publish__day=day).order_by('-id')
+        return queryset
+			
+    def get_context_data(self, **kwargs):
+        context = super(CalendarLogView, self).get_context_data(**kwargs)
+        context['classroom'] = Classroom.objects.get(id=self.kwargs['classroom_id'])
+        year = self.kwargs['year']
+        month = self.kwargs['month']
+        day = self.kwargs['day']
+        context['date'] = [year,month,day]
+        return context	

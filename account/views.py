@@ -570,7 +570,16 @@ class VisitorListView(ListView):
         for visitor in visitors:
             queryset.append([int(str(visitor.date)[0:4]), int(str(visitor.date)[4:6]),int(str(visitor.date)[6:8]),visitor])
         return queryset
-        
+
+    def get_context_data(self, **kwargs):
+        context = super(VisitorListView, self).get_context_data(**kwargs)
+        first_element = Visitor.objects.all()[0]
+        end_year = int(str(first_element.date)[0:4])
+        last_element = Visitor.objects.all().reverse()[0]
+        start_year = int(str(last_element.date)[0:4])
+        context['height'] = 200+ (end_year-start_year)*200;
+        return context	   
+			
 # 列出單日日期訪客
 class VisitorLogListView(ListView):
     model = VisitorLog

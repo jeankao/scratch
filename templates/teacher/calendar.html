@@ -16,9 +16,10 @@
        var dataTable = new google.visualization.DataTable();
        dataTable.addColumn({ type: 'date', id: 'Date' });
        dataTable.addColumn({ type: 'number', id: 'Won/Loss' });
+       dataTable.addColumn({ type: 'number', id: 'classroo_id' });            
        dataTable.addRows([
          {% for event in list.1 %}
-          [ new Date({{event.0.0}}, {{event.0.1|add:"-1"}}, {{event.0.2}}), {{event.1|length}} ],
+          [ new Date({{event.0.0}}, {{event.0.1|add:"-1"}}, {{event.0.2}}), {{event.1|length}}, {{list.0.id}} ],
          {% endfor %}
           // Many rows omitted for brevity.
         ]);
@@ -27,17 +28,37 @@
 
       //alert(start_year);
       var options = {
-         title: "({{list.0.seat}}){{list.0.student.first_name}}的登入記錄",
+         title: "{{list.0.name}}班的登入記錄",
          height: {{list.2}},
          noDataPattern: {
            color: '#ffc147'
          }
        };
 
-       chart.draw(dataTable, options);
+       var view = new google.visualization.DataView(dataTable);
+       view.setColumns([0, 1]);
+      
+      chart.draw(view, options);
+function getFormattedDate(date) {
+  var year = date.getFullYear();
+  var month = (1 + date.getMonth()).toString();
+  month = month.length > 1 ? month : '0' + month;
+  var day = date.getDate().toString();
+  day = day.length > 1 ? day : '0' + day;
+  return year + '/' + month + '/' + day ;
+}
+      
+			var selectHandler = function(e) {
+          day = getFormattedDate(dataTable.getValue(chart.getSelection()[0]['row'], 0 ))
+          window.location = "/teacher/calendar/"+dataTable.getValue(chart.getSelection()[0]['row'], 2 )+"/"+day;
+       }
+
+       google.visualization.events.addListener(chart, 'select', selectHandler);			
    }
 </script>
+<!--
 <div align=right style="width:850px"><a href="/account/event/timeline/{{list.0.student_id}}">使用記錄</a></div>
+-->
 <div id="calendar_basic{{forloop.counter}}" style="width: 950px;"></div>
 {% endfor %}
 {% endblock %}

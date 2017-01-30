@@ -1097,7 +1097,7 @@ def work1(request, classroom_id):
                       scorer_name = "X"
               except ObjectDoesNotExist:
                   work = Work(index=lesson, user_id=1)
-              works.append([enroll, work.score, scorer_name, work.number])
+              works.append([enroll, work.score, scorer_name])
               try :
                   assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson+1)
                   group_assistants.append(enroll)
@@ -1123,16 +1123,20 @@ class LoginCalendarClassView(ListView):
         classroom = Classroom.objects.get(id=self.kwargs['classroom_id'])
         enrolls = Enroll.objects.filter(classroom_id=classroom.id).order_by("seat")
         querysets = []
+        log = Log(user_id=self.request.user.id, event=u'查看班級登入記錄<'+classroom.name+'>')
+        log.save()
         for enroll in enrolls:
-            log = Log(user_id=self.request.user.id, event=u'查看班級登入記錄<'+classroom.name+'>')
-            log.save()
             user_logs = Log.objects.filter(user_id=enroll.student_id, event="登入系統")
-            weeklogs = groupby(user_logs, key=lambda row: (localtime(row.publish).isocalendar()[1]))
+            #weeklogs = groupby(user_logs, key=lambda row: (localtime(row.publish).isocalendar()[1]))
             logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day))
             month_lists = []
             for key, value in logs:
-                month_lists.append([key, list(value)])
-            querysets.append([enroll, month_lists])
+                events = list(value)
+                month_lists.append([key,events])
+            if len(month_lists) > 0 :
+                querysets.append([enroll, month_lists, (month_lists[-1][0][0]-month_lists[0][0][0])*150+200])
+            else :
+                querysets.append([enroll, month_lists,200])
         return querysets
         
     def get_context_data(self, **kwargs):

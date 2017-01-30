@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %} Teachers {% endblock %}
+{% block content %}
+{% load tag %}
+
+  <h1>{{classroom.name}}班的登入記錄：{{date.0}}年{{date.1}}月{{date.2}}日，共{{events.count}}筆</h1>
+ <table>
+        <tr>
+            <td>姓名</td>
+            <td>記錄</td>
+            <td>時間</td>
+        </tr>
+        {% for log in events %}
+            <tr>
+                <td><a href="/account/profile/{{log.user_id}}">{{log.user_id|name}}</a></td>
+                <td>{{log.event}}</a></td>
+				<td>{{log.publish| date:"DATE_FORMAT"}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        {% include "pagination.html" with page=page_obj %}
+        
+        <BR>
+{% endblock %}

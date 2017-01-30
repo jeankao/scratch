@@ -4,6 +4,9 @@
 {% endblock %}
 {% block title %} 課後問卷 {% endblock %}
 {% block content %}
+<h1>
+{{classroom.name}}班的課後問卷：{{enrolls|length}}位學生，共{{questionaires|length}}份問卷 
+</h1>
 <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
@@ -19,7 +22,7 @@
         ]);
 
         var options = {
-          title: "{{question.0}}"
+          title: "{{question.0}}(N={{questionaires|length}})"
         };
 
         var chart{{forloop.parentloop.counter}}_{{forloop.counter}} = new google.visualization.PieChart(document.getElementById('piechart{{forloop.parentloop.counter}}_{{forloop.counter}}'));
@@ -30,7 +33,11 @@
       }
     </script>
 {% for sections in questions %}
-<h1>{{sections.0}}</h1>
+<table>
+  <tr>
+<th>{{sections.0}}</th>
+  </tr>
+</table>
     {% for question in sections.1 %}
     <div id="piechart{{forloop.parentloop.counter}}_{{forloop.counter}}" style="width: 900px; height: 500px;"></div>
     {% endfor %}
