@@ -144,7 +144,7 @@ STATICFILES_DIRS = [
 ]
 
 # Static asset configuration.
-#STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 import os
 if os.getenv('DATABASE_URL') is not None:
