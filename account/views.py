@@ -891,10 +891,10 @@ class EventTimeLogView(ListView):
         # 記錄系統事件
         user = User.objects.get(id=self.kwargs['user_id'])
         date_string = self.kwargs['hour']
-        year = date_string[0:4]
-        month = date_string[4:6]
-        day = date_string[6:8]
-        hour = date_string[8:10]
+        year = int(date_string[0:4])
+        month = int(date_string[4:6])
+        day = int(date_string[6:8])
+        hour = int(date_string[8:10])
         log = Log(user_id=self.request.user.id, event=u'查看分時使用記錄<'+user.first_name+'>')
         log.save()
         user_logs = Log.objects.filter(user_id=user.id, publish__year=year, publish__month=month, publish__day=day, publish__hour=hour).order_by("-id")
