@@ -35,9 +35,9 @@
 			<a href="/student/bug/add/{{classroom.0.classroom_id}}">Bug求救</a>｜			
 			</td>
 		</tr>
-    <tr>
     {% for show in classroom.1 %}
-            <td>創意秀({{forloop.counter}})：
+    <tr>
+					<td>創意秀({{forloop.counter}})：
 			<a href="/show/group/{{show.id}}">組別</a>｜
 			{% if classroom.0.group_show > 0 %}
 			<a href="/show/group/submit/{{show.id}}/{{classroom.0.group_show}}/">繳交</a>｜
