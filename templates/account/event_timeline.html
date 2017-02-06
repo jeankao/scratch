@@ -16,6 +16,7 @@
     google.charts.setOnLoadCallback(drawChart{{forloop.counter}});
   
   	function drawChart{{forloop.counter}}() {
+        var day_count = {{day_count}};
         var container = document.getElementById('timeline{{forloop.counter}}');
         var chart = new google.visualization.Timeline(container);
         var dataTable = new google.visualization.DataTable();
@@ -23,7 +24,7 @@
         dataTable.addColumn({ type: 'string', id: 'count' });
         dataTable.addColumn({ type: 'date', id: 'Start' });
         dataTable.addColumn({ type: 'date', id: 'End' });	
-        dataTable.addRows([
+        dataTable.addRows([			
           {% for hours in value %}
 					{% for event in hours %}
            [ '{{event.0.0}}-{{event.0.1}}-{{event.0.2}}', "{{event.0.3}} 點，存取 {{event.1|length}} 次" ,  new Date({{event.0.0}}, {{event.0.1|add:"-1"}}, {{event.0.2}}, {{event.0.3}},0,0), new Date({{event.0.0}}, {{event.0.1|add:"-1"}}, {{event.0.2}}, {{event.0.3|add:1}},0,0) ],
@@ -36,8 +37,9 @@
 			  last_day.setDate(last_day.getDate() -  new Date({{value.0.0.0.0}},{{value.0.0.0.1|add:"-1"}},{{value.0.0.0.2}}).getDay() + 7);
 
 			  var options = {
+					height: day_count[{{forloop.counter|add:"-1"}}] * 45 + 50,
           hAxis: {
-
+         
             minValue: first_day,
             maxValue: last_day
           },
@@ -62,6 +64,7 @@
        google.visualization.events.addListener(chart, 'select', selectHandler);			
     }
 </script>
-<div id="timeline{{forloop.counter}}" style="height: 250px;"></div>
+
+<div id="timeline{{forloop.counter}}"></div>
 {% endfor %}
 {% endblock %}
