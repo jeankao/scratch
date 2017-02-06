@@ -871,8 +871,8 @@ class EventTimeLineView(ListView):
                 week[week_number].append(month_list)
             else:
                 week[week_number] = [month_list]
-        sorted(week.iteritems())
-        return week
+        #sorted(week.iteritems())
+        return sorted(week.iteritems())
         
     def get_context_data(self, **kwargs):
         context = super(EventTimeLineView, self).get_context_data(**kwargs)
