@@ -879,6 +879,21 @@ class EventTimeLineView(ListView):
         context['week_number'] = datetime(*(2017,1,30)).isocalendar()[1]
         user = User.objects.get(id=self.kwargs['user_id'])
         context['user1'] = user
+        user = User.objects.get(id=self.kwargs['user_id'])	
+        user_logs = Log.objects.filter(user_id=user.id).order_by("-id")
+        logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day))
+        week = OrderedDict()
+        for key, value in logs:        
+            week_number = key[0]*1000 + datetime(*key).isocalendar()[1]	
+            if week.has_key(week_number):
+                week[week_number] += 1
+            else:
+                week[week_number] = 1
+        sorted(week.iteritems())
+        day = []    
+        for key in week:
+            day.append(week[key])
+        context['day_count'] = day
         return context
 			
 # 記錄系統事件
