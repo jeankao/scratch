@@ -39,6 +39,8 @@ from django.core.files.storage import FileSystemStorage
 from uuid import uuid4
 from wsgiref.util import FileWrapper
 from itertools import groupby
+from account.helper import VideoLogHelper
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -989,46 +991,12 @@ class VideoListView(ListView):
     template_name = 'student/video.html'
     
     def get_queryset(self):
-        list = ['PLAY','PAUSE','STOP']
-        events = Log.objects.filter(Q(user_id=self.kwargs['user_id']), reduce(lambda x, y: x | y, [Q(event__contains=word) for word in list])).order_by("id")
-        
-        searching = False
-        start_time = ""
-        videos = {}
-        
-        for event in events:
-            video = event.event.split("|")
-            lesson = video[0][video[0].find("<")+1:video[0].find(">")].encode("utf-8")
-            action = video[2][1:video[2].find("[")]            
-            tabName = video[1][1:-1].encode("utf-8")
-            time = video[2][video[2].find("[")+1:video[2].find("]")]
-            if not searching and action == "PLAY" :
-                start_log_time = event.publish
-                start_time = time
-                searching = True
-            if searching and ( action == "PAUSE" or action == "STOP") :
-                if (lesson, tabName) in video_url :
-                    '''
-                    if (lesson, tabName) in videos :
-                        videos[lesson, tabName].append(str(localtime(start_log_time).strftime("%Y-%m-%d %H:%M:%S"))+"--["+start_time+"]--"+str(localtime(event.publish).strftime("%Y-%m-%d %H:%M:%S"))+"--["+time+ "]")
-                    else :
-                        videos[lesson, tabName] = []
-                        videos[lesson, tabName].append(str(localtime(start_log_time).strftime("%Y-%m-%d %H:%M:%S"))+"--["+start_time+"]--"+str(localtime(event.publish).strftime("%Y-%m-%d %H:%M:%S"))+"--["+time+ "]")
-                    '''
-                    if (lesson, tabName) not in videos:
-                        videos[lesson, tabName] = []
-                    tmp = start_time.split(":")
-                    tfrom = int(tmp[0])*3600+int(tmp[1])*60+int(tmp[2])
-                    tmp = time.split(":")
-                    tto = tfrom + int((event.publish - start_log_time).total_seconds())
-                    videos[lesson, tabName].append({'stamp':str(localtime(start_log_time).strftime("%Y-%m-%d %H:%M:%S")),'from':tfrom,'to':tto,'duration':video_duration[video_url[lesson, tabName.encode("UTF-8")]]})
-                    start_time = ""
-                    searching = False
-        # 記錄系統事件
-        if is_event_open(self.request) :          
-            log = Log(user_id=self.request.user.id, event=u'查看影片記錄')
-            log.save()          
-        return videos
+				videos = VideoLogHelper().getLogByUserid(self.kwargs['user_id'])
+				# 記錄系統事件
+				if is_event_open(self.request) :          
+						log = Log(user_id=self.request.user.id, event=u'查看影片記錄')
+						log.save()          
+				return videos
         
     def get_context_data(self, **kwargs):
         context = super(VideoListView, self).get_context_data(**kwargs)
@@ -1144,4 +1112,4 @@ class LoginCalendarClassView(ListView):
         return context	
 # 說明作品編號
 def test(request):
-        return render_to_response('student/test.html', context_instance=RequestContext(request))			
+        return render_to_response('student/test.html', context_instance=RequestContext(request))

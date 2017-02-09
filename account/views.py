@@ -34,6 +34,8 @@ import urllib
 from django.db.models import Q
 from itertools import groupby
 from collections import OrderedDict
+from helper import VideoLogHelper
+
 # 判斷是否開啟事件記錄
 def is_event_open(request):
         enrolls = Enroll.objects.filter(student_id=request.user.id)
@@ -934,42 +936,21 @@ class EventVideoView(ListView):
     template_name = 'account/event_video.html'
 
     def get_queryset(self):    
-        # 記錄系統事件
-        enrolls = Enroll.objects.filter(classroom_id=self.kwargs['classroom_id'])
-        classroom = Classroom.objects.get(id=self.kwargs['classroom_id'])
-        log = Log(user_id=self.request.user.id, event=u'查看影片觀看記錄<'+classroom.name+'>')
-        log.save()
-        students = []
-        # 初始化 student_log
-        for enroll in enrolls:
-              students.append(enroll.student_id)
-        user_logs = Log.objects.filter(Q(user_id__in=students) & (Q(event__icontains="PLAY") | Q(event__icontains="PAUSE")))
-        logs = groupby(user_logs, key=lambda row: row.user_id)
-        student_logs = {}
-        datas = {}
-        events = []
-        for key, value in logs:
-            student_log = list(value)
-            student_logs[key] = student_log
-            durations = 0
-            logs = student_logs[key]
-            play_time = ""
-            end_time = ""
-            for log in logs:
-                if "PLAY" in log.event:
-                    play_time = log.publish
-                    playing = True
-                elif "PAUSE" in log.event:
-                    end_time = log.publish
-                    duration = end_time - play_time
-                    durations += duration.seconds
-            datas[key]= durations
-        for enroll in enrolls :
-            if datas.has_key(enroll.student_id):
-                events.append([enroll, datas[enroll.student_id]])
-            else :
-                events.append([enroll, 0])
-        return events
+				# 記錄系統事件
+				classroom = Classroom.objects.get(id=self.kwargs['classroom_id'])
+				log = Log(user_id=self.request.user.id, event=u'查看影片觀看記錄<'+classroom.name+'>')
+				log.save()
+
+				enrolls = Enroll.objects.filter(classroom_id=self.kwargs['classroom_id'])
+				events = []
+				for student in enrolls: 
+						videos = VideoLogHelper().getLogByUserid(student.student_id)
+						length = 0
+						for video in videos: 
+								for log in videos[video]:									
+										length += log['length'];
+						events.append([student, length])
+				return events
         
     def get_context_data(self, **kwargs):
         context = super(EventVideoView, self).get_context_data(**kwargs)
@@ -1037,30 +1018,9 @@ def note_get(request):
           
 # 影片記錄
 def videolog(request):
-    tabName = request.POST.get('tabName')
-    lesson = request.POST.get('lesson')
-    duration = video_duration[video_url[lesson, tabName.encode("UTF-8")]]
-    logs = Log.objects.filter(user_id=request.user.id, event__startswith=u"查看課程內容<"+lesson+"> | "+tabName+" |").order_by('id')
-    xlist = []
-    text = ""
-    searching = False    
-    for log in logs:
-        video = log.event.split("|")
-        action = video[2][1:video[2].find("[")]
-        time = video[2][video[2].find("[")+1:video[2].find("]")]
-        if not searching and action == "PLAY" :
-            start_time = time
-            start_log_time = log.publish
-            searching = True
-        if searching and ( action == "PAUSE" or action == "STOP") :
-            row = str(localtime(start_log_time).strftime("%Y-%m-%d %H:%M:%S"))+"--["+start_time+"]--"+str(localtime(log.publish).strftime("%Y-%m-%d %H:%M:%S"))+"--["+time+ "]##"
-            tmp = start_time.split(":")
-            tfrom = int(tmp[0])*3600+int(tmp[1])*60+int(tmp[2])
-            tmp = time.split(":")
-            tto = tfrom + int((log.publish - start_log_time).total_seconds())
-            xlist.append({'stamp':str(localtime(start_log_time).strftime("%Y-%m-%d %H:%M:%S")),'from':tfrom,'to':tto})
-            text = text + row
-            start_time = ""
-            searching = False
-    return JsonResponse({'status':'ok', 'text':text, 'duration':duration, 'recs':json.dumps(xlist)}, safe=False)
+		tabName = request.POST.get('tabName')
+		lesson = request.POST.get('lesson')
+		duration = video_duration[video_url[lesson, tabName.encode('UTF-8')]]
+		xlist = VideoLogHelper().getLogByUserid_Lesson_Tab(request.user.id, lesson, tabName)
+		return JsonResponse({'status':'ok', 'duration':duration, 'recs':json.dumps(xlist)}, safe=False)
      
