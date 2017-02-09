@@ -16,7 +16,7 @@
        dataTable.addColumn({ type: 'number', id: 'Won/Loss' });
        dataTable.addRows([
          {% for event in events %}
-          [ new Date({{event.0.0}}, {{event.0.1|add:"-1"}}, {{event.0.2}}), {{event.1|length}} ],
+             [new Date('{{ event.logdate}}'), {{ event.count }}],
          {% endfor %}
           // Many rows omitted for brevity.
         ]);
