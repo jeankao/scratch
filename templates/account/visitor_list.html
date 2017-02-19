@@ -12,7 +12,7 @@
        dataTable.addColumn({ type: 'date', id: 'Date' });
        dataTable.addColumn({ type: 'number', id: 'Won/Loss' });
        dataTable.addRows([
-        {% for visitor in visitors %}
+        {% for visitor in total_visitors %}
           [ new Date({{visitor.0}},{{visitor.1|add:"-1"}}, {{visitor.2}}), {{visitor.3.count}} ],
         {% endfor %}
         ]);
@@ -29,6 +29,8 @@
 
        chart.draw(dataTable, options);
    }
+   
+   
     </script>
 {% endblock %}
 {% block content %}

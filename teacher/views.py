@@ -425,8 +425,8 @@ def work_group(request, lesson, classroom_id):
                     else :
                         scorer_name = "X"
                 except ObjectDoesNotExist:
-                    work = Work(index=lesson, user_id=1, number="0")
-                works.append([enroll, work.score, scorer_name, work.number])
+                    work = Work(index=lesson, user_id=1)
+                works.append([enroll, work.score, scorer_name])
                 try :
                     assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson)
                     group_assistants.append(enroll)
@@ -1264,7 +1264,8 @@ class CalendarView(ListView):
             enrolls = Enroll.objects.filter(classroom_id=classroom.id).order_by("seat")
             members = []
             for enroll in enrolls:
-                  members.append(enroll.student_id)            
+                  if enroll.seat > 0 :
+                      members.append(enroll.student_id)            
             user_logs = Log.objects.filter(user_id__in=members, event="登入系統")
             #weeklogs = groupby(user_logs, key=lambda row: (localtime(row.publish).isocalendar()[1]))
             logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day))

@@ -18,7 +18,7 @@ class VideoLogHelper:
 						action = video[2][1:video[2].find("[")]            
 						tabName = video[1][1:-1].encode("utf-8")
 						time = video[2][video[2].find("[")+1:video[2].find("]")]
-						if not searching and action == "PLAY" :
+						if action == "PLAY" :
 								start_log_time = event.publish
 								start_time = time
 								searching = True
@@ -31,6 +31,7 @@ class VideoLogHelper:
 										tmp = time.split(":")
 										length = int((event.publish - start_log_time).total_seconds())
 										tto = tfrom + length
+										#videos[lesson, tabName].append({'stamp':str(localtime(start_log_time).strftime("%Y-%m-%d %H:%M:%S")),'from':tfrom,'to':tto,'length':length, 'duration':video_duration[video_url[lesson, tabName.encode("UTF-8")]]})
 										videos[lesson, tabName].append({'stamp':str(localtime(start_log_time).strftime("%Y-%m-%d %H:%M:%S")),'from':tfrom,'to':tto,'length':length, 'duration':video_duration[video_url[lesson, tabName.encode("UTF-8")]]})
 										start_time = ""
 										searching = False

@@ -12,7 +12,7 @@
      google.charts.setOnLoadCallback(drawStuff);
       function drawStuff() {
         var data = new google.visualization.arrayToDataTable([
-          ['學生', '觀看時間(秒)', 'user_id'],          
+          ['學生', '觀看時間(分)', 'user_id'],          
           {% for event in events %}
           ['({{event.0.seat}}){{event.0.student.first_name}}', {{event.1}}, {{event.0.student_id}}],
           {% endfor %}
@@ -29,7 +29,7 @@
           bars: 'horizontal', // Required for Material Bar Charts.
           axes: {
             x: {
-              0: { side: 'top', label: '觀看時間(秒)'} // Top x-axis.
+              0: { side: 'top', label: '觀看時間(分)'} // Top x-axis.
             }
           },
           bar: { groupWidth: "90%" }

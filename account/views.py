@@ -585,11 +585,17 @@ class VisitorListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(VisitorListView, self).get_context_data(**kwargs)
-        first_element = Visitor.objects.all()[0]
+        first_element = Visitor.objects.all().order_by("-id")[0]
         end_year = int(str(first_element.date)[0:4])
-        last_element = Visitor.objects.all().reverse()[0]
+        last_element = Visitor.objects.all().order_by("id")[0]
         start_year = int(str(last_element.date)[0:4])
         context['height'] = 200+ (end_year-start_year)*200;
+        #context['height'] = last_element.date
+        visitors = Visitor.objects.all().order_by('id')
+        queryset = []
+        for visitor in visitors:
+            queryset.append([int(str(visitor.date)[0:4]), int(str(visitor.date)[4:6]),int(str(visitor.date)[6:8]),visitor])
+        context['total_visitors'] = queryset
         return context	   
 			
 # 列出單日日期訪客
@@ -937,15 +943,15 @@ class EventVideoView(ListView):
 				log = Log(user_id=self.request.user.id, event=u'查看影片觀看記錄<'+classroom.name+'>')
 				log.save()
 
-				enrolls = Enroll.objects.filter(classroom_id=self.kwargs['classroom_id'])
+				enrolls = Enroll.objects.filter(classroom_id=self.kwargs['classroom_id'], seat__gt=0).order_by("seat")
 				events = []
 				for student in enrolls: 
 						videos = VideoLogHelper().getLogByUserid(student.student_id)
 						length = 0
 						for video in videos: 
 								for log in videos[video]:									
-										length += log['length'];
-						events.append([student, length])
+										length += log['length']
+						events.append([student, length/60])
 				return events
         
     def get_context_data(self, **kwargs):
