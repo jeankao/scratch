@@ -14,9 +14,9 @@
             <tr>
 							  <td>{{log.user_id|school}}</td>
 							  <td>{{log.user_id|classroom}}</td>
-                <td><a href="/account/profile/{{log.user_id}}">{{log.user_id|name}}</a></td>
-				<td>{{log.time| date:"DATE_FORMAT"}}</td>
-              <td>{{log.IP}}</td>
+                <td nowrap><a href="/account/profile/{{log.user_id}}">{{log.user_id|name}}</a></td>
+				<td nowrap>{{log.time| date:"DATE_FORMAT"}}</td>
+              <td nowrap>{{log.IP}}</td>
             </tr>
         {% endfor %}
         </table>
