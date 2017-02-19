@@ -83,7 +83,7 @@ $(function () {
 <p>學校：{{profile.user.last_name}}</p>
 <p>
 班級：
-{% for enroll in enrolls %}
+{% for enroll in enrolls reversed %}
 {{enroll.classroom.name}}({{enroll.seat}}號)
 {% endfor %}
 </p>

@@ -36,7 +36,7 @@ def school(user_id):
 @register.filter()
 def classroom(user_id):
     if user_id > 0 :
-        enrolls = Enroll.objects.filter(student_id=user_id)
+        enrolls = Enroll.objects.filter(student_id=user_id).order_by("-id")
         classroom_names = ""
         for enroll in enrolls:
             classroom = Classroom.objects.get(id=enroll.classroom_id)
