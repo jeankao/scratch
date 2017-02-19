@@ -80,7 +80,8 @@ def homepage(request):
         admin_profile.save()
     except ObjectDoesNotExist:
         admin_profile = ""
-    return render_to_response('homepage.html', {'row_count':row_count, 'user_count':len(users), 'admin_profile': admin_profile}, context_instance=RequestContext(request))
+    classroom_count = Classroom.objects.all().count()
+    return render_to_response('homepage.html', {'classroom_count':classroom_count, 'row_count':row_count, 'user_count':len(users), 'admin_profile': admin_profile}, context_instance=RequestContext(request))
 
 # 作者
 def author(request):
