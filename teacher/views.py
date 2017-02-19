@@ -1266,7 +1266,7 @@ class CalendarView(ListView):
             for enroll in enrolls:
                   if enroll.seat > 0 :
                       members.append(enroll.student_id)            
-            user_logs = Log.objects.filter(user_id__in=members, event="登入系統")
+            user_logs = Log.objects.filter(user_id__in=members, event="登入系統").order_by("id")
             #weeklogs = groupby(user_logs, key=lambda row: (localtime(row.publish).isocalendar()[1]))
             logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day))
             month_lists = []
@@ -1280,7 +1280,7 @@ class CalendarView(ListView):
         return querysets
         
     def get_context_data(self, **kwargs):
-        context = super(CalendarView, self).get_context_data(**kwargs)
+        context = super(CalendarView, self).get_context_data(**kwargs)			
         return context	
 			
 # 日曆：班級登入列表
