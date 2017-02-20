@@ -12,7 +12,7 @@
         {% for group in student_group.1 %}
                 <tr>
                 <td>{{group.0.name}}</td>
-                <td>
+                <td nowrap>
 				{% for assistant in group.2 %}
 				    ({{assistant.seat}}){{assistant.student.first_name}}
 				{% endfor %}                                 
