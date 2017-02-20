@@ -330,7 +330,7 @@ def submit(request, lesson, index):
 
             if not works.exists():
                 if form.is_valid():
-                    work = Work(index=index, user_id=request.user.id, memo=form.cleaned_data['memo'], publication_date=timezone.now())
+                    work = Work(index=index, user_id=request.user.id, memo=form.cleaned_data['memo'], publication_date=timezone.now(), file=form.cleaned_data['file'])
                     work.save()
                     workfile = WorkFile(work_id=work.id, filename=filename)
                     workfile.save()
@@ -354,7 +354,7 @@ def submit(request, lesson, index):
                     #works[0].file = form.cleaned_data['file']
                     #works[0].memo = form.cleaned_data['memo']
                     #works[0].publication_date = timezone.localtime(timezone.now())
-                    works.update(memo=form.cleaned_data['memo'],publication_date=timezone.localtime(timezone.now()))
+                    works.update(memo=form.cleaned_data['memo'],publication_date=timezone.localtime(timezone.now()), file=form.cleaned_data['file'])
                     workfile = WorkFile(work_id=works[0].id, filename=filename)
                     workfile.save()
                     # 記錄系統事件 

@@ -864,6 +864,7 @@ class EventTimeLineView(ListView):
         user = User.objects.get(id=self.kwargs['user_id'])
         log = Log(user_id=self.request.user.id, event=u'查看使用記錄<'+user.first_name+'>')
         log.save()
+        #user_logs = Log.objects.filter(user_id=user.id, event="登入系統").extra({'logdate': "to_char(publish, 'YYYY-MM-DD')"}).values('logdate').annotate(count=Count('id')).order_by('logdate')
         user_logs = Log.objects.filter(user_id=user.id).order_by("id")
         logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day, localtime(row.publish).hour))
         week = OrderedDict()
