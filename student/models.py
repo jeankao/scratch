@@ -46,7 +46,7 @@ class Enroll(models.Model):
         return User.objects.get(id=self.student_id)      
 
     def __str__(self):
-        return str(self.id)    
+        return str(self.student_id)+'('+self.student.first_name+')'
 
     class Meta:
         unique_together = ('student_id', 'classroom_id',)		
