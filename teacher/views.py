@@ -153,7 +153,7 @@ def work1(request, classroom_id):
     enroll_pool = [enroll for enroll in Enroll.objects.filter(classroom_id=classroom_id).order_by('seat')]
     student_ids = map(lambda a: a.student_id, enroll_pool)
     work_pool = Work.objects.filter(user_id__in=student_ids)
-    user_pool = [user for user in User.objects.filter(id__in=student_ids)]
+    user_pool = [user for user in User.objects.filter(id__in=work_pool.values('scorer'))]
     assistant_pool = [assistant for assistant in Assistant.objects.filter(classroom_id=classroom_id)]
     for lesson in range(41):
         student_groups = []					
@@ -166,8 +166,8 @@ def work1(request, classroom_id):
                 work = filter(lambda w: w.index == lesson+1 and w.user_id == member.student_id, work_pool)
                 if work:
                     work = work[0]
-                    scorer = filter(lambda u: u.id == work.scorer, user_pool)[0]
-                    scorer_name = scorer.first_name
+                    scorer = filter(lambda u: u.id == work.scorer, user_pool)
+                    scorer_name = scorer[0].first_name if scorer else 'X'
                 else:
                     work = Work(index=lesson+1, user_id=1)
                 works.append([member, work.score, scorer_name, work.file])
