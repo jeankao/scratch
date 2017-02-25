@@ -132,54 +132,55 @@ def unenroll(request, enroll_id, classroom_id):
 
 # 列出班級所有作業
 def work(request, classroom_id):
-        # 限本班任課教師
-        if not is_teacher(request.user, classroom_id):
-            return redirect("homepage")    
-        classroom = Classroom.objects.get(id=classroom_id)
-        # 記錄系統事件
-        if is_event_open(request) :    
-            log = Log(user_id=request.user.id, event=u'列出班級所有作業<'+classroom.name+'>')
-            log.save()              
-        return render_to_response('teacher/work.html', {'lesson_list':lesson_list, 'classroom': classroom}, context_instance=RequestContext(request))
+    # 限本班任課教師
+    if not is_teacher(request.user, classroom_id):
+        return redirect("homepage")    
+    classroom = Classroom.objects.get(id=classroom_id)
+    # 記錄系統事件
+    if is_event_open(request) :    
+        log = Log(user_id=request.user.id, event=u'列出班級所有作業<'+classroom.name+'>')
+        log.save()              
+    return render_to_response('teacher/work.html', {'lesson_list':lesson_list, 'classroom': classroom}, context_instance=RequestContext(request))
 
 # 列出分組12堂課所有作業
 def work1(request, classroom_id):
-         # 限本班任課教師
-        if not is_teacher(request.user, classroom_id):
-            return redirect("homepage")    
-        classroom_name = Classroom.objects.get(id=classroom_id).name
-        lessons = []
-        groups = EnrollGroup.objects.filter(classroom_id=classroom_id)
-        for lesson in range(41):
-          student_groups = []					
-          for group in groups:
-              enrolls = Enroll.objects.filter(classroom_id=classroom_id, group=group.id)
-              group_assistants = []
-              works = []
-              scorer_name = ""
-              for enroll in enrolls: 
-                  try:    
-                      work = Work.objects.get(user_id=enroll.student_id, index=lesson+1)
-                      if work.scorer > 0 :
-                          scorer = User.objects.get(id=work.scorer)
-                          scorer_name = scorer.first_name
-                      else :
-                          scorer_name = "X"
-                  except ObjectDoesNotExist:
-                      work = Work(index=lesson, user_id=1)
-                  works.append([enroll, work.score, scorer_name, work.file])
-                  try :
-                      assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson+1)
-                      group_assistants.append(enroll)
-                  except ObjectDoesNotExist:
-                      pass
-              student_groups.append([group, works, group_assistants])
-          lessons.append([lesson_list[lesson], student_groups])
-        # 記錄系統事件
-        if is_event_open(request) :            
-            log = Log(user_id=request.user.id, event=u'以分組顯示作業<'+classroom_name+'>')
-            log.save()         
-        return render_to_response('teacher/work1.html', {'lessons':lessons, 'classroom_id':classroom_id}, context_instance=RequestContext(request))
+    # 限本班任課教師
+    if not is_teacher(request.user, classroom_id):
+        return redirect("homepage")    
+    classroom_name = Classroom.objects.get(id=classroom_id).name
+    lessons = []
+    groups = [group for group in EnrollGroup.objects.filter(classroom_id=classroom_id)]
+    enroll_pool = [enroll for enroll in Enroll.objects.filter(classroom_id=classroom_id).order_by('seat')]
+    student_ids = map(lambda a: a.student_id, enroll_pool)
+    work_pool = Work.objects.filter(user_id__in=student_ids)
+    user_pool = [user for user in User.objects.filter(id__in=work_pool.values('scorer'))]
+    assistant_pool = [assistant for assistant in Assistant.objects.filter(classroom_id=classroom_id)]
+    for lesson in range(41):
+        student_groups = []					
+        for group in groups:
+            members = filter(lambda u: u.group == group.id, enroll_pool)
+            group_assistants = []
+            works = []
+            scorer_name = ""
+            for member in members:
+                work = filter(lambda w: w.index == lesson+1 and w.user_id == member.student_id, work_pool)
+                if work:
+                    work = work[0]
+                    scorer = filter(lambda u: u.id == work.scorer, user_pool)
+                    scorer_name = scorer[0].first_name if scorer else 'X'
+                else:
+                    work = Work(index=lesson+1, user_id=1)
+                works.append([member, work.score, scorer_name, work.file])
+                assistant = filter(lambda a: a.student_id == member.student_id and a.lesson == lesson+1, assistant_pool)
+                if assistant:
+                    group_assistants.append(member)
+            student_groups.append([group, works, group_assistants])
+        lessons.append([lesson_list[lesson], student_groups])
+    # 記錄系統事件
+    if is_event_open(request) :            
+        log = Log(user_id=request.user.id, event=u'以分組顯示作業<'+classroom_name+'>')
+        log.save()         
+    return render_to_response('teacher/work1.html', {'lessons':lessons, 'classroom_id':classroom_id}, context_instance=RequestContext(request))
 			
 			
 # 列出某作業所有同學名單
