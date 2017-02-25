@@ -170,7 +170,7 @@ def work1(request, classroom_id):
                     scorer_name = scorer[0].first_name if scorer else 'X'
                 else:
                     work = Work(index=lesson+1, user_id=1)
-                works.append([member, work.score, scorer_name, work.file])
+                works.append([member, work.score, scorer_name, work.memo])
                 assistant = filter(lambda a: a.student_id == member.student_id and a.lesson == lesson+1, assistant_pool)
                 if assistant:
                     group_assistants.append(member)

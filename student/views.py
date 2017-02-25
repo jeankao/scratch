@@ -330,7 +330,7 @@ def submit(request, lesson, index):
 
             if not works.exists():
                 if form.is_valid():
-                    work = Work(index=index, user_id=request.user.id, memo=form.cleaned_data['memo'], publication_date=timezone.now(), file=form.cleaned_data['file'])
+                    work = Work(index=index, user_id=request.user.id, memo=form.cleaned_data['memo'], publication_date=timezone.now())
                     work.save()
                     workfile = WorkFile(work_id=work.id, filename=filename)
                     workfile.save()
@@ -354,7 +354,7 @@ def submit(request, lesson, index):
                     #works[0].file = form.cleaned_data['file']
                     #works[0].memo = form.cleaned_data['memo']
                     #works[0].publication_date = timezone.localtime(timezone.now())
-                    works.update(memo=form.cleaned_data['memo'],publication_date=timezone.localtime(timezone.now()), file=form.cleaned_data['file'])
+                    works.update(memo=form.cleaned_data['memo'],publication_date=timezone.localtime(timezone.now()))
                     workfile = WorkFile(work_id=works[0].id, filename=filename)
                     workfile.save()
                     # 記錄系統事件 
@@ -1065,7 +1065,7 @@ def work1(request, classroom_id):
                       scorer_name = "X"
               except ObjectDoesNotExist:
                   work = Work(index=lesson, user_id=1)
-              works.append([enroll, work.score, scorer_name])
+              works.append([enroll, work.score, scorer_name, work.memo])
               try :
                   assistant = Assistant.objects.get(student_id=enroll.student.id, classroom_id=classroom_id, lesson=lesson+1)
                   group_assistants.append(enroll)

@@ -1,8 +1,10 @@
 # -*- coding: UTF-8 -*-
+from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from teacher.models import Classroom
 from django.utils import timezone
+from django.utils.encoding import force_text
 
 # 學生選課資料
 class Enroll(models.Model):
@@ -46,7 +48,7 @@ class Enroll(models.Model):
         return User.objects.get(id=self.student_id)      
 
     def __str__(self):
-        return str(self.student_id)+'('+self.student.first_name+')'
+        return str(self.id)    
 
     class Meta:
         unique_together = ('student_id', 'classroom_id',)		
@@ -56,13 +58,10 @@ class EnrollGroup(models.Model):
     name = models.CharField(max_length=30)
     classroom_id = models.IntegerField(default=0)
 
-def upload_path_handler(instance, filename):
-    return "static/works/user_{id}/{filename}".format(id=instance.student_id, filename=filename)
-
 class Work(models.Model):
     user_id = models.IntegerField(default=0) 
     index = models.IntegerField()
-    file = models.FileField(upload_to = upload_path_handler)
+    file = models.FileField()
     memo = models.TextField()
     publication_date = models.DateTimeField(default=timezone.now)
     score = models.IntegerField(default=-1)

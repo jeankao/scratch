@@ -20,7 +20,7 @@
 									<td>
 				{% for enroll in group.1 %}										
 				    <a target=_blank href="/teacher/scoring/{{classroom_id}}/{{enroll.0.student_id}}/{{forloop.parentloop.parentloop.counter}}">({{enroll.0.seat}}){{enroll.0.student.first_name}}</a>
-					{% if enroll.1 != -1 %} -{{enroll.1}}-{{enroll.2}}{% else %}-{% if not enroll.3 %}<font color=green>尚未繳交</font>{% else %}<font color=red>尚未評分</font>{% endif %}{% endif %}
+					{% if enroll.1 != -1 %} -{{enroll.1}}-{{enroll.2}}{% else %}-{% if enroll.3 == ""  %}<font color=green>尚未繳交</font>{% else %}<font color=red>尚未評分</font>{% endif %}{% endif %}
 				{% endfor %}
 				</td>
         {% endfor %}
