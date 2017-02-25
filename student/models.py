@@ -55,11 +55,14 @@ class Enroll(models.Model):
 class EnrollGroup(models.Model):
     name = models.CharField(max_length=30)
     classroom_id = models.IntegerField(default=0)
-    
+
+def upload_path_handler(instance, filename):
+    return "static/works/user_{id}/{filename}".format(id=instance.student_id, filename=filename)
+
 class Work(models.Model):
     user_id = models.IntegerField(default=0) 
     index = models.IntegerField()
-    file = models.FileField()
+    file = models.FileField(upload_to = upload_path_handler)
     memo = models.TextField()
     publication_date = models.DateTimeField(default=timezone.now)
     score = models.IntegerField(default=-1)
