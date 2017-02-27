@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %} Teachers {% endblock %}
+{% block head_ext %}
+ <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+ <script type="text/javascript">
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ["詞句", "出現次數"],
+        {% for word in words %}
+        ['{{word.0}}', {{word.1}}],
+        {% endfor %}
+      ]);
+
+      var view = new google.visualization.DataView(data);
+      view.setColumns([0,1]);
+
+      var options = {
+        title: "{{classroom.name}}心得用詞統計",
+        width: 900,
+        height: 1200,
+      };
+      var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
+      chart.draw(view, options);
+      var selectHandler = function(e) {
+          window.location = "/student/memo_word/{{classroom.id}}/"+data.getValue(chart.getSelection()[0]['row'], 0 );
+       }
+
+       google.visualization.events.addListener(chart, 'select', selectHandler);
+  }
+  </script>
+{% endblock %}
+{% block content %}
+<div id="barchart_values"></div>
+
+{% endblock %}

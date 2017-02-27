@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load tag %}
+{% block title %}Create a question{% endblock %}
+{% block content %}
+{{classroom.name}}的心得詞句：<font color=blue>{{word}}</font>
+    <table>
+    <tr>
+        <td>編號</td>
+        <td>姓名</td>
+        <td>心得</td>
+    </tr>
+      {% for work in works %}
+    <Tr>
+      <td>{{work.index}}</td>
+      <td nowrap>{{work.user_id|name}}</td>
+      <td>{{work.memo|safe}}</td>
+    </Tr>
+      {% endfor %}
+    </table>
+{% endblock %}

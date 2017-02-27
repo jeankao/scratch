@@ -34,6 +34,7 @@ import string
 import base64
 import sys
 import os
+import jieba
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from uuid import uuid4
@@ -500,6 +501,56 @@ def memo_all(request, classroom_id):
             log.save()            
         return render_to_response('student/memo_all.html', {'enrolls':enrolls, 'classroom_name':classroom_name}, context_instance=RequestContext(request))
 
+# 查詢某班級心得
+def memo_count(request, classroom_id):
+        enrolls = Enroll.objects.filter(classroom_id=classroom_id).order_by("seat")
+        members = []
+        for enroll in enrolls:
+            members.append(enroll.student_id)
+        classroom = Classroom.objects.get(id=classroom_id)
+        works = Work.objects.filter(user_id__in=members)
+        memo = ""
+        for work in works:
+            memo += work.memo
+        memo = memo.rstrip('\r\n')
+        seglist = jieba.cut(memo, cut_all=False)
+        hash = {}
+        for item in seglist: 
+            if item in hash:
+                hash[item] += 1
+            else:
+                hash[item] = 1
+        words = []
+        count = 0
+        for key, value in sorted(hash.items(), key=lambda x: x[1], reverse=True):
+            count += 1
+            if ord(key[0]) > 32 :
+                words.append([key, value])
+                if count == 30:
+                    break
+        # 記錄系統事件
+        if is_event_open(request) :          
+            log = Log(user_id=request.user.id, event=u'查看班級心得統計<'+classroom.name+'>')
+            log.save()            
+        return render_to_response('student/memo_count.html', {'words':words, 'enrolls':enrolls, 'classroom':classroom}, context_instance=RequestContext(request))
+
+# 查詢某班某詞句心得
+def memo_word(request, classroom_id, word):
+        enrolls = Enroll.objects.filter(classroom_id=classroom_id).order_by("seat")
+        members = []
+        for enroll in enrolls:
+            members.append(enroll.student_id)
+        classroom = Classroom.objects.get(id=classroom_id)
+        works = Work.objects.filter(user_id__in=members, memo__contains=word).order_by('index')
+        for work in works:
+            work.memo = work.memo.replace(word, '<font color=red>'+word+'</font>')
+        # 記錄系統事件
+        if is_event_open(request) :          
+            log = Log(user_id=request.user.id, event=u'查看班級心得詞句<'+classroom.name+'><'+word+'>')
+            log.save()            
+        return render_to_response('student/memo_word.html', {'word':word, 'works':works, 'classroom':classroom}, context_instance=RequestContext(request))
+		
+			
 # 查詢個人心得
 def memo_show(request, user_id, unit,classroom_id, score):
     user_name = User.objects.get(id=user_id).first_name

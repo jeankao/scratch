@@ -50,7 +50,9 @@ urlpatterns = [
     #查詢某班級所有同學心得		
     url(r'^memo_all/(?P<classroom_id>[^/]+)$', views.memo_all),  	
     url(r'^memo_show/(?P<user_id>\d+)/(?P<unit>\d+)/(?P<classroom_id>[^/]+)/(?P<score>[^/]+)/$', views.memo_show),
-    
+    url(r'^memo_count/(?P<classroom_id>\d+)/$', views.memo_count),        
+    url(r'^memo_word/(?P<classroom_id>\d+)/(?P<word>[^/]+)/$', views.memo_word),  	
+	
     # bug
     url(r'^bug/class/(?P<classroom_id>[^/]+)/$', login_required(views.BugListClassView.as_view()), name='bug_class_list'),	
     url(r'^bug/(?P<bug_id>[^/]+)/$',views.bug_detail, name='bug_detail'),
