@@ -36,8 +36,6 @@ urlpatterns = [
     url(r'^lesson/log/(?P<lesson>[^/]+)/$', views.lesson_log),    
     #查詢該作業分組小老師
     url(r'^group/work/(?P<lesson>[^/]+)/(?P<classroom_id>[^/]+)$', views.work_group),  
-    #查詢該作業所有同學心得
-    url(r'^memo/(?P<classroom_id>[^/]+)/(?P<index>[^/]+)/$', views.memo),   
     
     #測驗
     url(r'^exam/$', views.exam),      
@@ -46,7 +44,11 @@ urlpatterns = [
 
     #積分排行榜
     url(r'^rank/(?P<kind>[^/]+)/(?P<classroom_id>[^/]+)/$', views.RankListView.as_view(), name='rank'), 
-    
+
+	
+    #查詢該作業所有同學心得
+    url(r'^memo/(?P<classroom_id>[^/]+)/(?P<index>[^/]+)/$', views.memo),   
+    url(r'^memo_user/(?P<user_id>\d+)/$', views.memo_user),				
     #查詢某班級所有同學心得		
     url(r'^memo_all/(?P<classroom_id>[^/]+)$', views.memo_all),  	
     url(r'^memo_show/(?P<user_id>\d+)/(?P<unit>\d+)/(?P<classroom_id>[^/]+)/(?P<score>[^/]+)/$', views.memo_show),

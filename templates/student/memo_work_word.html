@@ -12,7 +12,7 @@
       {% for work in works %}
     <Tr>
       <td>{{work.index}}</td>
-      <td nowrap>{{work.user_id|name}}</td>
+      <td nowrap>><a href="/student/memo_user/{{work.user_id}}">{{work.user_id|name}}</a></td>
       <td>{{work.memo|safe}}</td>
     </Tr>
       {% endfor %}

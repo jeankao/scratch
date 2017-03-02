@@ -568,22 +568,6 @@ def check(request, user_id, unit,classroom_id):
         log.save()  
     return render_to_response('teacher/check.html', {'form':form, 'works':works, 'lesson_list':lesson_list, 'student': user, 'unit':unit, 'classroom_id':classroom_id}, context_instance=RequestContext(request))
 
-# 評分某同學某進度心得
-@login_required
-def memo_user(request, user_id):
-    user = User.objects.get(id=user_id)
-    del lesson_list[:]
-    reset()
-    works = Work.objects.filter(user_id=user_id)
-    for work in works:
-        lesson_list[work.index-1].append(work.memo)
-
-    # 記錄系統事件
-    if is_event_open(request) :        
-        log = Log(user_id=request.user.id, event=u'查閱個人心得<'+user.first_name+'>')
-        log.save()  
-    return render_to_response('teacher/memo_user.html', {'lesson_list':lesson_list, 'student': user}, context_instance=RequestContext(request))
-	
 	
 # 查閱全班測驗卷成績
 def exam_list(request, classroom_id):

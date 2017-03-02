@@ -41,6 +41,7 @@ from uuid import uuid4
 from wsgiref.util import FileWrapper
 from itertools import groupby
 from account.helper import VideoLogHelper
+from django.contrib.auth.decorators import login_required
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -522,9 +523,10 @@ def memo_count(request, classroom_id):
                 hash[item] = 1
         words = []
         count = 0
+        error=""
         for key, value in sorted(hash.items(), key=lambda x: x[1], reverse=True):
-            count += 1
             if ord(key[0]) > 32 :
+                count += 1	
                 words.append([key, value])
                 if count == 30:
                     break
@@ -533,6 +535,23 @@ def memo_count(request, classroom_id):
             log = Log(user_id=request.user.id, event=u'查看班級心得統計<'+classroom.name+'>')
             log.save()            
         return render_to_response('student/memo_count.html', {'words':words, 'enrolls':enrolls, 'classroom':classroom}, context_instance=RequestContext(request))
+
+# 評分某同學某進度心得
+@login_required
+def memo_user(request, user_id):
+    user = User.objects.get(id=user_id)
+    del lesson_list[:]
+    reset()
+    works = Work.objects.filter(user_id=user_id)
+    for work in works:
+        lesson_list[work.index-1].append(work.memo)
+
+    # 記錄系統事件
+    if is_event_open(request) :        
+        log = Log(user_id=request.user.id, event=u'查閱個人心得<'+user.first_name+'>')
+        log.save()  
+    return render_to_response('student/memo_user.html', {'lesson_list':lesson_list, 'student': user}, context_instance=RequestContext(request))
+
 
 # 查詢某班級某作業心得統計
 def memo_work_count(request, classroom_id, work_id):
