@@ -28,6 +28,7 @@ urlpatterns = [
     
     # 心得
     url(r'^memo/(?P<classroom_id>\d+)/$', views.memo),	
+    url(r'^memo_user/(?P<user_id>\d+)/$', views.memo_user),		
 		url(r'^check/(?P<user_id>[^/]+)/(?P<unit>[^/]+)/(?P<classroom_id>\d+)/$', views.check), 	
 	
 	 #結算成績

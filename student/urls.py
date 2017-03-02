@@ -52,6 +52,8 @@ urlpatterns = [
     url(r'^memo_show/(?P<user_id>\d+)/(?P<unit>\d+)/(?P<classroom_id>[^/]+)/(?P<score>[^/]+)/$', views.memo_show),
     url(r'^memo_count/(?P<classroom_id>\d+)/$', views.memo_count),        
     url(r'^memo_word/(?P<classroom_id>\d+)/(?P<word>[^/]+)/$', views.memo_word),  	
+    url(r'^memo_work_count/(?P<classroom_id>\d+)/(?P<work_id>\d+)/$', views.memo_work_count),        	
+    url(r'^memo_work_word/(?P<classroom_id>\d+)/(?P<work_id>\d+)/(?P<word>[^/]+)/$', views.memo_work_word),  		
 	
     # bug
     url(r'^bug/class/(?P<classroom_id>[^/]+)/$', login_required(views.BugListClassView.as_view()), name='bug_class_list'),	

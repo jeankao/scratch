@@ -29,7 +29,7 @@
             <td>{{lesson.4|date:"Y/m/d h:i:s" }}</td>
             <td>{% if lesson.6 == 1 %}<a href="/teacher/score_peer/{{c}}/{{classroom_id}}/{{group}}">小老師</a>{% endif %}</td> 
             <td><A href="/student/group/work/{{ forloop.counter }}/{{classroom_id}}">查詢</A></td>			
-            <td><A href="/student/memo/{{classroom_id}}/{{ forloop.counter }}">心得</A></td>
+            <td><A href="/student/memo/{{classroom_id}}/{{ forloop.counter }}">心得</a> [<a href="/student/memo_work_count/{{classroom_id}}/{{ forloop.counter }}">統計]</A></td>
             
         </tr>
     {% endwith %}
