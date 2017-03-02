@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 from datetime import datetime
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
-
+from student.lesson import *
 register = template.Library()
 
 @register.filter()
@@ -145,3 +145,7 @@ def get_value_from_dict(dict_data, key):
 @register.filter
 def subtract(a, b):
     return a - b	
+
+@register.filter
+def lesson_name(index):
+    return lesson_list[index][2]
