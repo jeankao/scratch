@@ -25,7 +25,7 @@
       var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
       chart.draw(view, options);
       var selectHandler = function(e) {
-          window.location = "/student/memo_work_word/{{classroom.id}}/"+data.getValue(chart.getSelection()[0]['row'], 0 );
+          window.location = "/student/memo_word/{{classroom.id}}/"+data.getValue(chart.getSelection()[0]['row'], 0 );
        }
 
        google.visualization.events.addListener(chart, 'select', selectHandler);
