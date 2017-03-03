@@ -479,11 +479,11 @@ def memo(request, classroom_id, index):
     for enroll in enrolls:
         try:
             work = Work.objects.get(index=index, user_id=enroll.student_id)
-            datas.append([enroll.seat, enroll.student.first_name, work.memo])
+            datas.append([enroll, work.memo])
         except ObjectDoesNotExist:
-            datas.append([enroll.seat, enroll.student.first_name, ""])
+            datas.append([enroll, ""])
     def getKey(custom):
-        return custom[0]
+        return custom[0].seat
     datas = sorted(datas, key=getKey)	
     # 記錄系統事件
     if is_event_open(request) :      

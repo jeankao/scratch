@@ -10,9 +10,9 @@
         </tr>
         {% for data in datas %}
             <tr>
-            <td>{{data.0}}</td>
-            <td>{{data.1}}</td>
-            <td>{{data.2}}</td>            
+            <td>{{data.0.seat}}</td>
+            <td nowrap><a href="/student/memo_user/{{data.0.student_id}}">{{data.0.student.first_name}}</a></td>
+            <td>{{data.1}}</td>            
             </tr>
         {% endfor %}
         </table>
