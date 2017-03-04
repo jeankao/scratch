@@ -148,4 +148,4 @@ def subtract(a, b):
 
 @register.filter
 def lesson_name(index):
-    return lesson_list[index][2]
+    return lesson_list[index-1][2]
