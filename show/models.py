@@ -19,6 +19,7 @@ class ShowGroup(models.Model):
     body = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
     picture = models.ImageField(upload_to = upload_path_handler)
+    youtube = models.CharField(max_length=250)
     done = models.BooleanField(default=False)
     open =  models.BooleanField(default=False)
 

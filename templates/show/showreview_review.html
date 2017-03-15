@@ -57,6 +57,9 @@ swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent", "482", "387", "10.
               <BR>第{{showfiles|length|subtract:forloop.counter|add:1}}版：<A href="/show/download/{{show.id}}/{{showfile.id}}">{{showfile.upload_date}}</A>
         {% endfor %}
 <BR><BR>
+	{% if show.youtube %}
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/{{show.youtube}}" frameborder="0" allowfullscreen></iframe>
+	{% endif %}
 <H1>評分</H1>
   <form action="." method="post" onsubmit="return checkRegistration()">
 <table>
