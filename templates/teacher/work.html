@@ -7,6 +7,7 @@
         <td>編號</td>
         <td>作品</td>
         <td>班級</td>
+        <td>心得</td>      
     </tr>
     {% for lesson in lesson_list %}
     {% with c=forloop.counter %}
@@ -15,6 +16,7 @@
         <td align=right>{{lesson.0}}</td>
             <td>{{lesson.2}}</td>
             <td><a target=_blank href="/teacher/score/{{classroom.id}}/{{c}}">{{classroom.name}}</a></td>
+          <td><a href="/student/memo/{{classroom.id}}/{{c}}">心得</a></td>
         </tr>
     {% endwith %}
     {% endfor %}

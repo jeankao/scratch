@@ -1214,7 +1214,7 @@ class LoginCalendarClassView(ListView):
         log = Log(user_id=self.request.user.id, event=u'查看班級登入記錄<'+classroom.name+'>')
         log.save()
         for enroll in enrolls:
-            user_logs = Log.objects.filter(user_id=enroll.student_id, event="登入系統")
+            user_logs = Log.objects.filter(user_id=enroll.student_id, event="登入系統").order_by("id")
             #weeklogs = groupby(user_logs, key=lambda row: (localtime(row.publish).isocalendar()[1]))
             logs = groupby(user_logs, key=lambda row: (localtime(row.publish).year, localtime(row.publish).month, localtime(row.publish).day))
             month_lists = []
