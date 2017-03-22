@@ -35,12 +35,32 @@ class VideoLogHelper:
                         "%Y-%m-%d %H:%M:%S")), 'from': tfrom, 'to': tto, 'length': length, 'duration': video_duration[video_url[lesson, tabname.encode("UTF-8")]]})
                     searching = False
         return videos
+      
+    def _calculateTime(self, events):        
+        videos = []
+        start_time = ''        
+        for event in events:
+            # 查看課程內容<1> | 影片：為什麼要學程式設計 | PAUSE[00:07:56]
+            lesson, tabname, action, time = re.search(
+                "<([^ ]+)> *\| *([^ ]+) *\| *(PLAY|PAUSE|STOP)\[(.+)\]", event.event).groups()
+            tabname = tabname.encode('utf-8')
+            start_time = time
+            tmp = start_time.split(":")
+            tfrom = int(tmp[0]) * 3600 + int(tmp[1]) * 60 + int(tmp[2])
+            videos.append(tfrom)
+        return videos      
 
     def getLogByUserid(self, userid):
         event_list = ['PLAY', 'PAUSE', 'STOP']
         events = Log.objects.filter(Q(user_id=userid), reduce(lambda x, y: x | y, [
                                     Q(event__contains=word) for word in event_list])).order_by("id")
         return self._calculate(events)
+      
+    def getPlayLogByUserid(self, userid, lesson, tabName):
+        event_list = ['PLAY']
+        events = Log.objects.filter(Q(event__contains=u"查看課程內容<"+lesson+"> | "+tabName), Q(user_id=userid), reduce(lambda x, y: x | y, [
+                                    Q(event__contains=word) for word in event_list])).order_by("id")
+        return self._calculateTime(events)      
 
     def getLogByUserid_Lesson_Tab(self, userid, lesson, tab):
         events = self.getLogByUserid(userid)

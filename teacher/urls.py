@@ -2,7 +2,7 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from . import views
-from teacher.views import ClassroomListView, ClassroomCreateView, AnnounceListView, AnnounceCreateView
+from teacher.views import ClassroomListView, ClassroomCreateView, AnnounceListView, AnnounceCreateView, VideoView
 
 urlpatterns = [
     # post views
@@ -59,4 +59,6 @@ urlpatterns = [
     #登入統計
     url(r'^calendar/(?P<user_id>\d+)/$', views.CalendarView.as_view()),
     url(r'^calendar/(?P<classroom_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)$', views.CalendarLogView.as_view()),	
+    #影片統計
+    url(r'^video/(?P<classroom_id>\d+)/$', views.VideoView.as_view()),	
 ]

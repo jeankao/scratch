@@ -39,6 +39,8 @@ from django.core.files.storage import FileSystemStorage
 from uuid import uuid4
 from wsgiref.util import FileWrapper#from django.contrib.auth.decorators import login_required, user_passes_test
 from itertools import groupby
+from account.helper import VideoLogHelper
+
 # 判斷是否為授課教師
 def is_teacher(user, classroom_id):
     return user.groups.filter(name='teacher').exists() and Classroom.objects.filter(teacher_id=user.id, id=classroom_id).exists()
@@ -1315,3 +1317,25 @@ class CalendarLogView(ListView):
         day = self.kwargs['day']
         context['date'] = [year,month,day]
         return context	
+			
+# 影片：班級觀看列表
+class VideoView(ListView):
+    context_object_name = 'lists'
+    #paginate_by = 50
+    template_name = 'teacher/video.html'
+
+    def get_queryset(self):    
+        # 記錄系統事件        
+        log = Log(user_id=self.request.user.id, event=u'查看影片統計')
+        log.save()
+        enrolls = Enroll.objects.filter(classroom_id=self.kwargs['classroom_id'], seat__gt=0).order_by("seat")
+        events = []
+        videos = []
+        for student in enrolls: 
+            videos = VideoLogHelper().getPlayLogByUserid(student.student_id, "5", u"影片1")
+            events.append([student, videos])
+        return events		
+        
+    def get_context_data(self, **kwargs):
+        context = super(VideoView, self).get_context_data(**kwargs)			
+        return context				
