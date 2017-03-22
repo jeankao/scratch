@@ -8,7 +8,7 @@
         {% for list in classmate_work  %}
                 <tr>
                 <td>
-                {% if list.1.publication_date %} 
+                {% if list.1.memo %} 
                         <a href="/teacher/scoring/{{classroom_id}}/{{list.0.id}}/{{index}}">{{list.0.first_name}}
                     {% if list.1.score > 0 %}
                         ({{list.1.score}}-{{list.3}})
