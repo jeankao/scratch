@@ -10,8 +10,8 @@
         var data = google.visualization.arrayToDataTable([
           ['time', 'seat'],
 {% for list in lists %}
-    {% for time in list.1 %}
-          [{{time}}, {{list.0.seat}}],
+    {% for time in list.start %}
+          [{{time}}, {{list.seat}}],
     {% endfor %}
 {% endfor %}
         ]);
@@ -31,8 +31,5 @@
 {% endblock %}
 {% block content %}
 {% load tag %}
-{% for list in lists %}
-{{list}}
-{% endfor %}
     <div id="chart_div" style="width: 900px; height: 500px;"></div>
 {% endblock %}

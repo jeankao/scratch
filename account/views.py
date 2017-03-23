@@ -840,12 +840,12 @@ class EventCalendarView(ListView):
     template_name = 'account/event_calendar.html'
 
     def get_queryset(self):    
-				# 記錄系統事件
-				user = User.objects.get(id=self.kwargs['user_id'])
-				log = Log(user_id=self.request.user.id, event=u'查看登入記錄<'+user.first_name+'>')
-				log.save()
-				user_logs = Log.objects.filter(user_id=user.id, event="登入系統").extra({'logdate': "to_char(publish, 'YYYY-MM-DD')"}).values('logdate').annotate(count=Count('id')).order_by('logdate')
-				return user_logs
+        # 記錄系統事件
+        user = User.objects.get(id=self.kwargs['user_id'])
+        log = Log(user_id=self.request.user.id, event=u'查看登入記錄<'+user.first_name+'>')
+        log.save()
+        user_logs = Log.objects.filter(user_id=user.id, event="登入系統").extra({'logdate': "to_char(publish, 'YYYY-MM-DD')"}).values('logdate').annotate(count=Count('id')).order_by('logdate')
+        return user_logs
         
     def get_context_data(self, **kwargs):
         context = super(EventCalendarView, self).get_context_data(**kwargs)

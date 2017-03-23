@@ -1325,15 +1325,17 @@ class VideoView(ListView):
     template_name = 'teacher/video.html'
 
     def get_queryset(self):    
-        # 記錄系統事件        
+        # 記錄系統事件
         log = Log(user_id=self.request.user.id, event=u'查看影片統計')
         log.save()
         enrolls = Enroll.objects.filter(classroom_id=self.kwargs['classroom_id'], seat__gt=0).order_by("seat")
+        sids = map(lambda e: e.student_id, enrolls)
+        video_pool = VideoLogHelper().getPlayLogByUserids(sids, '5', u'影片1')
         events = []
-        videos = []
-        for student in enrolls: 
-            videos = VideoLogHelper().getPlayLogByUserid(student.student_id, "5", u"影片1")
-            events.append([student, videos])
+        for student in enrolls:
+            videos = map(lambda v: v['start'], filter(lambda v: v['uid'] == student.student_id, video_pool))
+            events.append({'seat': student.seat, 'start': videos})
+
         return events		
         
     def get_context_data(self, **kwargs):
