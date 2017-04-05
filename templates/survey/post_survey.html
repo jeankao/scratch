@@ -9,7 +9,7 @@ function color(element) {
   
 function validateForm() {
 {% for sections in questions %}
-{% for quesiton in sections %}  
+{% for quesiton in sections.1 %}  
     if (document.forms["myForm"]["p2_{{forloop.parentloop.counter}}_{{forloop.counter}}"].value=="") {
         alert("請填寫您的答案!!");
         var row = document.getElementById('trp2_{{forloop.parentloop.counter}}_{{forloop.counter}}');
