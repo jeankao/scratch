@@ -16,6 +16,7 @@ class ShowGroup(models.Model):
     name = models.CharField(max_length=30)
     title = models.CharField(max_length=250)
     file = models.FileField()	
+    number = models.CharField(max_length=30)
     body = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
     picture = models.ImageField(upload_to = upload_path_handler)
