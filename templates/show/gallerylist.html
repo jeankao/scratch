@@ -5,26 +5,26 @@
 {% load tag %}
 {% block content %}
 <table>
-{% for post in lists %}
+{% for show in lists %}
 {% if forloop.counter|add:1|divisibleby:2 %} 
 <tr><td>
 {% endif %}
     <h2>
-      <a href="/show/gallery/{{post.id}}">
-        {{ post.title }}
+      <a href="/show/gallery/{{show.id}}">
+        {{ show.title }}
       </a>
     </h2>
   
-{% if post.number %}
+{% if show.number %}
    <BR>
-  <iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ post.number  }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
+  <iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ show.number  }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
   <BR>
 {% else %}  
 <script type="text/javascript" src="/static/sb2/swfobject.js"></script>
  
 <script >   
 var flashvars = {
-project: "/{{post.file}}" ,
+project: "/{{show.file}}" ,
 autostart: "false"
 };
 
@@ -47,7 +47,7 @@ swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent{{forloop.counter}}",
 </div>   
 
 <BR></BR>    <p class="date">
-      Published {{ post.publish}} by {{ post.id|show_member }}
+      Published {{ show.publish}} by {{ show.id|show_member }}
     </p>
 {% if forloop.counter|add:1|divisibleby:2 %}
   </td><td>
