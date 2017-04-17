@@ -14,6 +14,12 @@
         {{ post.title }}
       </a>
     </h2>
+  
+{% if show.number %}
+   <BR>
+  <iframe allowtransparency="true" width="485" height="402" src="http://scratch.mit.edu/projects/embed/{{ show.number  }}/?autostart=false" frameborder=“0” allowfullscreen></iframe>
+  <BR>
+{% else %}  
 <script type="text/javascript" src="/static/sb2/swfobject.js"></script>
  
 <script >   
@@ -35,7 +41,7 @@ var attributes = {};
 swfobject.embedSWF("/static/sb2/Scratch.swf", "flashContent{{forloop.counter}}", "482", "387", "10.2.0","expressInstall.swf", flashvars, params, attributes);
 
 </script>
-              
+{% endif %}              
 <div id="flashContent{{forloop.counter}}" >
  
 </div>   
