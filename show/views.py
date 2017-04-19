@@ -587,7 +587,8 @@ def upload_pic(request, show_id):
         if is_event_open(request) :         
             log = Log(user_id=request.user.id, event='上傳Dr Scratch分析圖成功')
             log.save()             
-        return redirect('/show/detail/'+show_id+'/#drscratch')
+        round_id = ShowGroup.objects.get(id=show_id).round_id
+        return redirect('/show/detail/'+str(round_id)+'/'+show_id+'/#drscratch')
     else :
         try:
             m = ShowGroup.objects.get(id=show_id)   
