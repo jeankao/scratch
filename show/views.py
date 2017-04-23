@@ -371,7 +371,7 @@ class RankListView(ListView):
                 score = reviews.aggregate(Sum('score'+self.kwargs['rank_id'])).values()[0]/reviews.count()
             else :
                 score = 0
-            lists.append([show, students, score, reviews.count(), self.kwargs['rank_id']])
+            lists.append([show, students, score, reviews.count(), self.kwargs['rank_id'], self.kwargs['round_id']])
             lists= sorted(lists, key=getKey, reverse=True)
         # 記錄系統事件
         if is_event_open(self.request) :         
@@ -460,7 +460,7 @@ class ScoreListView(ListView):
                 scores = [math.ceil(score1*10)/10, math.ceil(score2*10)/10, math.ceil(score3*10)/10,  score1+score2+score3, reviews.count()]
             else :
                 scores = [0,0,0,0]        
-            lists[showa.id] = [showa, scores, members]
+            lists[showa.id] = [showa, scores, members, self.kwargs['round_id']]
         # 記錄系統事件
         if is_event_open(self.request) :         
             log = Log(user_id=self.request.user.id, event=u'查看創意秀平均分數<'+classroom_name+'>')
@@ -701,19 +701,15 @@ def commentall(request, round_id):
 
 def comment(request, round_id, user_id):
     classroom_id = Round.objects.get(id=round_id).classroom_id
-    rounds = Round.objects.filter(classroom_id=classroom_id)
     classroom = Classroom.objects.get(id=classroom_id)
-    
     reviews = ShowReview.objects.filter(student_id=user_id)
     user = User.objects.get(id=user_id)
     lists = []
     for review in reviews:
-        show = ShowGroup.objects.get(id=review.show_id)
-        classroom_ids = []
-        for round in rounds:
-            classroom_ids.append(round.classroom_id)
-        if Round.objects.get(id=show.round_id).classroom_id in classroom_ids:
-            lists.append([show, review])
+        shows = ShowGroup.objects.filter(id=review.show_id)
+        for show in shows:
+            if review.comment != "":
+                lists.append([show, review, round_id])
     return render(request, 'show/comment.html', {'user':user, 'classroom':classroom, 'lists': lists})
 
 def zip(request, round_id):

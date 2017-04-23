@@ -18,7 +18,7 @@
 {% for list in lists %}
   <tr>
   <td>{{list.0.name}}</td>
-    <td><a href="/show/detail/{{list.0.id}}">{{list.0.title}}</a></td>
+    <td><a href="/show/detail/{{list.2}}/{{list.0.id}}">{{list.0.title}}</a></td>
   <td>{{list.1.comment}}</td>
   </tr>  
 {% endfor %}

@@ -21,12 +21,12 @@
 <TD>分數</TD>
 <TD>評分人數</TD>
 </tr>
-  {% for show, students, score, count in lists %}
+  {% for show, students, score, count, rank, round_id in lists %}
 	<tr>
 	<td>{{forloop.counter}}</td>
 	<td>{{show.name}}</td>
 	<td>{% for student in students%}<A href="/account/profile/{{student.student.id}}"><img src="/static/avatar/s{{ student.student.profile.avatar }}.png"></a>({{student.seat}}){{student.student.first_name}}{% endfor %}</td>
-	<td><a href="/show/detail/{{show.id}}">{{show.title}}</a></td>
+	<td><a href="/show/detail/{{round_id}}/{{show.id}}">{{show.title}}</a></td>
 	<td>{{score}}</td>
 	<td>{{count}}</td>
 	</tr>
