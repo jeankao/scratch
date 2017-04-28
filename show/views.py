@@ -33,6 +33,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from uuid import uuid4
 from wsgiref.util import FileWrapper
+from operator import itemgetter
 
 def is_teacher(user, classroom_id):
     return user.groups.filter(name='teacher').exists() and Classroom.objects.filter(teacher_id=user.id, id=classroom_id).exists()
@@ -465,7 +466,8 @@ class ScoreListView(ListView):
         if is_event_open(self.request) :         
             log = Log(user_id=self.request.user.id, event=u'查看創意秀平均分數<'+classroom_name+'>')
             log.save()  
-        lists = OrderedDict(sorted(lists.items(), key=lambda x: x[0]))
+        lists = OrderedDict(sorted(lists.items(), key=lambda x: x[1][1][3], reverse=True))
+        #lists = OrderedDict(sorted(lists.items(), key=itemgetter(1)))
         return lists
 
 # 藝廊                  
