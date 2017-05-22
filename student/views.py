@@ -903,7 +903,8 @@ def bug_detail(request, bug_id):
 def bug_download(request, bug_id):
     bug = Bug.objects.get(id=bug_id)
     username = bug.author.first_name
-    filename = "Bug_"+username + "_" + bug.title + ".sb2"
+    title = bug.title.replace(",", "")		
+    filename = "Bug_"+username + "_" + title + ".sb2"
     download =  settings.BASE_DIR + "/" + str(bug.file)
     wrapper = FileWrapper(file( download, "r" ))
     response = HttpResponse(wrapper, content_type = 'application/force-download')
@@ -917,7 +918,8 @@ def debug_download(request, debug_id):
     debug = Debug.objects.get(id=debug_id)
     bug = Bug.objects.get(id=debug.bug_id)
     username = debug.author.first_name
-    filename = "Debug_"+username + "_" + bug.title + ".sb2"
+    title = debug.title.replace(",", "")
+    filename = "Debug_"+username + "_" + title + ".sb2"
     download =  settings.BASE_DIR + "/" + str(debug.file)
     wrapper = FileWrapper(file( download, "r" ))
     response = HttpResponse(wrapper, content_type = 'application/force-download')
