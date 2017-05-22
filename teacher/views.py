@@ -67,7 +67,7 @@ def is_event_video_open(request):
 class ClassroomListView(ListView):
     model = Classroom
     context_object_name = 'classrooms'
-    paginate_by = 20
+    #paginate_by = 1000
     def get_queryset(self):
         # 記錄系統事件
         if is_event_open(self.request) :    
