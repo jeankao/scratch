@@ -918,7 +918,7 @@ def debug_download(request, debug_id):
     debug = Debug.objects.get(id=debug_id)
     bug = Bug.objects.get(id=debug.bug_id)
     username = debug.author.first_name
-    title = debug.title.replace(",", "")
+    title = bug.title.replace(",", "")
     filename = "Debug_"+username + "_" + title + ".sb2"
     download =  settings.BASE_DIR + "/" + str(debug.file)
     wrapper = FileWrapper(file( download, "r" ))
