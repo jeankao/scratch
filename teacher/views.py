@@ -534,7 +534,7 @@ def check(request, user_id, unit,classroom_id):
                 enroll.score_memo3=form.cleaned_data['score_memo3']
                 enroll.save()
                 # 記錄系統事件
-                if is_event_open() :                    
+                if is_event_open(request) :                    
                     log = Log(user_id=request.user.id, event=u'批改實戰進擊心得<'+user_name+'>')
                     log.save() 
 						
@@ -554,7 +554,7 @@ def check(request, user_id, unit,classroom_id):
                 enroll.score_memo4=form.cleaned_data['score_memo4']
                 enroll.save()
                 # 記錄系統事件
-                if is_event_open() :                    
+                if is_event_open(request) :                    
                     log = Log(user_id=request.user.id, event=u'批改實戰高手心得<'+user_name+'>')
                     log.save() 						
                 if form.cleaned_data['certificate']:		
