@@ -205,7 +205,7 @@ def score(request, classroom_id, index):
         except ObjectDoesNotExist:
             work = Work(index=index, user_id=0)
         except MultipleObjectsReturned:
-            work =  Work.objects.filter(user_id=enroll.student_id, index=index)[0]
+            work =  Work.objects.filter(user_id=enroll.student_id, index=index).order_by("-id")[0]
         try:
 			group_name = EnrollGroup.objects.get(id=enroll.group).name
         except ObjectDoesNotExist:
@@ -243,6 +243,8 @@ def scoring(request, classroom_id, user_id, index):
         work3 = Work.objects.get(user_id=user_id, index=index)
     except ObjectDoesNotExist:
         work3 = Work(index=index, user_id=user_id)
+    except MultipleObjectsReturned:
+        work3 =  Work.objects.filter(user_id=user_id, index=index).order_by("-id")[0]				
 				
     workfiles = WorkFile.objects.filter(work_id=work3.id).order_by("-id")
 		
