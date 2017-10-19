@@ -204,6 +204,8 @@ def score(request, classroom_id, index):
                 scorer_name = "1"
         except ObjectDoesNotExist:
             work = Work(index=index, user_id=0)
+        except MultipleObjectsReturned:
+            work =  Work.objects.filter(user_id=enroll.student_id, index=index)[0]
         try:
 			group_name = EnrollGroup.objects.get(id=enroll.group).name
         except ObjectDoesNotExist:
