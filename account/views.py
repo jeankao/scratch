@@ -352,7 +352,7 @@ def adminemail(request):
     if request.method == 'POST':
         form = EmailForm(request.POST)
         if form.is_valid():
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(id=request.user.id)
             user.email =form.cleaned_data['email']
             user.save()
             # 記錄系統事件
