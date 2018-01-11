@@ -655,6 +655,14 @@ def grade_unit1(request, classroom_id):
                 except ObjectDoesNotExist:
                     enroll_score.append('缺')
                     enroll_grade.append(0)
+                except Work.MultipleObjectsReturned:
+                    work = Work.objects.filter(user_id=enroll.student_id, index=i+1)[0]
+                    if work.score == -1 :
+                        score=0
+                    else :
+                        score = work.score
+                    enroll_score.append(work.score)
+                    enroll_grade.append(score/25.0)										
             # 3個測驗
             for i in range(3):
                 exams = Exam.objects.filter(student_id=enroll.student_id, exam_id=i+1)
