@@ -7,6 +7,7 @@
         <table>
         <tr>
 			<td>學校</td>
+			<td>帳號</td>
 			<td>等級</td>
             <td>座號</td>        
             <td>姓名</td>
@@ -33,6 +34,7 @@
 			{% endif %}
 			{% endfor %}
 			</td>
+			<td>{{enroll.student.username}}</td>
 			<td><A href="/account/profile/{{enroll.student.id}}"><img src="/static/avatar/s{{ enroll.student.profile.avatar }}.png"></a></td>
             <td>{{enroll.seat}}</td>           
             <td>{{enroll.student.first_name}}</td>
