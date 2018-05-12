@@ -11,7 +11,7 @@ from account.models import Profile, PointHistory, Log, Message, MessagePoll, Vis
 from student.models import Enroll, Work, Assistant
 from teacher.models import Classroom
 from certificate.models import Certificate
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from account.templatetags import tag 
 from django.views.generic import ListView, CreateView
 from django.contrib.auth.models import Group
@@ -137,6 +137,8 @@ def user_login(request):
                                             visitor = Visitor.objects.get(date=date_number)
                                         except ObjectDoesNotExist:
                                             visitor = Visitor(date=date_number)
+                                        except MultipleObjectsReturned:
+                                            visitor = Visitor.objects.filter(date=date_number).order_by("-id")[0]
                                         visitor.count = visitor.count + 1
                                         visitor.save()
                                         
