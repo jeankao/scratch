@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from survey.models import PreSurvey, PostSurvey
 from student.models import Enroll
 from teacher.models import Classroom
@@ -255,6 +255,8 @@ def post_teacher(request, classroom_id):
             questionaire = PostSurvey.objects.get(student_id=enroll.student_id)
         except ObjectDoesNotExist :
             questionaire = PostSurvey(student_id=enroll.student_id)
+        except MultipleObjectsReturned:
+            questionaire = PostSurvey.objects.filter(student_id=enroll.student_id).order_by("-id")[0]
         questionaires.append([enroll, questionaire])						
     return render_to_response('survey/post_teacher.html', {'classroom':classroom,'questionaires':questionaires, 'post_questions':post_questions},context_instance=RequestContext(request))
 
