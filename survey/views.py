@@ -94,7 +94,7 @@ def pre_result(request, classroom_id):
             questionaires.append(questionaire)						
         except ObjectDoesNotExist : 
             pass
-    return render_to_response('survey/pre_result.html', {'enrolls':enrolls, 'result':questions, 'questions': pre_questions, 'classroom':classroom, 'questionaires':questionaires},context_instance=RequestContext(request))
+    return render(request, 'survey/pre_result.html', {'enrolls':enrolls, 'result':questions, 'questions': pre_questions, 'classroom':classroom, 'questionaires':questionaires},context_instance=RequestContext(request))
 
 
 def pre_survey(request):
@@ -137,7 +137,7 @@ def pre_survey(request):
                 log.save()        
         
             return redirect('/student/lesson/1')
-    return render_to_response('survey/pre_survey.html', {'questionaire':questionaire,'questions': questions},context_instance=RequestContext(request))
+    return render(request, 'survey/pre_survey.html', {'questionaire':questionaire,'questions': questions},context_instance=RequestContext(request))
 
 def pre_teacher(request, classroom_id):
     enrolls = Enroll.objects.filter(classroom_id=classroom_id).order_by("seat")
@@ -150,7 +150,7 @@ def pre_teacher(request, classroom_id):
         except ObjectDoesNotExist :
             questionaire = PreSurvey(student_id=enroll.student_id)
         questionaires.append([enroll, questionaire])						
-    return render_to_response('survey/pre_teacher.html', {'classroom':classroom,'questionaires':questionaires, 'pre_questions':pre_questions},context_instance=RequestContext(request))
+    return render(request, 'survey/pre_teacher.html', {'classroom':classroom,'questionaires':questionaires, 'pre_questions':pre_questions},context_instance=RequestContext(request))
 
 def post_survey(request):
     try:
@@ -203,7 +203,7 @@ def post_survey(request):
                 log = Log(user_id=request.user.id, event=u'填寫課後問卷'+request.user.first_name+'>')
                 log.save()   
             return redirect('/student/lesson/11')	
-    return render_to_response('survey/post_survey.html', {'questionaire':questionaire,'questions': questions, 'questions_t':questions_t},context_instance=RequestContext(request))
+    return render(request, 'survey/post_survey.html', {'questionaire':questionaire,'questions': questions, 'questions_t':questions_t},context_instance=RequestContext(request))
 
 def post_result(request, classroom_id):
     classroom = Classroom.objects.get(id=classroom_id)
@@ -243,7 +243,7 @@ def post_result(request, classroom_id):
             questionaires.append(questionaire)
         except ObjectDoesNotExist : 
             pass
-    return render_to_response('survey/post_result.html', {'enrolls':enrolls, 'result':questions, 'questions': post_questions, 'classroom':classroom, 'questionaires':questionaires},context_instance=RequestContext(request))
+    return render(request, 'survey/post_result.html', {'enrolls':enrolls, 'result':questions, 'questions': post_questions, 'classroom':classroom, 'questionaires':questionaires},context_instance=RequestContext(request))
 
 def post_teacher(request, classroom_id):
     enrolls = Enroll.objects.filter(classroom_id=classroom_id).order_by("seat")
@@ -258,5 +258,5 @@ def post_teacher(request, classroom_id):
         except MultipleObjectsReturned:
             questionaire = PostSurvey.objects.filter(student_id=enroll.student_id).order_by("-id")[0]
         questionaires.append([enroll, questionaire])						
-    return render_to_response('survey/post_teacher.html', {'classroom':classroom,'questionaires':questionaires, 'post_questions':post_questions},context_instance=RequestContext(request))
+    return render(request, 'survey/post_teacher.html', {'classroom':classroom,'questionaires':questionaires, 'post_questions':post_questions},context_instance=RequestContext(request))
 

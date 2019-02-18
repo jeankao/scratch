@@ -116,7 +116,7 @@ def classroom_edit(request, classroom_id):
     else:
         form = ClassroomForm(instance=classroom)
 
-    return render_to_response('form.html',{'form': form}, context_instance=RequestContext(request))        
+    return render(request, 'form.html',{'form': form})        
     
 # 退選
 def unenroll(request, enroll_id, classroom_id):
@@ -142,7 +142,7 @@ def work(request, classroom_id):
     if is_event_open(request) :    
         log = Log(user_id=request.user.id, event=u'列出班級所有作業<'+classroom.name+'>')
         log.save()              
-    return render_to_response('teacher/work.html', {'lesson_list':lesson_list, 'classroom': classroom}, context_instance=RequestContext(request))
+    return render(request, 'teacher/work.html', {'lesson_list':lesson_list, 'classroom': classroom})
 
 # 列出分組12堂課所有作業
 def work1(request, classroom_id):
@@ -182,7 +182,7 @@ def work1(request, classroom_id):
     if is_event_open(request) :            
         log = Log(user_id=request.user.id, event=u'以分組顯示作業<'+classroom_name+'>')
         log.save()         
-    return render_to_response('teacher/work1.html', {'lessons':lessons, 'classroom_id':classroom_id}, context_instance=RequestContext(request))
+    return render(request, 'teacher/work1.html', {'lessons':lessons, 'classroom_id':classroom_id})
 			
 			
 # 列出某作業所有同學名單
@@ -226,7 +226,7 @@ def score(request, classroom_id, index):
     if is_event_open(request) :        
         log = Log(user_id=request.user.id, event=u'列出某作業所有同學名單<'+classroom_name+'><'+index+'>')
         log.save()          
-    return render_to_response('teacher/score.html',{'classmate_work': classmate_work, 'classroom_id':classroom_id, 'lesson':lesson, 'index': index}, context_instance=RequestContext(request))
+    return render(request, 'teacher/score.html',{'classmate_work': classmate_work, 'classroom_id':classroom_id, 'lesson':lesson, 'index': index})
 
 
 # 教師評分
@@ -237,7 +237,7 @@ def scoring(request, classroom_id, user_id, index):
         assistant = Assistant.objects.filter(classroom_id=classroom_id,lesson=index,student_id=request.user.id)
     except ObjectDoesNotExist:            
         if not is_teacher(request.user, classroom_id):
-            return render_to_response('message.html', {'message':"您沒有權限"}, context_instance=RequestContext(request))
+            return render(request, 'message.html', {'message':"您沒有權限"})
         
     try:
         work3 = Work.objects.get(user_id=user_id, index=index)
@@ -315,7 +315,7 @@ def scoring(request, classroom_id, user_id, index):
         else:
             form = ScoreForm(instance=work[0], user=request.user)
     lesson = lesson_list[int(index)-1]
-    return render_to_response('teacher/scoring.html', {'form': form,'workfiles':workfiles, 'index': index, 'work':work3, 'student':user, 'classroom_id':classroom_id, 'lesson':lesson}, context_instance=RequestContext(request))
+    return render(request, 'teacher/scoring.html', {'form': form,'workfiles':workfiles, 'index': index, 'work':work3, 'student':user, 'classroom_id':classroom_id, 'lesson':lesson})
 
 # 小老師評分名單
 def score_peer(request, index, classroom_id, group):
@@ -345,7 +345,7 @@ def score_peer(request, index, classroom_id, group):
     if is_event_open(request) :        
         log = Log(user_id=request.user.id, event=u'小老師評分名單<'+index+'><'+group+'>')
         log.save()    
-    return render_to_response('teacher/score_peer.html',{'enrolls':enrolls, 'workfiles': workfiles, 'classmate_work': classmate_work, 'classroom_id':classroom_id, 'lesson':lesson, 'index': index}, context_instance=RequestContext(request))
+    return render(request, 'teacher/score_peer.html',{'enrolls':enrolls, 'workfiles': workfiles, 'classmate_work': classmate_work, 'classroom_id':classroom_id, 'lesson':lesson, 'index': index})
 
 # 設定為小老師
 def assistant(request, classroom_id, user_id, lesson):
@@ -445,7 +445,7 @@ def work_group(request, lesson, classroom_id):
         if is_event_open(request) :            
             log = Log(user_id=request.user.id, event=u'以分組顯示作業<'+lesson+'><'+classroom_name+'>')
             log.save()         
-        return render_to_response('teacher/work_group.html', {'lesson':lesson, 'lesson_data':lesson_data, 'student_groups':student_groups, 'classroom_id':classroom_id, 'student_group':student_group}, context_instance=RequestContext(request))
+        return render(request, 'teacher/work_group.html', {'lesson':lesson, 'lesson_data':lesson_data, 'student_groups':student_groups, 'classroom_id':classroom_id, 'student_group':student_group})
 
 # 心得
 def memo(request, classroom_id):
@@ -458,7 +458,7 @@ def memo(request, classroom_id):
         if is_event_open(request) :            
             log = Log(user_id=request.user.id, event=u'查閱心得<'+classroom_name+'>')
             log.save()  
-        return render_to_response('teacher/memo.html', {'enrolls':enrolls, 'classroom_name':classroom_name}, context_instance=RequestContext(request))
+        return render(request, 'teacher/memo.html', {'enrolls':enrolls, 'classroom_name':classroom_name})
 
 # 評分某同學某進度心得
 @login_required
@@ -572,7 +572,7 @@ def check(request, user_id, unit,classroom_id):
     if is_event_open(request) :        
         log = Log(user_id=request.user.id, event=u'查閱個人心得<'+user_name+'>')
         log.save()  
-    return render_to_response('teacher/check.html', {'form':form, 'works':works, 'lesson_list':lesson_list, 'student': user, 'unit':unit, 'classroom_id':classroom_id}, context_instance=RequestContext(request))
+    return render(request, 'teacher/check.html', {'form':form, 'works':works, 'lesson_list':lesson_list, 'student': user, 'unit':unit, 'classroom_id':classroom_id})
 
 	
 # 查閱全班測驗卷成績
@@ -600,7 +600,7 @@ def exam_list(request, classroom_id):
         if is_event_open(request) :            
             log = Log(user_id=request.user.id, event=u'查閱測驗卷成績<'+classroom_name+'>')
             log.save() 	
-        return render_to_response('teacher/exam_list.html', {'classroom_id':classroom_id, 'classroom_name':classroom_name, 'enroll_exam':enroll_exam}, context_instance=RequestContext(request))
+        return render(request, 'teacher/exam_list.html', {'classroom_id':classroom_id, 'classroom_name':classroom_name, 'enroll_exam':enroll_exam})
 
 # 查詢某項測驗的所有資料
 def exam_detail(request, classroom_id, student_id, exam_id):
@@ -613,7 +613,7 @@ def exam_detail(request, classroom_id, student_id, exam_id):
         if is_event_open(request) :            
             log = Log(user_id=request.user.id, event=u'檢視測驗資料<'+exam_id+'><'+enroll.student.first_name+'>')
             log.save() 	        
-        return render_to_response('teacher/exam_detail.html', {'exams': exams, 'enroll':enroll}, context_instance=RequestContext(request))
+        return render(request, 'teacher/exam_detail.html', {'exams': exams, 'enroll':enroll})
 		
 # 結算成績
 @login_required
@@ -626,7 +626,7 @@ def grade(request, classroom_id):
         if is_event_open(request) :    
             log = Log(user_id=request.user.id, event=u'結算成績<'+classroom.name+'>')
             log.save() 	                
-        return render_to_response('teacher/grade.html', {'classroom': classroom}, context_instance=RequestContext(request))
+        return render(request, 'teacher/grade.html', {'classroom': classroom})
 
 @login_required
 def grade_unit1(request, classroom_id):
@@ -717,7 +717,7 @@ def grade_unit1(request, classroom_id):
         if is_event_open(request) :    
             log = Log(user_id=request.user.id, event=u'查看成績<12堂課><'+classroom.name+'>')
             log.save() 	
-        return render_to_response('teacher/grade_unit1.html', {'lesson_list':lesson_list, 'classroom':classroom, 'data':data}, context_instance=RequestContext(request))
+        return render(request, 'teacher/grade_unit1.html', {'lesson_list':lesson_list, 'classroom':classroom, 'data':data})
 
 @login_required
 def grade_unit2(request, classroom_id):
@@ -779,7 +779,7 @@ def grade_unit2(request, classroom_id):
             log = Log(user_id=request.user.id, event=u'查看成績<實戰入門><'+classroom.name+'>')
             log.save() 
 
-        return render_to_response('teacher/grade_unit2.html', {'lesson_list':lesson_list, 'classroom':classroom, 'data':data}, context_instance=RequestContext(request))
+        return render(request, 'teacher/grade_unit2.html', {'lesson_list':lesson_list, 'classroom':classroom, 'data':data})
 
 @login_required
 def grade_unit3(request, classroom_id):
@@ -841,7 +841,7 @@ def grade_unit3(request, classroom_id):
             log = Log(user_id=request.user.id, event=u'查看成績<實戰進擊><'+classroom.name+'>')
             log.save() 
 
-        return render_to_response('teacher/grade_unit3.html', {'lesson_list':lesson_list, 'classroom':classroom, 'data':data}, context_instance=RequestContext(request))
+        return render(request, 'teacher/grade_unit3.html', {'lesson_list':lesson_list, 'classroom':classroom, 'data':data})
 
 @login_required
 def grade_unit4(request, classroom_id):
@@ -903,7 +903,7 @@ def grade_unit4(request, classroom_id):
             log = Log(user_id=request.user.id, event=u'查看成<績實戰高手><'+classroom.name+'>')
             log.save() 
             
-        return render_to_response('teacher/grade_unit4.html', {'enroll_group':enroll_group, 'lesson_list':lesson_list, 'classroom':classroom, 'data':data}, context_instance=RequestContext(request))
+        return render(request, 'teacher/grade_unit4.html', {'enroll_group':enroll_group, 'lesson_list':lesson_list, 'classroom':classroom, 'data':data})
 
 # 列出所有公告
 class AnnounceListView(ListView):
@@ -926,10 +926,10 @@ class AnnounceListView(ListView):
         return context	    
 
     # 限本班任課教師        
-    def render_to_response(self, context):
+    def render(request, self, context):
         if not is_teacher(self.request.user, self.kwargs['classroom_id']):
             return redirect('/')
-        return super(AnnounceListView, self).render_to_response(context)        
+        return super(AnnounceListView, self).render(request, context)        
         
 #新增一個公告
 class AnnounceCreateView(CreateView):
@@ -976,10 +976,10 @@ class AnnounceCreateView(CreateView):
         return context	   
         
     # 限本班任課教師        
-    def render_to_response(self, context):
+    def render(request, self, context):
         if not is_teacher(self.request.user, self.kwargs['classroom_id']):
             return redirect('/')
-        return super(AnnounceCreateView, self).render_to_response(context)          
+        return super(AnnounceCreateView, self).render(request, context)          
         
 # 查看藝郎某項目
 def announce_detail(request, message_id):
@@ -1002,7 +1002,7 @@ def announce_detail(request, message_id):
         log.save()
 
     files = MessageFile.objects.filter(message_id=message_id)
-    return render_to_response('teacher/announce_detail.html', {'files':files, 'message':message, 'classroom':classroom, 'announce_reads':announce_reads}, context_instance=RequestContext(request))
+    return render(request, 'teacher/announce_detail.html', {'files':files, 'message':message, 'classroom':classroom, 'announce_reads':announce_reads})
 
 def announce_download(request, messagefile_id):
     messagefile = MessageFile.objects.get(id=messagefile_id)
@@ -1015,7 +1015,7 @@ def announce_download(request, messagefile_id):
     # It's usually a good idea to set the 'Content-Length' header too.
     # You can also set any other required headers: Cache-Control, etc.
     return response
-    #return render_to_response('student/download.html', {'download':download})
+    #return render(request, 'student/download.html', {'download':download})
 
 # 記錄系統事件
 class EventListView(ListView):
@@ -1214,10 +1214,10 @@ class NoteListView(ListView):
         return context	    
 
     # 限本班任課教師        
-    def render_to_response(self, context):
+    def render(request, self, context):
         if not is_teacher(self.request.user, self.kwargs['classroom_id']):
             return redirect('/')
-        return super(NoteListView, self).render_to_response(context)        
+        return super(NoteListView, self).render(request, context)        
         
 # 教學筆記匯出到word    
 def doc_download(request, classroom_id):

@@ -66,7 +66,7 @@ def upload_pic(request):
         except ObjectDoesNotExist:
             pass
         form = ImageUploadForm()
-    return render_to_response('certificate/certificate.html', {'form':form, 'certificate': m}, context_instance=RequestContext(request))
+    return render(request, 'certificate/certificate.html', {'form':form, 'certificate': m})
 
 # 顯示證書
 def show(request, unit, enroll_id):
@@ -82,7 +82,7 @@ def show(request, unit, enroll_id):
     if is_event_open(request) :      
         log = Log(user_id=request.user.id, event=u'查看證書<'+unit+'><'+enroll.student.first_name+'>')
         log.save() 		
-    return render_to_response('certificate/show.html', {'certificate_image': certificate_image}, context_instance=RequestContext(request))
+    return render(request, 'certificate/show.html', {'certificate_image': certificate_image})
     
 # 顯示班級證書    
 def classroom(request, unit, classroom_id):
@@ -151,7 +151,7 @@ def classroom(request, unit, classroom_id):
     if is_event_open(request) :      
         log = Log(user_id=request.user.id, event=u'查看班級證書<'+unit+'><'+classroom_name+'>')
         log.save() 				
-    return render_to_response('certificate/classroom.html', {'enrolls':nodatas,'datas': datas, 'unit':unit}, context_instance=RequestContext(request))
+    return render(request, 'certificate/classroom.html', {'enrolls':nodatas,'datas': datas, 'unit':unit})
 
 def openFile(fileName, mode, context):
 	# open file using python's open method

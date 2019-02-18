@@ -81,11 +81,11 @@ def homepage(request):
     except ObjectDoesNotExist:
         admin_profile = ""
     classroom_count = Classroom.objects.all().count()
-    return render_to_response('homepage.html', {'classroom_count':classroom_count, 'row_count':row_count, 'user_count':len(users), 'admin_profile': admin_profile}, context_instance=RequestContext(request))
+    return render(request, 'homepage.html', {'classroom_count':classroom_count, 'row_count':row_count, 'user_count':len(users), 'admin_profile': admin_profile})
 
 # 作者
 def author(request):
-    return render_to_response('account/author.html', context_instance=RequestContext(request))
+    return render(request, 'account/author.html')
 
 	
 	
@@ -156,7 +156,7 @@ def user_login(request):
                             message = "無效的帳號或密碼!"
         else:
                 form = LoginForm()
-        return render_to_response('registration/login.html', {'test': test, 'message': message, 'form': form}, context_instance=RequestContext(request))
+        return render(request, 'registration/login.html', {'test': test, 'message': message, 'form': form})
 
 # 記錄登出
 def suss_logout(request, user_id):
@@ -258,9 +258,9 @@ def profile(request, user_id):
     user_enrolls = Enroll.objects.filter(student_id=request.user.id)
     for enroll in user_enrolls:
         if is_classmate(user_id, enroll.classroom_id) or request.user.id == 1:
-          return render_to_response('account/profile.html',{'hour_of_code':hour_of_code, 'works':works, 'lesson_list':lesson_list, 'enrolls':enrolls, 'profile': profile,'user_id':user_id, 'credit':credit}, context_instance=RequestContext(request))	
+          return render(request, 'account/profile.html',{'hour_of_code':hour_of_code, 'works':works, 'lesson_list':lesson_list, 'enrolls':enrolls, 'profile': profile,'user_id':user_id, 'credit':credit})	
     if user_id == str(request.user.id):	
-        return render_to_response('account/profile.html',{'hour_of_code':hour_of_code, 'works':works, 'lesson_list':lesson_list, 'enrolls':enrolls, 'profile': profile,'user_id':user_id, 'credit':credit}, context_instance=RequestContext(request))	
+        return render(request, 'account/profile.html',{'hour_of_code':hour_of_code, 'works':works, 'lesson_list':lesson_list, 'enrolls':enrolls, 'profile': profile,'user_id':user_id, 'credit':credit})	
     return redirect("/")
 
 	# 修改密碼
@@ -280,7 +280,7 @@ def password(request, user_id):
         form = PasswordForm()
         user = User.objects.get(id=user_id)
 
-    return render_to_response('account/password.html',{'form': form, 'user':user}, context_instance=RequestContext(request))
+    return render(request, 'account/password.html',{'form': form, 'user':user})
 
 # 修改他人的真實姓名
 def adminrealname(request, user_id):
@@ -309,7 +309,7 @@ def adminrealname(request, user_id):
         else:
             return redirect("/")
 
-    return render_to_response('account/realname.html',{'form': form}, context_instance=RequestContext(request))
+    return render(request, 'account/realname.html',{'form': form})
 	
 # 修改自己的真實姓名
 def realname(request):
@@ -328,7 +328,7 @@ def realname(request):
         user = User.objects.get(id=request.user.id)
         form = RealnameForm(instance=user)
 
-    return render_to_response('account/realname.html',{'form': form}, context_instance=RequestContext(request))
+    return render(request, 'account/realname.html',{'form': form})
 
 # 修改學校名稱
 def adminschool(request):
@@ -347,7 +347,7 @@ def adminschool(request):
         user = User.objects.get(id=request.user.id)
         form = SchoolForm(instance=user)
 
-    return render_to_response('account/school.html',{'form': form}, context_instance=RequestContext(request))
+    return render(request, 'account/school.html',{'form': form})
     
 # 修改信箱
 def adminemail(request):
@@ -366,7 +366,7 @@ def adminemail(request):
         user = User.objects.get(id=request.user.id)
         form = EmailForm(instance=user)
 
-    return render_to_response('account/email.html',{'form': form}, context_instance=RequestContext(request))    
+    return render(request, 'account/email.html',{'form': form})    
 
 # 記錄積分項目
 class LogListView(ListView):
@@ -510,10 +510,10 @@ class LineClassListView(ListView):
         return queryset
         
     # 限本班同學
-    def render_to_response(self, context):
+    def render(request, self, context):
         if not is_classmate(self.request.user.id, self.kwargs['classroom_id']):
             return redirect('/')
-        return super(LineClassListView, self).render_to_response(context)            
+        return super(LineClassListView, self).render(request, context)            
                 
 #新增一個私訊
 class LineCreateView(CreateView):
@@ -561,7 +561,7 @@ def line_detail(request, classroom_id, message_id):
         messagepoll = MessagePoll.objects.get(message_id=message_id)
     except :
         pass
-    return render_to_response('account/line_detail.html', {'lists':messes, 'classroom_id':classroom_id, 'message':message, 'messagepoll':messagepoll}, context_instance=RequestContext(request))
+    return render(request, 'account/line_detail.html', {'lists':messes, 'classroom_id':classroom_id, 'message':message, 'messagepoll':messagepoll})
 
 
 # 列出所有日期訪客
@@ -617,10 +617,10 @@ class VisitorLogListView(ListView):
         queryset = VisitorLog.objects.filter(visitor_id=self.kwargs['visitor_id']).order_by('-id')
         return queryset
         
-    def render_to_response(self, context):
+    def render(request, self, context):
         if not self.request.user.is_authenticated():
             return redirect('/')
-        return super(VisitorLogListView, self).render_to_response(context)
+        return super(VisitorLogListView, self).render(request, context)
         
 # 顯示學生手冊
 def manual_student(request):
@@ -628,7 +628,7 @@ def manual_student(request):
     if is_event_open(request) :       
         log = Log(user_id=0, event='查看學生手冊')
         log.save()        
-    return render_to_response('account/manual_student.html',  context_instance=RequestContext(request))	
+    return render(request, 'account/manual_student.html',  context_instance=RequestContext(request))	
 
 # 顯示教師手冊
 def manual_teacher(request):
@@ -636,7 +636,7 @@ def manual_teacher(request):
     if is_event_open(request) :       
         log = Log(user_id=0, event='查看教師手冊')
         log.save()        
-    return render_to_response('account/manual_teacher.html',  context_instance=RequestContext(request))	
+    return render(request, 'account/manual_teacher.html',  context_instance=RequestContext(request))	
 
 # 顯示Windows架站
 def manual_windows(request):
@@ -644,7 +644,7 @@ def manual_windows(request):
     if is_event_open(request) :       
         log = Log(user_id=0, event='查看Windows架站')
         log.save()        
-    return render_to_response('account/manual_windows.html',  context_instance=RequestContext(request))	
+    return render(request, 'account/manual_windows.html',  context_instance=RequestContext(request))	
 
 # 顯示Ubuntu架站
 def manual_ubuntu(request):
@@ -652,7 +652,7 @@ def manual_ubuntu(request):
     if is_event_open(request) :       
         log = Log(user_id=0, event='查看ubuntu架站')
         log.save()        
-    return render_to_response('account/manual_ubuntu.html',  context_instance=RequestContext(request))	
+    return render(request, 'account/manual_ubuntu.html',  context_instance=RequestContext(request))	
 
 # 顯示Heroku架站
 def manual_heroku(request):
@@ -660,7 +660,7 @@ def manual_heroku(request):
     if is_event_open(request) :       
         log = Log(user_id=0, event='查看Heroku架站')
         log.save()        
-    return render_to_response('account/manual_heroku.html',  context_instance=RequestContext(request))	
+    return render(request, 'account/manual_heroku.html',  context_instance=RequestContext(request))	
 
 # 顯示好文
 def article(request):
@@ -668,7 +668,7 @@ def article(request):
     if is_event_open(request) :       
         log = Log(user_id=0, event='查看好文分享')
         log.save()        
-    return render_to_response('account/article.html',  context_instance=RequestContext(request))	
+    return render(request, 'account/article.html',  context_instance=RequestContext(request))	
 
 # 下載檔案
 def download(request, filename):
@@ -707,7 +707,7 @@ def avatar(request):
     if is_event_open(request) :       
         log = Log(user_id=request.user.id, event=u'查看個人圖像')
         log.save()        
-    return render_to_response('account/avatar.html', {'avatar':profile.avatar}, context_instance=RequestContext(request))
+    return render(request, 'account/avatar.html', {'avatar':profile.avatar})
     
 # 記錄系統事件
 class EventListView(ListView):
@@ -734,10 +734,10 @@ class EventListView(ListView):
         return context	
         
     # 限本人 
-    def render_to_response(self, context):
+    def render(request, self, context):
         #if is_teacher(self.kwargs['user_id'], self.request) :
         #    return redirect('/')
-        return super(EventListView, self).render_to_response(context)      
+        return super(EventListView, self).render(request, context)      
 
 # 記錄系統事件
 class Event12ListView(ListView):
@@ -764,10 +764,10 @@ class Event12ListView(ListView):
     #    return context	
         
     # 限本人 
-    #def render_to_response(self, context):
+    #def render(request, self, context):
     #    if not is_student(self.kwargs['user_id'], self.request) and not self.request.user.id == int(self.kwargs['user_id']):
     #        return redirect('/')
-    #    return super(Event12ListView, self).render_to_response(context)      		
+    #    return super(Event12ListView, self).render(request, context)      		
 		
 # 記錄系統事件
 class EventAdminListView(ListView):
@@ -794,10 +794,10 @@ class EventAdminListView(ListView):
         return context	
         
     # 限管理員
-    def render_to_response(self, context):
+    def render(request, self, context):
         if not self.request.user.id == 1 :
             return redirect('/')
-        return super(EventAdminListView, self).render_to_response(context)      
+        return super(EventAdminListView, self).render(request, context)      
         
 # 記錄系統事件
 class EventAdminClassroomListView(ListView):
@@ -830,10 +830,10 @@ class EventAdminClassroomListView(ListView):
         return context	
         
     # 限管理員
-    def render_to_response(self, context):
+    def render(request, self, context):
         if not self.request.user.id == 1:
             return redirect('/')
-        return super(EventAdminClassroomListView, self).render_to_response(context)     
+        return super(EventAdminClassroomListView, self).render(request, context)     
 from django.utils.dateparse import parse_date
 # 記錄系統事件
 class EventCalendarView(ListView):
@@ -967,12 +967,12 @@ class EventVideoView(ListView):
         return context
 			
     # 限本班同學
-    def render_to_response(self, context):
+    def render(request, self, context):
         try:
             enroll = Enroll.objects.get(student_id=self.request.user.id, classroom_id=self.kwargs['classroom_id'])
         except ObjectDoesNotExist :
             return redirect('/')
-        return super(EventVideoView, self).render_to_response(context)        
+        return super(EventVideoView, self).render(request, context)        
 	
 			
 

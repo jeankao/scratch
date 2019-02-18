@@ -78,7 +78,7 @@ def group(request, round_id):
         if is_event_open(request) :         
             log = Log(user_id=request.user.id, event=u'查看創意秀組別<'+classroom.name+'>')
             log.save()              
-        return render_to_response('show/group.html', {'round_id':round_id, 'nogroup': nogroup, 'group_show_open':group_show_open, 'teacher':is_teacher(request.user, classroom_id), 'student_groups':student_groups, 'classroom_id':classroom_id, 'student_group':student_group}, context_instance=RequestContext(request))
+        return render(request, 'show/group.html', {'round_id':round_id, 'nogroup': nogroup, 'group_show_open':group_show_open, 'teacher':is_teacher(request.user, classroom_id), 'student_groups':student_groups, 'classroom_id':classroom_id, 'student_group':student_group})
 
 # 新增組別
 def group_add(request, round_id):
@@ -102,7 +102,7 @@ def group_add(request, round_id):
                 return redirect('/show/group/'+round_id)
         else:
             form = GroupForm()
-        return render_to_response('show/group_add.html', {'form':form}, context_instance=RequestContext(request))
+        return render(request, 'show/group_add.html', {'form':form})
 
 # 新增創意秀
 def round_add(request, classroom_id):
@@ -130,7 +130,7 @@ def group_size(request, round_id):
         else:
             classroom = Classroom.objects.get(id=classroom_id)
             form = GroupShowSizeForm(instance=classroom)
-        return render_to_response('show/group_size.html', {'form':form}, context_instance=RequestContext(request))        
+        return render(request, 'show/group_size.html', {'form':form})        
 
 # 加入組別
 def group_enroll(request, round_id,  group_id):
@@ -195,7 +195,7 @@ class ShowUpdateView(UpdateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         context = self.get_context_data(object=self.object, form=form, members=members)
-        return self.render_to_response(context)
+        return self.render(request, context)
 
     def get_object(self, queryset=None):
         obj = ShowGroup.objects.get(id=self.kwargs['group_show'])
@@ -281,7 +281,7 @@ class ReviewUpdateView(UpdateView):
         round = Round.objects.get(id=self.kwargs['round_id'])
         teacher = is_teacher(self.request.user, round.classroom_id)				
         context = self.get_context_data(teacher=teacher, showfiles=showfiles, show=show, form=form, members=members, review=self.object, scores=scores, score=score, reviews=reviews)
-        return self.render_to_response(context)
+        return self.render(request, context)
 
     def get_object(self, queryset=None):
         try :
@@ -396,7 +396,7 @@ def show_download(request, show_id, showfile_id):
     # It's usually a good idea to set the 'Content-Length' header too.
     # You can also set any other required headers: Cache-Control, etc.
     return response
-    #return render_to_response('student/download.html', {'download':download})
+    #return render(request, 'student/download.html', {'download':download})
 			
 # 教師查看創意秀評分情況
 class TeacherListView(ListView):
@@ -597,7 +597,7 @@ def upload_pic(request, show_id):
         except ObjectDoesNotExist:
             pass
         form = ImageUploadForm()
-    return render_to_response('show/drscratch.html', {'form':form, 'show': m}, context_instance=RequestContext(request))
+    return render(request, 'show/drscratch.html', {'form':form, 'show': m})
 
 def excel(request, round_id):
     output = StringIO.StringIO()
